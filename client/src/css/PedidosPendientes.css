@@ -1,0 +1,41 @@
+/* En tu archivo CSS (por ejemplo, GananciasAdmin.css) */
+.pedidos-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .pedidos-table th, .pedidos-table td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  .pedidos-table th {
+    background-color: #f2f2f2;
+    color: #333;
+  }
+  
+  .pedidos-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .pedidos-table tr:hover {
+    background-color: #ddd;
+  }
+  
+  .estado-entregado {
+    background-color: #d4edda; /* Verde claro */
+    color: #155724; /* Texto verde oscuro */
+    padding: 10px;
+    border-radius: 5px;
+    white-space: pre-line; /* Para respetar los saltos de línea */
+  }
+  
+  .estado-pendiente {
+    background-color: #ffeeba; /* Naranja claro */
+    color: #856404; /* Texto naranja oscuro */
+    padding: 10px;
+    border-radius: 5px;
+    white-space: pre-line; /* Para respetar los saltos de línea */
+  }

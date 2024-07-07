@@ -1,0 +1,157 @@
+/* Estilos generales */
+
+:root {
+  --perfilusuario-body-font-family: Arial, sans-serif;
+  --perfilusuario-body-margin: 0;
+  --perfilusuario-body-padding: 0;
+  --perfilusuario-body-background-color: #f0f0f0;
+  --perfilusuario-body-display: flex;
+  --perfilusuario-body-flex-direction: column;
+ /*  --perfilusuario-body-align-items: center; */
+  /* --perfilusuario-body-min-height: 100vh; */
+}
+
+body {
+  font-family: var(--perfilusuario-body-font-family);
+  margin: var(--perfilusuario-body-margin);
+  padding: var(--perfilusuario-body-padding);
+  background-color: var(--perfilusuario-body-background-color); /* Color de fondo para todo el body */
+  display: var(--perfilusuario-body-display);
+  flex-direction: var(--perfilusuario-body-flex-direction);
+  /* align-items: var(--perfilusuario-body-align-items); */
+  /* min-height: var(--perfilusuario-body-min-height); */
+}
+
+hr {
+  width: 100%;
+  margin: 10px 0;
+  border: none;
+  border-top: 1px solid #ccc;
+}
+
+/* Contenedor principal */
+.user-profile-center-container {
+  /* max-width: 800px; */ /* Se ha removido la limitación del ancho */
+  width: 100%;
+  padding: 20px;
+  margin-top: 20px; /* Margen superior para separar del Navbar */
+  background-color: #fff; /* Fondo blanco para el contenedor principal */
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+}
+
+.user-profile-center-container h1 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Tarjeta de perfil de usuario */
+.user-profile-card {
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.user-profile-card h2 {
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.user-profile-card .user-profile-direccion-input-container {
+  margin-top: 10px;
+}
+
+.user-profile-card .user-profile-direccion-input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.user-profile-card .user-profile-button {
+  padding: 8px 16px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.user-profile-card .user-profile-btn-primary {
+  background-color: #7270ec;
+  color: #fff;
+}
+
+.user-profile-card .user-profile-btn-primary:hover {
+  background-color: #5e5ce6;
+}
+
+.user-profile-card .user-profile-btn-secondary {
+  background-color: #ccc;
+  color: #333;
+}
+
+.user-profile-card .user-profile-btn-secondary:hover {
+  background-color: #bbb;
+}
+
+/* Acciones para usuarios staff */
+.user-profile-staff-actions {
+  margin-top: 20px;
+}
+
+.user-profile-staff-actions h1 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+
+.user-profile-staff-button {
+  display: block; 
+  width: fit-content;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #7270ec;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.user-profile-staff-button:hover {
+  background-color: #5e5ce6;
+}
+
+/* Contenido adicional */
+.content-container {
+  margin-top: 10px;
+}
+
+.non-staff-actions {
+  margin-top: 20px;
+}
+
+.non-staff-actions h1 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.non-staff-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #ccc;
+  color: #333;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.non-staff-button:hover {
+  background-color: #bbb;
+}

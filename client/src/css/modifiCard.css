@@ -1,0 +1,25 @@
+.product-card {
+  position: relative;
+  width: 100%; /* Ajustado para ocupar el ancho del contenedor padre */
+  max-width: 500px; /* Ajustado para limitar el ancho máximo */
+  height: auto; /* Ajustado para adaptarse al contenido */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  margin-bottom: 20px; /* Espaciado entre las tarjetas */
+}
+
+.product-card-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}

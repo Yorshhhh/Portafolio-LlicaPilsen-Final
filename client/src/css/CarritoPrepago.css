@@ -1,0 +1,74 @@
+
+:root{
+  --carritoprepago-body-font-family:Arial, sans-serif;
+  --carritoprepago-body-background-color: #080808;
+  --carritoprepago-body-margin: 0;
+  --carritoprepago-body-padding: 0;
+}
+
+/* Estilos generales */
+.carritoprepago {
+  font-family: var(--carritoprepago-body-font-family);
+  background-color: var(--carritoprepago-body-background-color);
+  margin: var(--carritoprepago-body-margin);
+  padding: var(--carritoprepago-body-padding)
+}
+
+/* Estilos para el contenedor del carrito */
+.cart-dropdown {
+  width: 100%;
+  max-width: 800px;
+  margin: 20px auto;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+/* Estilos para la tabla */
+.cart-vista {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.cart-vista th,
+.cart-vista td {
+  border: 1px solid #e2e6de;
+  padding: 10px;
+  text-align: left;
+}
+
+.cart-vista th {
+  background-color: #92c52c;
+  color: #000; /* Color negro para los th */
+}
+
+.cart-vista img {
+  width: 50px;
+  height: auto;
+}
+
+/* Estilos para los botones */
+.btn {
+  padding: 6px 12px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+/* Estilos para textos */
+p {
+  margin: 0;
+}

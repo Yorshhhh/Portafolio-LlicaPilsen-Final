@@ -1,0 +1,19 @@
+/* styles.css */
+.navbar-nav {
+    display: flex;
+    align-items: center;
+  }
+  
+  .nav-item {
+    margin-right: 20px;
+  }
+  
+  .carrito-item {
+    display: flex;
+    align-items: center;
+  }
+  
+  .carrito-item .cart-icon {
+    font-size: 1.5rem;
+  }
+  

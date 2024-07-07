@@ -1,0 +1,99 @@
+/* Estilos generales */
+:root {
+  --prepago-body-font-family: Arial, sans-serif;
+  --prepago-body-line-height: 1.6;
+  --prepago-body-background-color: #5826ae;
+  --prepago-body-margin: 0;
+  --prepago-body-padding: 0;
+  --prepago-body-display: flex;
+  --prepago-body-flex-direction: column;
+  --prepago-body-justify-content: center;
+}
+
+.prepago{
+  font-family: var(--prepago-body-font-family);
+  line-height: var(--prepago-body-line-height);
+  background-color: var(--prepago-body-background-color);
+  margin: var(--prepago-body-margin);
+  padding: var(--prepago-body-padding);
+  display: var(--prepago-body-display);
+  flex-direction: var(--prepago-body-flex-direction);
+  justify-content: var(--prepago-body-justify-content);
+}
+
+/* Estilos para el contenedor horizontal */
+.horizontal-container {
+  background-color: #dbcec2;
+  padding-top: 30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center; /* Cambio para centrar verticalmente */
+  margin:  0px;
+}
+
+/* Estilos para las tarjetas */
+.card {
+  background-color: #e7e9e4;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  width: 45%;
+}
+
+/* Estilos para el contenido centrado */
+.centered-content {
+  text-align: center;
+}
+
+/* Estilos para el contenedor de login */
+.login-container {
+  width: 100%;
+  text-align: center;
+  margin-top: 50px;
+}
+
+/* Estilos para formularios y radios */
+.form-check {
+  margin-bottom: 10px;
+}
+
+.radio-despacho {
+  display: flex;
+  align-items: center;
+}
+
+/* Estilos para botones y enlaces */
+:root{
+ --prepago-btn-display: inline-block;
+ --prepago-btn-padding: 10px 20px;
+ --prepago-btn-background-color: #4a9b5d;
+ --prepago-btn-color: #fff;
+ --prepago-btn-text-decoration: none;
+ --prepago-btn-border: none;
+ --prepago-btn-cursor: pointer;
+ --prepago-btn-border-radius: 5px;
+}
+.prepago-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #4a9b5d;
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.btn:hover {
+  background-color: #218838;
+}
+
+/* Estilos específicos para imágenes */
+img {
+  padding-top: 10px;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto; /* Centrar la imagen */
+}
