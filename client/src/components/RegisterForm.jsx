@@ -117,6 +117,7 @@ function RegisterForm() {
     header: {
       textAlign: "center",
       marginBottom: "20px",
+      color: "black", // Cambiado a color negro
     },
     formGroup: {
       marginBottom: "15px",
@@ -125,6 +126,7 @@ function RegisterForm() {
       display: "block",
       marginBottom: "5px",
       fontWeight: "bold",
+      color: "black", // Cambiado a color negro
     },
     input: {
       width: "100%",
