@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.utils.dateparse import parse_date
 from rest_framework.decorators import api_view,action
+import re
 
 
 from .paginacion import PedidoPagination,HistorialPagination,PedidoPendientePagination,\
@@ -15,7 +16,8 @@ from .paginacion import PedidoPagination,HistorialPagination,PedidoPendientePagi
 from .serializer import ProductoSerializer,UsuarioSerializer,\
     Detalle_PedidoSerializer,PedidoSerializer,CustomAuthTokenSerializer
 
-from .models import Producto,Usuario,Detalle_Pedido,Pedido,GananciasProducto,PedidoPendiente,PedidoEntregado
+from .models import Producto,Usuario,Detalle_Pedido,Pedido,GananciasProducto,PedidoPendiente,\
+    PedidoEntregado, VentasComuna
 
 # Create your views here.
 class UsuarioView(viewsets.ModelViewSet):
@@ -106,6 +108,20 @@ class CustomAuthToken(ObtainAuthToken):
 
         return Response({'token': token.key, 'user': user_data}, status=status.HTTP_200_OK)
 
+class VentasComunaView(APIView): 
+    def get(self,request):
+        try:
+            ventas = VentasComuna.objects.all()
+            ventas_data = [{
+                "comuna_envio": venta.comuna_envio,
+                "total": venta.total
+            }
+            for venta in ventas
+            ]
+            return Response(ventas_data,status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class VentasProductoView(APIView):
     def get(self, request):
         try:
@@ -153,7 +169,48 @@ class PedidoEntregadoView(APIView):
         except Exception as e:
             print(f"Error: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-               
+        
+class VentasMensualesComunaView(APIView):
+    def get(self, request):
+        month_year = request.query_params.get('mes')  # Parámetro para el mes en formato MM-YYYY
+
+        if not month_year:
+            return Response({"error": "Falta el parámetro 'mes' en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            with connection.cursor() as cursor:
+                # Ejecutar la consulta SQL
+                cursor.execute("""
+                    SELECT comuna_envio, SUM(b.cantidad * b.precio_unitario) AS total
+                    FROM cerveceria_pedido a
+                    JOIN cerveceria_detalle_pedido b ON (a.cod_pedido = b.cod_pedido_id)
+                    WHERE TO_CHAR(fecha_entrega,'MM-YYYY') = %s
+                    GROUP BY comuna_envio
+                """, [month_year])
+
+                ventas_mensuales = cursor.fetchall()
+
+                # Si no se encuentran ventas, devolver un error
+                if not ventas_mensuales:
+                    return Response({"error": "No se encontraron ventas para el mes especificado."}, status=status.HTTP_404_NOT_FOUND)
+
+                # Crear la respuesta con los datos de ventas
+                ventas_data = []
+
+                for venta in ventas_mensuales:
+                    venta_dict = {
+                        "comuna_envio": venta[0],
+                        "total": venta[1],
+                    }
+                    ventas_data.append(venta_dict)
+                return Response(ventas_data, status=status.HTTP_200_OK)
+
+        except OperationalError as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        except Exception as e:
+            return Response({"error": "Ocurrió un error inesperado: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class VentasMensualesView(APIView):
     def get(self, request):
         month_year = request.query_params.get('mes')  # Parámetro para el mes en formato MM-YYYY

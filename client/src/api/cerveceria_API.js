@@ -70,14 +70,25 @@ export const registrarDetalles = async (detalles) => {
   }
 };
 
-export const obtenerGananciasPorProducto = async () => {
+export const obtenerVentasPorProducto = async () => {
   try {
-    const response = await cerveceriaAPI.get("/ganancias_producto/");
+    const response = await cerveceriaAPI.get("/ventas_producto/");
     return response.data;
   } catch (error) {
     throw error;
   }
 };
+
+export const obtenerVentasPorComuna = async () => {
+  try {
+    const response = await cerveceriaAPI.get("/ventas_comuna/");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 
 export const historialPedidos = async (id) => {
   try {
@@ -90,9 +101,20 @@ export const historialPedidos = async (id) => {
   }
 };
 
-export const ventasMensuales = async(mes) =>{
+export const ventasMensualesProducto = async(mes) =>{
   try{
     const response = await cerveceriaAPI.get(("/ventas_mensuales/"), {
+      params: {mes: mes},
+    })
+    return response.data;
+  }catch(error)
+{
+  throw error;
+}}
+
+export const ventasMensualesComuna = async(mes) =>{
+  try{
+    const response = await cerveceriaAPI.get(("/ventas_mensuales_comuna/"), {
       params: {mes: mes},
     })
     return response.data;

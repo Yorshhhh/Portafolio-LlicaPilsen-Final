@@ -16,9 +16,11 @@ urlpatterns = [
     path("update-stock/", update_stock, name="update_stock"), 
     path("login/", CustomAuthToken.as_view(), name="login"),
     path("historial_pedidos/", HistorialPedidosView.as_view(),name='historial_pedidos'),
-    path('ganancias_producto/', VentasProductoView.as_view(), name='ganancias_por_producto'),
+    path('ventas_producto/', VentasProductoView.as_view(), name='ventas_por_producto'),
+    path('ventas_comuna/', VentasComunaView.as_view(), name='ventas_por_comuna'),
     path('pedidos_pendientes/', PedidoPendienteView.as_view(), name='pedidos_pendientes'),
     path('pedidos_entregados/', PedidoEntregadoView.as_view(), name='pedidos_entregados'),
-    path('ventas_mensuales/', VentasMensualesView.as_view(), name='ventas_mensuales')
+    path('ventas_mensuales/', VentasMensualesView.as_view(), name='ventas_mensuales'),
+    path('ventas_mensuales_comuna/', VentasMensualesComunaView.as_view(), name='ventas_mensuales'),
 ]
 #MOISES SEPULVEDA, OJO

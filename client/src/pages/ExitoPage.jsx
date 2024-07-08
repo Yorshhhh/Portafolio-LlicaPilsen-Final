@@ -59,7 +59,9 @@ function ExitoPage() {
       }
 
       if (!user) {
-        setError("Usuario no encontrado. No se puede procesar la transacción.");
+        setError(
+          "Usuario no encontrado. No se puede procesar la transacción."
+        );
         return;
       }
 
@@ -77,36 +79,54 @@ function ExitoPage() {
         if (response.data.status === "success") {
           setTransactionData(response.data.viewData.commitResponse);
 
-          const nuevoPedido = {
-            fecha_pedido: fechaPedido,
-            id_usuario: user.id,
-          };
+          const pedidoDetalles = localStorage.getItem("pedidoDetalles");
+          if (pedidoDetalles) {
+            const { tipo_entrega, comuna } = JSON.parse(pedidoDetalles);
 
-          try {
-            const pedido = await registrarPedido(nuevoPedido);
-            console.log("Pedido registrado:", pedido);
+            const nuevoPedido = {
+              fecha_pedido: fechaPedido,
+              id_usuario: user.id,
+              tipo_entrega: tipo_entrega,
+              comuna_envio: comuna,
+            };
 
-            const detalles = carro.map((producto) => ({
-              cod_producto: producto.cod_producto,
-              cod_pedido: pedido.cod_pedido,
-              descuento: 0,
-              cantidad: producto.quantity,
-              precio_unitario: producto.precio_producto,
-            }));
+            try {
+              const pedido = await registrarPedido(nuevoPedido);
+              console.log("Pedido registrado:", pedido);
 
-            const promises = detalles.map((detalle) =>
-              registrarDetalles(detalle)
-            );
-            await Promise.all(promises);
-            console.log("Todos los detalles de pedidos han sido registrados.");
-            localStorage.removeItem("carrito");
-            console.log("Carrito eliminado del localStorage.");
-          } catch (error) {
-            console.error("Error al registrar los detalles del pedido:", error);
-            setError("Error al registrar los detalles del pedido.");
+              const detalles = carro.map((producto) => ({
+                cod_producto: producto.cod_producto,
+                cod_pedido: pedido.cod_pedido,
+                descuento: 0,
+                cantidad: producto.quantity,
+                precio_unitario: producto.precio_producto,
+              }));
+
+              const promises = detalles.map((detalle) =>
+                registrarDetalles(detalle)
+              );
+              await Promise.all(promises);
+              console.log(
+                "Todos los detalles de pedidos han sido registrados."
+              );
+              localStorage.removeItem("carrito");
+              localStorage.removeItem("pedidoDetalles");
+              console.log("Carrito y detalles eliminados del localStorage.");
+            } catch (error) {
+              console.error(
+                "Error al registrar los detalles del pedido:",
+                error
+              );
+              setError("Error al registrar los detalles del pedido.");
+            }
+          } else {
+            setError("No se encontraron detalles de pedido en localStorage.");
           }
         } else {
-          setError("Error en la transacción: " + JSON.stringify(response.data.commitResponse));
+          setError(
+            "Error en la transacción: " +
+              JSON.stringify(response.data.commitResponse)
+          );
         }
       } catch (error) {
         setError("Error confirmando la transacción: " + error.message);

@@ -65,10 +65,48 @@ class Producto(models.Model):
 
 # MODELO PEDIDOS
 class Pedido(models.Model):
+    TIPO_ENTREGA_CHOICES = [
+        ('retiro', 'Retiro en tienda'),
+        ('domicilio', 'Despacho a domicilio'),
+    ]
+    COMUNA_ENVIO_CHOICES = [
+        ('lota', 'Lota'),
+        ('coronel', 'Coronel'),
+        ('san_pedro', 'San Pedro')
+    ]
+
     cod_pedido = models.AutoField(primary_key=True)
     id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='pedidos')
     fecha_pedido = models.DateField()
     fecha_entrega = models.DateField(null=True, blank=True)
+    tipo_entrega = models.CharField(
+        max_length=20,
+        choices=TIPO_ENTREGA_CHOICES,
+        null=True,  # Permitir valores nulos inicialmente
+        blank=True,
+        default=None,
+        help_text="Tipo de entrega: 'retiro', 'domicilio'."
+    )
+    codigo_envio = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Código de envío proporcionado por el servicio de mensajería."
+    )
+    comuna_envio = models.CharField(
+        max_length=20,
+        choices=COMUNA_ENVIO_CHOICES,
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Comuna de destino para el despacho a domicilio: 'lota', 'coronel', 'san_pedro'."
+    )
+    class Meta:
+        verbose_name = "Pedido"
+        verbose_name_plural = "Pedidos"
+        ordering = ['fecha_pedido']
+
     
 # MODELO DETALLE PEDIDO
 class Detalle_Pedido(models.Model):
@@ -82,7 +120,6 @@ class Detalle_Pedido(models.Model):
     def __str__(self):
         return f"Detalle del pedido {self.cod_pedido} para el producto {self.cod_producto}"
 
-
 class GananciasProducto(models.Model):
     cod_producto = models.IntegerField(primary_key=True)
     nombre_producto = models.CharField(max_length=100)
@@ -91,6 +128,14 @@ class GananciasProducto(models.Model):
     class Meta:
         managed = False
         db_table = 'view_ventas_producto'
+
+class VentasComuna(models.Model):
+    comuna_envio = models.CharField(max_length=10, primary_key=True)
+    total = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'view_ventas_comunas'
 
 class PedidoPendiente(models.Model):
     nombre_cliente = models.CharField(max_length=100)
