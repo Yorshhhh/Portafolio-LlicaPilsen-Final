@@ -5,7 +5,7 @@ import "../css/modifiCard.css";
 
 const DEFAULT_IMAGE_URL = "https://via.placeholder.com/150?text=No+Image";
 
-function ModificarCardProduct({ producto }) {
+function ModificarCardProduct({ producto, actualizarProducto }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedProduct, setEditedProduct] = useState({ ...producto });
   const [errors, setErrors] = useState({});
@@ -48,6 +48,10 @@ function ModificarCardProduct({ producto }) {
       if (!response.ok) {
         throw new Error("Error al guardar el producto");
       }
+
+      const productoActualizado = await response.json();
+      actualizarProducto(productoActualizado);
+
       toast.success("Producto modificado correctamente");
       setIsEditing(false);
     } catch (error) {
@@ -168,15 +172,11 @@ function ModificarCardProduct({ producto }) {
           <label className="text-white block mb-2">Descripción:</label>
           <textarea
             value={editedProduct.descripcion_producto}
-            onChange={(e) =>
-              handleChange("descripcion_producto", e.target.value)
-            }
+            onChange={(e) => handleChange("descripcion_producto", e.target.value)}
             className="mb-2 p-2 border rounded-md w-full"
           />
           {errors.descripcion_producto && (
-            <div className="text-red-500 mb-2">
-              {errors.descripcion_producto}
-            </div>
+            <div className="text-red-500 mb-2">{errors.descripcion_producto}</div>
           )}
           <label className="text-white block mb-2">Precio:</label>
           <input
@@ -201,6 +201,7 @@ function ModificarCardProduct({ producto }) {
           <label className="text-white block mb-2">Grado Alcohólico:</label>
           <input
             type="number"
+            step="0.1"
             value={editedProduct.grado_alcoholico}
             onChange={(e) => handleChange("grado_alcoholico", e.target.value)}
             className="mb-2 p-2 border rounded-md w-full"
@@ -220,34 +221,11 @@ function ModificarCardProduct({ producto }) {
           )}
           <label className="text-white block mb-2">Imagen:</label>
           <input type="file" onChange={handleImageChange} className="mb-2" />
-          {editedProduct.imagen && typeof editedProduct.imagen === "string" ? (
-            <div className="h-[150px] w-[150px] bg-cover mb-2">
-              <img
-                src={editedProduct.imagen || DEFAULT_IMAGE_URL}
-                alt="Imagen Producto"
-                className="h-full w-full object-cover"
-              />
-            </div>
-          ) : (
-            <div className="h-[150px] w-[150px] bg-cover mb-2">
-              <img
-                src={DEFAULT_IMAGE_URL}
-                alt="Imagen por Defecto"
-                className="h-full w-full object-cover"
-              />
-            </div>
-          )}
           <button
             onClick={handleSave}
-            className="w-full bg-green-500 py-2 px-6 text-white text-lg font-bold rounded-md hover:bg-green-700"
+            className="w-full bg-green-500 py-2 px-6 text-white text-lg font-bold rounded-md hover:bg-green-600"
           >
             Guardar
-          </button>
-          <button
-            onClick={() => setIsEditing(false)}
-            className="w-full bg-gray-500 py-2 px-6 text-white text-lg font-bold rounded-md hover:bg-gray-700 mt-2"
-          >
-            Cancelar
           </button>
         </div>
       )}
@@ -256,7 +234,17 @@ function ModificarCardProduct({ producto }) {
 }
 
 ModificarCardProduct.propTypes = {
-  producto: PropTypes.object.isRequired,
+  producto: PropTypes.shape({
+    cod_producto: PropTypes.number.isRequired,
+    nombre_producto: PropTypes.string.isRequired,
+    descripcion_producto: PropTypes.string.isRequired,
+    precio_producto: PropTypes.number.isRequired,
+    stock_producto: PropTypes.number.isRequired,
+    grado_alcoholico: PropTypes.number.isRequired,
+    litros: PropTypes.number.isRequired,
+    imagen: PropTypes.string,
+  }).isRequired,
+  actualizarProducto: PropTypes.func.isRequired,
 };
 
 export default ModificarCardProduct;
