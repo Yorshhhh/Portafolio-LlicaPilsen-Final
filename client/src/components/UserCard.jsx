@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { actualizarDireccion } from "../api/cerveceria_API";
 import PropTypes from "prop-types";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function UserCard({ user }) {
   UserCard.propTypes = {
@@ -34,15 +36,15 @@ function UserCard({ user }) {
           })
         );
         setEditDireccion(false); // Ocultar el input de edición después de guardar
-        alert("Dirección actualizada correctamente.");
+        toast.success("Dirección actualizada correctamente.");
       } catch (error) {
         console.error("Error al actualizar la dirección:", error);
-        alert("Ocurrió un error al actualizar la dirección.");
+        toast.error("Ocurrió un error al actualizar la dirección.");
       } finally {
         setLoading(false); // Oculta el indicador de carga
       }
     } else {
-      alert("Por favor, ingresa una dirección válida.");
+      toast.error("Por favor, ingresa una dirección válida.");
     }
   };
 
@@ -70,6 +72,7 @@ function UserCard({ user }) {
               value={direccion}
               onChange={handleDireccionChange}
               className="user-profile-direccion-input"
+              style={{ color: "black" }} // Establecer el color del texto en negro
             />
             <button
               onClick={handleGuardarDireccionClick}
@@ -92,6 +95,7 @@ function UserCard({ user }) {
           </div>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 }
