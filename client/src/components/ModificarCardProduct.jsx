@@ -127,7 +127,7 @@ function ModificarCardProduct({ producto }) {
 
   return (
     <div className="product-card-content flex flex-col items-center">
-      <h1>Modificar Producto</h1>
+      <h1 >Modificar Producto</h1>
       {!isEditing ? (
         <>
           <div className="h-[150px] w-[150px] bg-cover mb-2">

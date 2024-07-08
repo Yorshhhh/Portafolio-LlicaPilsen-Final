@@ -32,7 +32,7 @@ function CardProducts({ producto }) {
         />
       </Link>
       <div className="p-2 flex flex-col flex-grow w-full">
-        <h3 className="mb-1 text-lg font-bold">{producto.nombre_producto}</h3>
+        <h2 className="text-gray-700 mb-1 text-lg font-bold">{producto.nombre_producto}</h2>
         <p className="text-gray-700 mb-4">{producto.descripcion}</p>
         <p className="text-gray-900 font-bold mb-2">Precio: ${producto.precio_producto}</p>
         <p className="text-gray-600 mb-4">Stock: {producto.stock_producto}</p>

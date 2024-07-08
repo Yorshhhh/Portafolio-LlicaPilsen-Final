@@ -95,8 +95,20 @@ function PedidosEntregados() {
 
   return (
     <>
-      <div>
+      <div className="pedidos-table-container">
         <h2>Pedidos Entregados</h2>
+
+        {prevPage && (
+          <button onClick={() => handlePageChange(prevPage)}>
+            Página Anterior
+          </button>
+        )}
+        {nextPage && (
+          <button onClick={() => handlePageChange(nextPage)}>
+            Siguiente Página
+          </button>
+        )}
+
         <table className="pedidos-table">
           <thead>
             <tr>
@@ -145,16 +157,7 @@ function PedidosEntregados() {
             ))}
           </tbody>
         </table>
-        {prevPage && (
-          <button onClick={() => handlePageChange(prevPage)}>
-            Página Anterior
-          </button>
-        )}
-        {nextPage && (
-          <button onClick={() => handlePageChange(nextPage)}>
-            Siguiente Página
-          </button>
-        )}
+        
       </div>
     </>
   );

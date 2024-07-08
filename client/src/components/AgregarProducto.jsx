@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
 export default function AgregarProducto() {
     const [producto, setProducto] = useState({
         nombre_producto: '',
@@ -104,7 +103,6 @@ export default function AgregarProducto() {
             valid = false;
         }
         return valid;
-
     };
 
     const handleSubmit = async (e) => {
@@ -278,7 +276,8 @@ const styles = {
         maxWidth: '600px',
         margin: '0 auto',
         padding: '20px',
-        fontFamily: 'Arial, sans-serif'
+        fontFamily: 'Arial, sans-serif',
+        
     },
     title: {
         textAlign: 'center',
@@ -292,7 +291,8 @@ const styles = {
         marginBottom: '15px'
     },
     label: {
-        marginBottom: '5px'
+        marginBottom: '5px',
+        color: '#000'
     },
     input: {
         width: '100%',
@@ -313,7 +313,7 @@ const styles = {
         border: 'none',
         borderRadius: '4px',
         background: '#000000', // Fondo negro
-        color: '#ff0000', // Letras rojas
+        color: '#fff', // Letras negras
         cursor: 'pointer',
         textAlign: 'center'
     },

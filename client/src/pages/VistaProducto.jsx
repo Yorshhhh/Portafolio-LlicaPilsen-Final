@@ -117,7 +117,7 @@ function VistaProductoPage() {
         <div className="container-info-product">
           <div className="container-description">
             <div className="title-description">
-              <h2>Descripcion</h2>
+              <h2 text-white>Descripcion</h2>
               <i className="fa-solid fa-chevron-down"></i>
             </div>
 

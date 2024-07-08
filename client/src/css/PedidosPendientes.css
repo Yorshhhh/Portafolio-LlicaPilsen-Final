@@ -1,41 +1,49 @@
-/* En tu archivo CSS (por ejemplo, GananciasAdmin.css) */
+
+
+.pedidos-table-container {
+  margin-bottom: 20px; /* Espacio entre la tabla y el footer */
+}
 .pedidos-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  .pedidos-table th, .pedidos-table td {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-  }
-  
-  .pedidos-table th {
-    background-color: #f2f2f2;
-    color: #333;
-  }
-  
-  .pedidos-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  .pedidos-table tr:hover {
-    background-color: #ddd;
-  }
-  
-  .estado-entregado {
-    background-color: #d4edda; /* Verde claro */
-    color: #155724; /* Texto verde oscuro */
-    padding: 10px;
-    border-radius: 5px;
-    white-space: pre-line; /* Para respetar los saltos de línea */
-  }
-  
-  .estado-pendiente {
-    background-color: #ffeeba; /* Naranja claro */
-    color: #856404; /* Texto naranja oscuro */
-    padding: 10px;
-    border-radius: 5px;
-    white-space: pre-line; /* Para respetar los saltos de línea */
-  }
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px; /* Ajusta según sea necesario */
+}
+
+.pedidos-table th, .pedidos-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  background-color: #fff; /* Fondo blanco para asegurar visibilidad */
+}
+
+.pedidos-table th {
+  background-color: #f2f2f2; /* Fondo gris claro para las cabeceras */
+  color: #333; /* Color de texto oscuro para las cabeceras */
+}
+
+.pedidos-table tr:nth-child(even) {
+  background-color: #f9f9f9; /* Fondo gris claro para filas pares */
+}
+
+.pedidos-table tr:nth-child(odd) {
+  background-color: #ffffff; /* Fondo blanco para filas impares */
+}
+
+.pedidos-table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #d2770e;
+  color: rgb(0, 0, 0);
+}
+
+.pedidos-table td {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  text-align: left;
+  color: rgb(0, 0, 0);
+}
+
+.pedidos-table tr:nth-child(even){background-color: #f2f2f2}
+
+.pedidos-table tr:hover {background-color: #ddd;}
