@@ -22,14 +22,6 @@ export default function ListarProductos() {
     fetchProductos();
   }, []);
 
-  const actualizarProducto = (productoActualizado) => {
-    setProductos((productos) =>
-      productos.map((producto) =>
-        producto.cod_producto === productoActualizado.cod_producto ? productoActualizado : producto
-      )
-    );
-  };
-
   return (
     <div className="my-[2rem]  flex flex-col items-center justify-center bg-gray-100">
       <div className="w-full max-w-screen-xl p-4">
@@ -37,12 +29,12 @@ export default function ListarProductos() {
           Lista de Productos
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {productos.map((producto) => (
+          {productos.map((producto, index) => (
             <div
               key={producto.cod_producto}
               className="rounded-md shadow-md hover:shadow-xl bg-white"
             >
-              <ModificarCardProduct producto={producto} actualizarProducto={actualizarProducto} />
+              <ModificarCardProduct producto={producto} />
             </div>
           ))}
         </div>
