@@ -69,6 +69,7 @@ function LoginForm() {
       display: "block",
       marginBottom: "5px",
       fontWeight: "bold",
+      color: "#000",
     },
     input: {
       width: "100%",
@@ -143,10 +144,10 @@ function LoginForm() {
               Entrar
             </button>
           </form>
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <div style={{ textAlign: "center", marginTop: "20px", color:"#000"}}>
             <NavLink to="/register">Registrate</NavLink>
           </div>
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <div style={{ textAlign: "center", marginTop: "20px", color:"#000" }}>
             <NavLink to="/home">Volver al Inicio</NavLink>
           </div>
         </div>
