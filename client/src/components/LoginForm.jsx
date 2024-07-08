@@ -61,6 +61,7 @@ function LoginForm() {
     header: {
       textAlign: "center",
       marginBottom: "20px",
+      color: "black", // Cambiado a color negro
     },
     formGroup: {
       marginBottom: "15px",
