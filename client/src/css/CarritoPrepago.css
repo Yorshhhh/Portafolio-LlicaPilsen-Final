@@ -42,7 +42,7 @@
 
 .cart-vista th {
   background-color: #192bcb;
-  color: #fdfdfd; /* Color negro para los th */
+  color: #fdfdfd; /* Color blanco para los th */
 }
 
 .cart-vista img {
@@ -71,4 +71,14 @@
 /* Estilos para textos */
 p {
   margin: 0;
+}
+
+/* Estilo específico para los p dentro de td para que sean negros */
+.cart-vista td p {
+  color: black;
+}
+
+/* Centrar el contenido de las celdas de cantidad */
+.cart-vista td.cantidad {
+  text-align: center;
 }
