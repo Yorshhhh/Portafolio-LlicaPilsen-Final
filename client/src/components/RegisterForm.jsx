@@ -42,11 +42,7 @@ function RegisterForm() {
       return;
     }
 
-    if (telefono.trim() === "") {
-      setErrorTelefono(true);
-      return;
-    }
-    if (!/^\d{9}$/.test(telefono)) {
+    if (telefono.trim() === "" || !/^\d{9}$/.test(telefono)) {
       setErrorTelefono(true);
       return;
     }
@@ -133,6 +129,7 @@ function RegisterForm() {
       padding: "10px",
       borderRadius: "4px",
       border: "1px solid #ccc",
+      color: "black", // Cambiado a color negro
     },
     button: {
       padding: "10px 15px",
@@ -221,11 +218,10 @@ function RegisterForm() {
                 placeholder="Ingresa un numero de telefono"
                 onChange={(e) => {
                   const inputValue = e.target.value;
-                  setTelefono(inputValue);
-                  setErrorTelefono(false); // Resetear error al escribir en el campo
+                  setTelefono(inputValue.replace(/\D/, "")); // Solo permite números
+                  setErrorTelefono(false);
                 }}
                 value={telefono}
-                required
               />
               {errorTelefono && (
                 <div style={styles.errorMessage}>

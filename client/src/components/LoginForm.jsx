@@ -77,6 +77,7 @@ function LoginForm() {
       padding: "10px",
       borderRadius: "4px",
       border: "1px solid #ccc",
+      color: "black", // Cambiado a color negro
     },
     button: {
       padding: "10px 15px",
