@@ -32,8 +32,12 @@ function HomePage() {
   useEffect(() => {
     async function loadProductos() {
       const res = await getAllProductos();
-      /* console.log(res.data); */
-      setProductos(res.data);
+      // IDs específicos de los productos que deseas mostrar
+      const featuredProductIds = [32, 34, 36, 38, 28];
+      const featuredProducts = res.data.filter(producto =>
+        featuredProductIds.includes(producto.cod_producto)
+      );
+      setProductos(featuredProducts);
     }
     loadProductos();
   }, []);
