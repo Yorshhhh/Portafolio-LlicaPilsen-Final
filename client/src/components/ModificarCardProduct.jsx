@@ -161,6 +161,7 @@ function ModificarCardProduct({ producto }) {
             value={editedProduct.nombre_producto}
             onChange={(e) => handleChange("nombre_producto", e.target.value)}
             className="mb-2 p-2 border rounded-md w-full"
+            style={{ color: "black" }} // Establecer el color del texto en negro
           />
           {errors.nombre_producto && (
             <div className="text-red-500 mb-2">{errors.nombre_producto}</div>
@@ -172,6 +173,7 @@ function ModificarCardProduct({ producto }) {
               handleChange("descripcion_producto", e.target.value)
             }
             className="mb-2 p-2 border rounded-md w-full"
+            style={{ color: "black" }} // Establecer el color del texto en negro
           />
           {errors.descripcion_producto && (
             <div className="text-red-500 mb-2">
@@ -184,6 +186,7 @@ function ModificarCardProduct({ producto }) {
             value={editedProduct.precio_producto}
             onChange={(e) => handleChange("precio_producto", e.target.value)}
             className="mb-2 p-2 border rounded-md w-full"
+            style={{ color: "black" }} // Establecer el color del texto en negro
           />
           {errors.precio_producto && (
             <div className="text-red-500 mb-2">{errors.precio_producto}</div>
@@ -194,6 +197,7 @@ function ModificarCardProduct({ producto }) {
             value={editedProduct.stock_producto}
             onChange={(e) => handleChange("stock_producto", e.target.value)}
             className="mb-2 p-2 border rounded-md w-full"
+            style={{ color: "black" }} // Establecer el color del texto en negro
           />
           {errors.stock_producto && (
             <div className="text-red-500 mb-2">{errors.stock_producto}</div>
@@ -204,6 +208,7 @@ function ModificarCardProduct({ producto }) {
             value={editedProduct.grado_alcoholico}
             onChange={(e) => handleChange("grado_alcoholico", e.target.value)}
             className="mb-2 p-2 border rounded-md w-full"
+            style={{ color: "black" }} // Establecer el color del texto en negro
           />
           {errors.grado_alcoholico && (
             <div className="text-red-500 mb-2">{errors.grado_alcoholico}</div>
@@ -214,6 +219,7 @@ function ModificarCardProduct({ producto }) {
             value={editedProduct.litros}
             onChange={(e) => handleChange("litros", e.target.value)}
             className="mb-2 p-2 border rounded-md w-full"
+            style={{ color: "black" }} // Establecer el color del texto en negro
           />
           {errors.litros && (
             <div className="text-red-500 mb-2">{errors.litros}</div>

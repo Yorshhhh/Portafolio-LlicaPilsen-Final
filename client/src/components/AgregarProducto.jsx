@@ -300,14 +300,16 @@ const styles = {
         padding: '8px',
         boxSizing: 'border-box',
         borderRadius: '4px',
-        border: '1px solid #ccc'
+        border: '1px solid #ccc',
+        color: "black", // Cambiado a color negro
     },
     textarea: {
         width: '100%',
         padding: '8px',
         boxSizing: 'border-box',
         borderRadius: '4px',
-        border: '1px solid #ccc'
+        border: '1px solid #ccc',
+        color: "black", // Cambiado a color negro
     },
     button: {
         padding: '10px 15px',
