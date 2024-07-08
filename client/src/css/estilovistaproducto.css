@@ -2,7 +2,7 @@
 	--vistaproducto-body-font-family: 'Open Sans', sans-serif;
 	--vistaproducto-body-max-width: 1200px;
 	--vistaproducto-body-margin: 0 auto;
-	--vistaproducto-font-size: 18px; /* Aumentar tamaño de fuente global */
+	--vistaproducto-font-size: 20px; /* Aumentar tamaño de fuente global */
   }
   
   * {
@@ -13,6 +13,8 @@
   
   body {
 	font-size: var(--vistaproducto-font-size);
+	background-color: #081d27; /* Fondo negro */
+	color: #fff; /* Color de texto blanco */
   }
   
   .vista-producto {
@@ -35,9 +37,9 @@
   
   .container-title {
 	padding: 30px;
-	background-color: #eee;
+	background-color: #333; /* Fondo gris oscuro */
 	margin-bottom: 50px;
-	color: #222;
+	color: #fff; /* Texto blanco */
 	font-family: 'Plain';
   }
   
@@ -53,7 +55,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background-color: #f7f7f9; /* Asegúrate de que esto coincida con tu diseño */
+	background-color: #555; /* Fondo gris */
   }
   
   .imagen img {
@@ -71,10 +73,14 @@
   
   .container-price {
 	padding-bottom: 20px;
-	border-bottom: 1px solid #e4e4e4;
+	border-bottom: 1px solid #ffffff; /* Línea gris oscuro */
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+  }
+
+  .container-price h2{
+	color: #fff;
   }
   
   .container-price span {
@@ -86,20 +92,24 @@
 	display: flex;
 	gap: 20px;
 	padding-bottom: 30px;
-	border-bottom: 1px solid #e4e4e4;
+	border-bottom: 1px solid #ffffff; /* Línea gris oscuro */
   }
   
   .container-quantity {
 	position: relative;
   }
+
+  .container-quantity h2{
+	color: #fff;
+  }
   
   .input-quantity {
-	background-color: #f7f7f7;
+	background-color: #777; /* Fondo gris claro */
 	border: none;
 	padding: 10px;
 	width: 60px;
 	height: 100%;
-	color: #666;
+	color: #fff; /* Texto blanco */
 	font-weight: 500;
 	line-height: 0;
   }
@@ -124,14 +134,11 @@
   
   .btn-increment-decrement i {
 	font-size: 11px;
-	color: #666;
+	color: #fff; /* Iconos blancos */
 	cursor: pointer;
   }
   
-  .fa-chevron-down:hover {
-	color: #1bbeb4;
-  }
-  
+  .fa-chevron-down:hover,
   .fa-chevron-up:hover {
 	color: #1bbeb4;
   }
@@ -140,7 +147,7 @@
 	border: none;
 	background-color: #252525;
 	padding: 10px;
-	color: #f7f7f7;
+	color: #fff; /* Texto blanco */
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -160,9 +167,10 @@
   .container-description {
 	display: flex;
 	flex-direction: column;
-	border-bottom: 1px solid #e4e4e4;
+	border-bottom: 1px solid #ffffff; /* Línea gris oscuro */
 	padding: 10px 0;
-	margin-bottom: 20px
+	margin-bottom: 20px;
+	
   }
   
   .title-description {
@@ -172,18 +180,21 @@
 	cursor: pointer;
   }
   
-  .title-description h4 {
+  .title-description h2  {
 	font-weight: 300;
-	color: #666;
+	color: #fff; /* Texto blanco */
 	font-size: 16px; /* Aumentar tamaño de fuente específico */
   }
   
   .text-description {
 	font-size: 16px; /* Aumentar tamaño de fuente específico */
-	color: #252525;
+	color: #fff; /* Texto blanco */
 	line-height: 22px;
 	margin-top: 25px;
-	margin-bottom: 20px
+	margin-bottom: 20px;
+  }
+  .text-description h2,p {
+	color: #fff;
   }
   
   .container-related-products h2 {
@@ -217,28 +228,4 @@
 	justify-content: space-between;
   }
   
-  .text-product {
-	color: #252525;
-	font-weight: 300;
-	line-height: 1.4;
-  }
   
-  .text-product h3 {
-	color: inherit;
-	font-weight: inherit;
-	font-size: 17px; /* Aumentar tamaño de fuente específico */
-  }
-  
-  /* Animaciones al pasar el mouse */
-  .text-product h3:hover {
-	color: #1bbeb4;
-  }
-  
-  .text-product p {
-	color: #666;
-	font-size: 15px; /* Aumentar tamaño de fuente específico */
-  }
-  
-  .text-product p:hover {
-	color: #1bbeb4;
-  }

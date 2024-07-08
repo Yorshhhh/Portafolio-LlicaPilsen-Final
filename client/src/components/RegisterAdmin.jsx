@@ -112,13 +112,15 @@ function RegisterAdmin() {
       justifyContent: "center",
       alignItems: "center",
       height: "100vh",
-      background: "#f5f5f5",
+      background: "#f1f1f1  ",
+      color: "#000",
+      
     },
     card: {
       background: "#fff",
       padding: "20px",
       borderRadius: "8px",
-      boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+      boxShadow: "0 0 10px rgba(#000)",
       maxWidth: "400px",
       width: "100%",
     },

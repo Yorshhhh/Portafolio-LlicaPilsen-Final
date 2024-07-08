@@ -25,7 +25,7 @@
 :root {
   --primary-color: #f13a11;
   --white-color: #ffffff;
-  --dark-color: #171819;
+  --dark-color: #081d27;
   --about-bg-color: #f9f9f9;
 
   --gray-color: #909090;
@@ -57,6 +57,14 @@ body {
   font-family: var(--base-font-family);
 }
 
+
+/* Estilo para la sección de productos destacados */
+.featured-products {
+  background-color: var(--dark-color); /* O usa directamente #000000 para negro puro */
+  color: var(--white-color); /* Para asegurar que el texto sea visible sobre el fondo negro */
+  padding: 20px; /* Ajusta según tus necesidades */
+}
+
 /*---------------------------------------
  TYPOGRAPHY              
 -----------------------------------------*/
@@ -69,6 +77,7 @@ h5,
 h6 {
   font-weight: var(--font-weight-thin);
   line-height: normal;
+  text-align: center;
 }
 
 h1 {
@@ -507,50 +516,6 @@ FEATURE
   display: block;
 }
 
-/*---------------------------------------
- CONTACT              
------------------------------------------*/
-
-.webform input,
-button#submit-button {
-  height: calc(2.25rem + 20px);
-}
-
-.form-control {
-  border-radius: var(--border-radius-small);
-  margin: 1.3rem 0;
-}
-
-.form-control:focus {
-  box-shadow: none;
-  border-color: var(--dark-color);
-}
-
-button#submit-button {
-  background: var(--dark-color);
-  border-color: transparent;
-  color: var(--white-color);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-button#submit-button:hover {
-  background: var(--primary-color);
-}
-
-.contact h2 + p {
-  max-width: 90%;
-}
-
-.google-map {
-  border-top: 1px solid #efebeb;
-  margin-top: 2.5rem;
-  padding-top: 2.5rem;
-}
-
-.google-map iframe {
-  width: 100%;
-}
 
 /*---------------------------------------
  FOOTER              
@@ -568,6 +533,7 @@ button#submit-button:hover {
 
 .site-footer p {
   font-size: var(--base-font-size);
+  color: #ffffff;
 }
 
 .contact .fa,

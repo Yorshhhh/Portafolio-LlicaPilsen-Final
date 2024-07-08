@@ -10,7 +10,7 @@
   --prepago-body-justify-content: center;
 }
 
-.prepago{
+.prepago-btn {
   font-family: var(--prepago-body-font-family);
   line-height: var(--prepago-body-line-height);
   background-color: var(--prepago-body-background-color);
@@ -23,13 +23,13 @@
 
 /* Estilos para el contenedor horizontal */
 .horizontal-container {
-  background-color: #dbcec2;
-  padding-top: 30px;
+  background-color: #081d27#ffffff  ;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  align-items: center; /* Cambio para centrar verticalmente */
-  margin:  0px;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 /* Estilos para las tarjetas */
@@ -39,6 +39,7 @@
   padding: 20px;
   margin-bottom: 20px;
   width: 45%;
+  border-radius: 10px;
 }
 
 /* Estilos para el contenido centrado */
@@ -64,16 +65,6 @@
 }
 
 /* Estilos para botones y enlaces */
-:root{
- --prepago-btn-display: inline-block;
- --prepago-btn-padding: 10px 20px;
- --prepago-btn-background-color: #4a9b5d;
- --prepago-btn-color: #fff;
- --prepago-btn-text-decoration: none;
- --prepago-btn-border: none;
- --prepago-btn-cursor: pointer;
- --prepago-btn-border-radius: 5px;
-}
 .prepago-btn {
   display: inline-block;
   padding: 10px 20px;
@@ -83,17 +74,41 @@
   border: none;
   cursor: pointer;
   border-radius: 5px;
+  transition: background-color 0.3s ease;
 }
 
-.btn:hover {
-  background-color: #218838;
+.prepago-btn:hover {
+  background-color: #bc887e;
 }
 
 /* Estilos específicos para imágenes */
 img {
-  padding-top: 10px;
   max-width: 100%;
   height: auto;
   display: block;
   margin: 0 auto; /* Centrar la imagen */
+}
+
+/* Estilos específicos para etiquetas h2 y h3 */
+h2, h3 {
+  color: #333;
+}
+
+/* Estilos específicos para la barra de navegación */
+.navbar {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
 }

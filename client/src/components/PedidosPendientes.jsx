@@ -123,8 +123,9 @@ function PedidosPendientes() {
       return `${dia}-${mes}-${año}`;
     };
 
+    
   return (
-    <div>
+    <div className="pedidos-table-container">
       <h2>Pedidos Pendientes</h2>
       <table className="pedidos-table">
         <thead>
