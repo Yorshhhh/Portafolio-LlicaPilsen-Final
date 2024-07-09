@@ -14,8 +14,8 @@ import {
   Legend,
   ResponsiveContainer,
   Cell,
-} from "recharts";
-import "../css/GananciasAdmin.css";
+} from "recharts";/* 
+import "../css/GananciasAdmin.css"; */
 
 const COLORS = [
   "#0088FE",

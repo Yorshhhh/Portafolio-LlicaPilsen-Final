@@ -4,10 +4,13 @@ import Ganancias from "../components/GananciasAdmin";
 
 import "../css/PerfilUsuario.css";
 import UserCard from "../components/UserCard";
+import VentasProductos from "../components/VentasProductos";
 
 function PerfilUsuarioPage() {
   const [user, setUser] = useState(null);
   const [carro, setCarrito] = useState([]);
+  const [showVentasProducto, setShowVentasProducto] = useState(false);
+
   // Estado para mostrar/ocultar diferentes secciones
   const [showSection, setShowSection] = useState({
     infoUser: false,
@@ -51,6 +54,10 @@ function PerfilUsuarioPage() {
     }
   }, []);
 
+  const toggleVentasProducto = () => {
+    setShowVentasProducto(!showVentasProducto);
+  };
+
   if (!user) {
     return (
       <>
@@ -65,6 +72,28 @@ function PerfilUsuarioPage() {
   return (
     <>
       <Navbar />
+      <div className="flex flex-col items-center justify-center">
+        <div className="flex justify-center gap-4 mb-8">
+          <button
+            className={`py-2 px-4 text-sm rounded-md ${
+              showVentasProducto
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-black"
+            }`}
+            onClick={toggleVentasProducto}
+          >
+            {showVentasProducto
+              ? "Ocultar Ventas por Producto"
+              : "Ver Ventas por Producto"}
+          </button>
+        </div>
+        {showVentasProducto && (
+          <div className="w-full flex justify-center items-center">
+            <VentasProductos />
+          </div>
+        )}
+      </div>
+
       <div className="user-profile-center-container">
         <div className="m-auto h-screen w-full flex justify-center items-center">
           <UserCard user={user} />
