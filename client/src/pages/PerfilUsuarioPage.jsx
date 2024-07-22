@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
-import Ganancias from "../components/GananciasAdmin";
 
 import "../css/PerfilUsuario.css";
 import UserCard from "../components/UserCard";
@@ -8,21 +7,8 @@ import VentasProductos from "../components/VentasProductos";
 
 function PerfilUsuarioPage() {
   const [user, setUser] = useState(null);
-  const [carro, setCarrito] = useState([]);
   const [showVentasProducto, setShowVentasProducto] = useState(false);
-
-  // Estado para mostrar/ocultar diferentes secciones
-  const [showSection, setShowSection] = useState({
-    infoUser: false,
-    agregarProducto: false,
-    crearAdmin: false,
-    modificarProducto: false,
-    nonStaffContent: false,
-    ganancias: false,
-    historial: false,
-    pendientes: false,
-    entregados: false,
-  });
+  const [showVentasComuna, setShowVentasComuna] = useState(false);
 
   useEffect(() => {
     const userJson = localStorage.getItem("usuario");
@@ -33,29 +19,12 @@ function PerfilUsuarioPage() {
     }
   }, []);
 
-  useEffect(() => {
-    const userCarrito = localStorage.getItem("carrito");
-    if (userCarrito) {
-      try {
-        const carritoParsed = JSON.parse(userCarrito);
-        setCarrito(carritoParsed);
-        const detalles = carritoParsed.map((producto) => ({
-          cod_producto: producto.cod_producto,
-          descuento: 0,
-          cantidad: producto.quantity,
-          precio_unitario: producto.precio_producto,
-        }));
-        console.log("Detalles del carrito", detalles);
-      } catch (error) {
-        console.error("Error al parsear el carrito del localStorage:", error);
-      }
-    } else {
-      console.warn("No existen productos en el carrito.");
-    }
-  }, []);
-
   const toggleVentasProducto = () => {
     setShowVentasProducto(!showVentasProducto);
+  };
+
+  const toggleVentasComuna = () => {
+    setShowVentasComuna(!showVentasComuna);
   };
 
   if (!user) {
@@ -72,10 +41,10 @@ function PerfilUsuarioPage() {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-row items-center justify-center">
         <div className="flex justify-center gap-4 mb-8">
           <button
-            className={`py-2 px-4 text-sm rounded-md ${
+            className={`user-profile-button user-profile-staff-button py-2 px-4 text-sm rounded-md ${
               showVentasProducto
                 ? "bg-blue-500 text-white"
                 : "bg-gray-200 text-black"
@@ -87,24 +56,27 @@ function PerfilUsuarioPage() {
               : "Ver Ventas por Producto"}
           </button>
         </div>
-        {showVentasProducto && (
-          <div className="w-full flex justify-center items-center">
-            <VentasProductos />
-          </div>
-        )}
+        {showVentasProducto && <VentasProductos />}
+
+        <div className="flex justify-center gap-4 mb-8">
+          <button
+            className={`user-profile-button user-profile-staff-button py-2 px-4 text-sm rounded-md ${
+              showVentasComuna
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-black"
+            }`}
+            onClick={toggleVentasComuna}
+          >
+            {showVentasComuna
+              ? "Ocultar Ventas por Comuna"
+              : "Ver Ventas por Comuna"}
+          </button>
+        </div>
+        {showVentasComuna && <div>Se viene esta implementacion</div>}
       </div>
 
-      <div className="user-profile-center-container">
-        <div className="m-auto h-screen w-full flex justify-center items-center">
-          <UserCard user={user} />
-        </div>
-
-        {/* Solo mostrar el componente Ganancias si el usuario es staff */}
-        {user.is_staff && (
-          <div>
-            <Ganancias />
-          </div>
-        )}
+      <div className="m-auto h-screen w-full flex justify-center items-center">
+        <UserCard user={user} />
       </div>
     </>
   );

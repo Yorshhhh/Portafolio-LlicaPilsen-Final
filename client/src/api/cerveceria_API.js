@@ -79,6 +79,8 @@ export const obtenerVentasPorProducto = async () => {
   }
 };
 
+
+
 export const obtenerVentasPorComuna = async () => {
   try {
     const response = await cerveceriaAPI.get("/ventas_comuna/");
@@ -94,6 +96,20 @@ export const historialPedidos = async (id) => {
   try {
     const response = await cerveceriaAPI.get("/historial_pedidos/", {
       params: { id: id },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const ventasPorFecha = async (fecha_inicio, fecha_fin) => {
+  try {
+    const response = await cerveceriaAPI.get('/ventas_entre/', {
+      params: {
+        fecha_inicio: fecha_inicio,
+        fecha_fin: fecha_fin,
+      },
     });
     return response.data;
   } catch (error) {

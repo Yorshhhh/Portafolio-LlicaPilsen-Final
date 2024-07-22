@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from "react-icons/fa";
 import { obtenerPedidosEntregados } from "../api/cerveceria_API";
 
 function PedidosEntregados() {
@@ -97,6 +98,18 @@ function PedidosEntregados() {
     <>
       <div>
         <h2>Pedidos Entregados</h2>
+        {prevPage && (
+          <button onClick={() => handlePageChange(prevPage)}>
+            Página Anterior
+            <FaArrowAltCircleLeft className="ml-2" />
+          </button>
+        )}
+        {nextPage && (
+          <button onClick={() => handlePageChange(nextPage)}>
+            Siguiente Página
+            <FaArrowAltCircleRight className="ml-2" />
+          </button>
+        )}
         <table className="pedidos-table">
           <thead>
             <tr>
@@ -148,11 +161,13 @@ function PedidosEntregados() {
         {prevPage && (
           <button onClick={() => handlePageChange(prevPage)}>
             Página Anterior
+            <FaArrowAltCircleLeft className="ml-2" />
           </button>
         )}
         {nextPage && (
           <button onClick={() => handlePageChange(nextPage)}>
             Siguiente Página
+            <FaArrowAltCircleRight className="ml-2" />
           </button>
         )}
       </div>

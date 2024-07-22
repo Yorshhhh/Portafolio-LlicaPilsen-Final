@@ -25,7 +25,7 @@ function Carrito() {
         onClick={() => setShowCart(!showCart)}
         style={{ color: "white", textDecoration: "none" }}
       >
-        <i class="fa-sharp fa-solid fa-cart-shopping"></i> ({cartItems.length})
+        <i className="fa-sharp fa-solid fa-cart-shopping"></i> ({cartItems.length})
       </a>
       {showCart && (
         <div id="carrito" className="cart-dropdown absolute top-0 right-0 z-40 w-auto">

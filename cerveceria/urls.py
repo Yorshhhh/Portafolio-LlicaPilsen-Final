@@ -21,6 +21,7 @@ urlpatterns = [
     path('pedidos_pendientes/', PedidoPendienteView.as_view(), name='pedidos_pendientes'),
     path('pedidos_entregados/', PedidoEntregadoView.as_view(), name='pedidos_entregados'),
     path('ventas_mensuales/', VentasMensualesView.as_view(), name='ventas_mensuales'),
+    path('ventas_entre/', VentasFechaView.as_view(), name='ventas_entre'),
     path('ventas_mensuales_comuna/', VentasMensualesComunaView.as_view(), name='ventas_mensuales'),
 ]
 #MOISES SEPULVEDA, OJO

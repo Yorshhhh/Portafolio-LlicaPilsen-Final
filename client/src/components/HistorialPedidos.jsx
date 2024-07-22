@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { historialPedidos } from "../api/cerveceria_API";
 import "../css/PedidosPendientes.css";
+import Navbar from "./Navbar";
+import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from "react-icons/fa";
 
 const HistorialPedidos = () => {
   const [user, setUser] = useState(null);
@@ -103,6 +105,7 @@ const HistorialPedidos = () => {
   return (
     <>
       <div>
+        <Navbar />
         <h2>Historial de Pedidos</h2>
         <table className="pedidos-table">
           <thead>
@@ -122,8 +125,10 @@ const HistorialPedidos = () => {
                   <ul>
                     {pedidoAgrupado.detalles.map((detalle, index) => (
                       <li key={index}>
-                        <strong>Codigo Producto:</strong> {detalle.cod_producto} <br />
-                        <strong>Nombre Producto:</strong> {detalle.nombre_producto} <br />
+                        <strong>Codigo Producto:</strong> {detalle.cod_producto}{" "}
+                        <br />
+                        <strong>Nombre Producto:</strong>{" "}
+                        {detalle.nombre_producto} <br />
                         <strong>Cantidad:</strong> {detalle.cantidad} <br />
                         <strong>Precio:</strong>{" "}
                         {detalle.precio_unitario.toLocaleString("es-CL", {
@@ -159,7 +164,9 @@ const HistorialPedidos = () => {
                   )}
                 </td>
                 <td>
-                  <strong>{calcularTotalBoleta(pedidoAgrupado.detalles)}</strong>{" "}
+                  <strong>
+                    {calcularTotalBoleta(pedidoAgrupado.detalles)}
+                  </strong>{" "}
                 </td>
               </tr>
             ))}
@@ -168,11 +175,13 @@ const HistorialPedidos = () => {
         {prevPage && (
           <button onClick={() => handlePageChange(prevPage)}>
             Página Anterior
+            <FaArrowAltCircleLeft className="ml-2" />
           </button>
         )}
         {nextPage && (
           <button onClick={() => handlePageChange(nextPage)}>
             Siguiente Página
+            <FaArrowAltCircleRight className="ml-2" />
           </button>
         )}
       </div>

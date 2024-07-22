@@ -249,7 +249,46 @@ class VentasMensualesView(APIView):
 
         except OperationalError as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class VentasFechaView(APIView):
+    def get(self, request):
+        fecha_inicio = request.query_params.get('fecha_inicio')  # Parámetro para la fecha de inicio en formato DD-MM-YYYY
+        fecha_fin = request.query_params.get('fecha_fin')  # Parámetro para la fecha de fin en formato DD-MM-YYYY
 
+        if not fecha_inicio or not fecha_fin:
+            return Response({"error": "Faltan los parámetros 'fecha_inicio' o 'fecha_fin' en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT b.cod_producto, b.nombre_producto, TO_CHAR(c.fecha_entrega,'DD-MM-YYYY') AS fecha_entrega,
+                           NVL(SUM(a.precio_unitario * a.cantidad), 0) AS total
+                    FROM cerveceria_detalle_pedido a
+                        JOIN cerveceria_producto b ON a.cod_producto_id = b.cod_producto
+                        JOIN cerveceria_pedido c ON a.cod_pedido_id = c.cod_pedido
+                    WHERE c.fecha_entrega IS NOT NULL AND TO_CHAR(c.fecha_entrega, 'DD-MM-YYYY') BETWEEN %s AND %s
+                    GROUP BY b.cod_producto, b.nombre_producto, TO_CHAR(c.fecha_entrega, 'DD-MM-YYYY')
+                    ORDER BY TO_CHAR(c.fecha_entrega, 'DD-MM-YYYY') ASC
+                """, [fecha_inicio, fecha_fin])
+
+                ventas_por_fecha = cursor.fetchall()
+
+                if not ventas_por_fecha:
+                    return Response({"error": "No se encontraron ventas para el rango de fechas especificado."}, status=status.HTTP_404_NOT_FOUND)
+
+                ventas_data = []
+                for venta in ventas_por_fecha:
+                    venta_dict = {
+                        "cod_producto": venta[0],
+                        "nombre_producto": venta[1],
+                        "fecha_entrega": venta[2],
+                        "total": venta[3],
+                    }
+                    ventas_data.append(venta_dict)
+                return Response(ventas_data, status=status.HTTP_200_OK)
+
+        except OperationalError as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class PedidoPendienteView(APIView):
     pagination_class =  PedidoPendientePagination

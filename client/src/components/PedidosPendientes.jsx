@@ -3,6 +3,7 @@ import {
   obtenerPedidosPendientes,
   confirmarPedido,
 } from "../api/cerveceria_API";
+import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from "react-icons/fa";
 import "../css/PedidosPendientes.css";
 
 function PedidosPendientes() {
@@ -126,6 +127,18 @@ function PedidosPendientes() {
   return (
     <div>
       <h2>Pedidos Pendientes</h2>
+      {prevPage && (
+          <button onClick={() => handlePageChange(prevPage)}>
+            Página Anterior
+            <FaArrowAltCircleLeft className="ml-2" />
+          </button>
+        )}
+        {nextPage && (
+          <button onClick={() => handlePageChange(nextPage)}>
+            Siguiente Página
+            <FaArrowAltCircleRight className="ml-2" />
+          </button>
+        )}
       <table className="pedidos-table">
         <thead>
           <tr>
@@ -181,15 +194,17 @@ function PedidosPendientes() {
         </tbody>
       </table>
       {prevPage && (
-        <button onClick={() => handlePageChange(prevPage)}>
-          Página Anterior
-        </button>
-      )}
-      {nextPage && (
-        <button onClick={() => handlePageChange(nextPage)}>
-          Siguiente Página
-        </button>
-      )}
+          <button onClick={() => handlePageChange(prevPage)}>
+            Página Anterior
+            <FaArrowAltCircleLeft className="ml-2" />
+          </button>
+        )}
+        {nextPage && (
+          <button onClick={() => handlePageChange(nextPage)}>
+            Siguiente Página
+            <FaArrowAltCircleRight className="ml-2" />
+          </button>
+        )}
     </div>
   );
 }
