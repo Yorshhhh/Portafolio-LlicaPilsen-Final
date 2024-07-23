@@ -137,38 +137,6 @@ class VentasProductoView(APIView):
             return Response(ventas_data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-class PedidoEntregadoView(APIView):
-    pagination_class = PedidoEntregadoPagination
-
-    def get(self, request):
-        try:
-            pedidos_entregados = PedidoEntregado.objects.all()
-            pedidos_data = [
-                {
-                    "cod_pedido": pedido.cod_pedido,
-                    "nombre_cliente": pedido.nombre_cliente,
-                    "correo": pedido.correo,
-                    "telefono": pedido.telefono,
-                    "id_detalle_pedido": pedido.id_detalle_pedido,
-                    "cod_producto": pedido.cod_producto,
-                    "nombre_producto": pedido.nombre_producto,
-                    "cantidad": pedido.cantidad,
-                    "precio_unitario": pedido.precio_unitario,
-                    "total": pedido.total,
-                    "fecha_pedido": pedido.fecha_pedido,
-                    "fecha_entrega": pedido.fecha_entrega,
-                }
-                for pedido in pedidos_entregados
-            ]
-            # Paginar los resultados utilizando la clase de paginación personalizada
-            paginator = self.pagination_class()
-            page = paginator.paginate_queryset(pedidos_data, request)
-            return paginator.get_paginated_response(page)
-            #return Response(pedidos_data, status=status.HTTP_200_OK)
-        except Exception as e:
-            print(f"Error: {str(e)}")
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 class VentasMensualesComunaView(APIView):
     def get(self, request):
@@ -326,6 +294,99 @@ class PedidoPendienteView(APIView):
             # Manejo de excepciones en caso de error
             print("estas aqui?")
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class PedidoEntregadoView(APIView):
+    pagination_class = PedidoEntregadoPagination
+
+    def get(self, request):
+        try:
+            pedidos_entregados = PedidoEntregado.objects.all()
+            pedidos_data = [
+                {
+                    "cod_pedido": pedido.cod_pedido,
+                    "nombre_cliente": pedido.nombre_cliente,
+                    "correo": pedido.correo,
+                    "telefono": pedido.telefono,
+                    "id_detalle_pedido": pedido.id_detalle_pedido,
+                    "cod_producto": pedido.cod_producto,
+                    "nombre_producto": pedido.nombre_producto,
+                    "cantidad": pedido.cantidad,
+                    "precio_unitario": pedido.precio_unitario,
+                    "total": pedido.total,
+                    "fecha_pedido": pedido.fecha_pedido,
+                    "fecha_entrega": pedido.fecha_entrega,
+                }
+                for pedido in pedidos_entregados
+            ]
+            # Paginar los resultados utilizando la clase de paginación personalizada
+            paginator = self.pagination_class()
+            page = paginator.paginate_queryset(pedidos_data, request)
+            return paginator.get_paginated_response(page)
+            #return Response(pedidos_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Error: {str(e)}")
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class BuscarPedidosConCodigoView(APIView):
+    def get(self, request):
+        pedido_id = request.query_params.get('cod_pedido')
+
+        if not pedido_id:
+            return Response({"error": "Falta el parámetro ID en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT b.correo,
+                           a.cod_pedido,
+                           c.id_detalle_pedido,
+                           c.cod_producto_id,
+                           d.nombre_producto,
+                           c.cantidad,
+                           c.precio_unitario,
+                           TO_CHAR(fecha_pedido,'DD-MM-YYYY') fecha_pedido,
+                           TO_CHAR(fecha_entrega,'DD-MM-YYYY') fecha_entrega,
+                           a.codigo_envio,
+                           a.tipo_entrega,
+                           NVL(a.comuna_envio, 'retiro en tienda') AS comuna_envio
+                    FROM cerveceria_pedido a
+                    JOIN cerveceria_usuario b ON a.id_usuario_id = b.id
+                    JOIN cerveceria_detalle_pedido c ON a.cod_pedido = c.cod_pedido_id
+                    JOIN cerveceria_producto d ON c.cod_producto_id = d.cod_producto
+                    WHERE a.cod_pedido = %s
+                    ORDER BY a.cod_pedido ASC
+                """, [pedido_id])
+
+                # Obtener todos los resultados de la consulta
+                pedidos = cursor.fetchall()
+
+                if not pedidos:
+                    return Response({"error": "No se encontró el pedido con el código proporcionado."}, status=status.HTTP_404_NOT_FOUND)
+
+                # Estructurar los resultados en una lista de diccionarios
+                pedidos_data = []
+                for pedido in pedidos:
+                    pedido_dict = {
+                        "correo": pedido[0],
+                        "cod_pedido": pedido[1],
+                        "id_detalle_pedido": pedido[2],
+                        "cod_producto_id": pedido[3],
+                        "nombre_producto": pedido[4],
+                        "cantidad": pedido[5],
+                        "precio_unitario": pedido[6],
+                        "fecha_pedido": pedido[7],
+                        "fecha_entrega": pedido[8],
+                        "codigo_envio": pedido[9],
+                        "tipo_entrega": pedido[10],
+                        "comuna_envio": pedido[11],
+                    }
+                    pedidos_data.append(pedido_dict)
+                
+                return Response(pedidos_data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class HistorialPedidosView(APIView):
     pagination_class = HistorialPagination  # Especifica la clase de paginación personalizada

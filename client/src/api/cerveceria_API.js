@@ -79,8 +79,6 @@ export const obtenerVentasPorProducto = async () => {
   }
 };
 
-
-
 export const obtenerVentasPorComuna = async () => {
   try {
     const response = await cerveceriaAPI.get("/ventas_comuna/");
@@ -89,8 +87,6 @@ export const obtenerVentasPorComuna = async () => {
     throw error;
   }
 };
-
-
 
 export const historialPedidos = async (id) => {
   try {
@@ -103,9 +99,20 @@ export const historialPedidos = async (id) => {
   }
 };
 
+export const buscarPedidoCodigo = async (codigo) => {
+  try {
+    const response = await cerveceriaAPI.get("/buscar_pedidos_cod/", {
+      params: { cod_pedido: codigo },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const ventasPorFecha = async (fecha_inicio, fecha_fin) => {
   try {
-    const response = await cerveceriaAPI.get('/ventas_entre/', {
+    const response = await cerveceriaAPI.get("/ventas_entre/", {
       params: {
         fecha_inicio: fecha_inicio,
         fecha_fin: fecha_fin,
@@ -117,27 +124,27 @@ export const ventasPorFecha = async (fecha_inicio, fecha_fin) => {
   }
 };
 
-export const ventasMensualesProducto = async(mes) =>{
-  try{
-    const response = await cerveceriaAPI.get(("/ventas_mensuales/"), {
-      params: {mes: mes},
-    })
+export const ventasMensualesProducto = async (mes) => {
+  try {
+    const response = await cerveceriaAPI.get("/ventas_mensuales/", {
+      params: { mes: mes },
+    });
     return response.data;
-  }catch(error)
-{
-  throw error;
-}}
+  } catch (error) {
+    throw error;
+  }
+};
 
-export const ventasMensualesComuna = async(mes) =>{
-  try{
-    const response = await cerveceriaAPI.get(("/ventas_mensuales_comuna/"), {
-      params: {mes: mes},
-    })
+export const ventasMensualesComuna = async (mes) => {
+  try {
+    const response = await cerveceriaAPI.get("/ventas_mensuales_comuna/", {
+      params: { mes: mes },
+    });
     return response.data;
-  }catch(error)
-{
-  throw error;
-}}
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const obtenerPedidosPendientes = async () => {
   try {

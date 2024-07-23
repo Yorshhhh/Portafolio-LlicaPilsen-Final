@@ -97,7 +97,7 @@ function PedidosEntregados() {
   return (
     <>
       <div>
-        <h2>Pedidos Entregados</h2>
+        <h1>Pedidos Entregados</h1>
         {prevPage && (
           <button onClick={() => handlePageChange(prevPage)}>
             Página Anterior

@@ -126,7 +126,7 @@ function PedidosPendientes() {
 
   return (
     <div>
-      <h2>Pedidos Pendientes</h2>
+      <h1>Pedidos Pendientes</h1>
       {prevPage && (
           <button onClick={() => handlePageChange(prevPage)}>
             Página Anterior
