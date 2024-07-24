@@ -110,6 +110,17 @@ export const buscarPedidoCodigo = async (codigo) => {
   }
 };
 
+export const buscarPedidoCorreo = async (correo) => {
+  try {
+    const response = await cerveceriaAPI.get("/buscar_pedidos_correo/", {
+      params: { correo: correo },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const ventasPorFecha = async (fecha_inicio, fecha_fin) => {
   try {
     const response = await cerveceriaAPI.get("/ventas_entre/", {

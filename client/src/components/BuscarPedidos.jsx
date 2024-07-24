@@ -1,12 +1,18 @@
 import { useState } from "react";
-import { buscarPedidoCodigo } from "../api/cerveceria_API";
-import { FaArrowAltCircleLeft, FaArrowAltCircleRight } from "react-icons/fa";
+import { buscarPedidoCodigo, buscarPedidoCorreo } from "../api/cerveceria_API";
+import { toast, ToastContainer } from "react-toastify";
+import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from "react-icons/fa";
+import "react-toastify/dist/ReactToastify.css";
 
 function BuscarPedidos() {
   const [busquedaCodigo, setBusquedaCodigo] = useState("");
+  const [busquedaCorreo, setBusquedaCorreo] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [pedidos, setPedidos] = useState([]);
+  const [pedidosCodigo, setPedidosCodigo] = useState([]);
+  const [pedidosCorreo, setPedidosCorreo] = useState([]);
+  const [nextPageCorreo, setNextPageCorreo] = useState(null);
+  const [prevPageCorreo, setPrevPageCorreo] = useState(null);
 
   const buscarPedidoCod = async () => {
     if (
@@ -20,14 +26,53 @@ function BuscarPedidos() {
 
     setLoading(true);
     setError(null);
-
     try {
       const data = await buscarPedidoCodigo(busquedaCodigo);
-      setPedidos(data);
+      setPedidosCodigo(data);
+      setPedidosCorreo([]); // Limpiar resultados de correo
+      setNextPageCorreo(null);
+      setPrevPageCorreo(null);
     } catch (error) {
-      console.error("Error al obtener los pedidos: ", error);
-      setError("Error al cargar los pedidos");
+      const mensajeError = error.response?.data?.error || "Error desconocido";
+      toast.error(mensajeError);
     } finally {
+      setLoading(false);
+      setBusquedaCodigo(""); // Limpiar el input de código
+      setBusquedaCorreo(""); // Limpiar el input de correo
+    }
+  };
+
+  const buscarPedidoCorreoHandler = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await buscarPedidoCorreo(busquedaCorreo);
+      setPedidosCorreo(data.results);
+      setPedidosCodigo([]); // Limpiar resultados de código
+      setNextPageCorreo(data.next);
+      setPrevPageCorreo(data.previous);
+    } catch (error) {
+      const mensajeError = error.response?.data?.error || "Error desconocido";
+      toast.error(mensajeError);
+    } finally {
+      setLoading(false);
+      setBusquedaCodigo(""); // Limpiar el input de código
+      setBusquedaCorreo(""); // Limpiar el input de correo
+    }
+  };
+
+  const handlePageChange = async (pageUrl) => {
+    try {
+      setLoading(true);
+      const response = await fetch(pageUrl);
+      const data = await response.json();
+      setPedidosCorreo(data.results); // Actualiza los resultados de la página actual
+      setNextPageCorreo(data.next); // Actualiza el enlace a la siguiente página
+      setPrevPageCorreo(data.previous); // Actualiza el enlace a la página anterior
+      setLoading(false);
+    } catch (error) {
+      console.error("Error al cambiar de página: ", error);
+      setError("Error al cambiar de página.");
       setLoading(false);
     }
   };
@@ -67,15 +112,7 @@ function BuscarPedidos() {
     });
   };
 
-  /*   const formatearFecha = (fechaISO) => {
-    const fecha = new Date(fechaISO);
-    const dia = String(fecha.getDate()).padStart(2, "0");
-    const mes = String(fecha.getMonth() + 1).padStart(2, "0"); // Los meses en JavaScript comienzan desde 0.
-    const año = fecha.getFullYear();
-    return `${dia}-${mes}-${año}`;
-  };
- */
-  const handleInputChange = (e) => {
+  const handleCodigoInputChange = (e) => {
     const value = e.target.value;
     // Permitir solo números mayores que 0 o vacío
     if (value === "" || (value.match(/^\d+$/) && Number(value) > 0)) {
@@ -86,6 +123,10 @@ function BuscarPedidos() {
     }
   };
 
+  const handleCorreoInputChange = (e) => {
+    setBusquedaCorreo(e.target.value);
+  };
+
   return (
     <div>
       <h1 className="text-center">Buscar Pedidos</h1>
@@ -94,7 +135,7 @@ function BuscarPedidos() {
           type="text"
           placeholder="Ingresar código del pedido"
           value={busquedaCodigo}
-          onChange={handleInputChange}
+          onChange={handleCodigoInputChange}
           className="border border-gray-400 rounded py-2 px-4"
         />
         <button
@@ -103,10 +144,40 @@ function BuscarPedidos() {
         >
           Buscar
         </button>
+
+        <input
+          type="text"
+          placeholder="Ingresar correo@buscar.cl"
+          value={busquedaCorreo}
+          onChange={handleCorreoInputChange}
+          className="border border-gray-400 rounded py-2 px-4 ml-4"
+        />
+        <button
+          onClick={buscarPedidoCorreoHandler}
+          className="btn btn-success rounded-none py-2 px-4 ml-4 bg-green-600"
+        >
+          Buscar
+        </button>
       </div>
 
       {loading && <div>Cargando...</div>}
-      {error && <div>{error}</div>}
+
+      {pedidosCorreo.length > 0 && (
+        <>
+          {prevPageCorreo && (
+            <button onClick={() => handlePageChange(prevPageCorreo)}>
+              Página Anterior
+              <FaArrowAltCircleLeft className="ml-2" />
+            </button>
+          )}
+          {nextPageCorreo && (
+            <button onClick={() => handlePageChange(nextPageCorreo)}>
+              Siguiente Página
+              <FaArrowAltCircleRight className="ml-2" />
+            </button>
+          )}
+        </>
+      )}
 
       <table className="pedidos-table mx-auto">
         <thead>
@@ -122,7 +193,7 @@ function BuscarPedidos() {
           </tr>
         </thead>
         <tbody>
-          {agruparPedidos(pedidos).map((pedidoAgrupado) => (
+          {agruparPedidos([...pedidosCodigo, ...pedidosCorreo]).map((pedidoAgrupado) => (
             <tr key={pedidoAgrupado.cod_pedido}>
               <td>{pedidoAgrupado.correo}</td>
               <td>{pedidoAgrupado.cod_pedido}</td>
@@ -135,15 +206,10 @@ function BuscarPedidos() {
                       <strong>Codigo Producto:</strong>{" "}
                       {detalle.cod_producto_id}
                       <br />
-                      <strong>Cantidad:</strong> {detalle.cantidad} <br />
-                      <strong>Precio:</strong>{" "}
-                      {detalle.precio_unitario.toLocaleString("es-CL", {
-                        style: "currency",
-                        currency: "CLP",
-                      })}
+                      <strong>Cantidad:</strong> {detalle.cantidad}
                       <br />
-                      <strong>Total:</strong>{" "}
-                      {detalle.total.toLocaleString("es-CL", {
+                      <strong>Precio:</strong>
+                      {detalle.precio_unitario.toLocaleString("es-CL", {
                         style: "currency",
                         currency: "CLP",
                       })}
@@ -184,6 +250,7 @@ function BuscarPedidos() {
           ))}
         </tbody>
       </table>
+      <ToastContainer />
     </div>
   );
 }

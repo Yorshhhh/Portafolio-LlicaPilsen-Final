@@ -12,12 +12,16 @@ function Prepago() {
   const [user, setUser] = useState(null);
   const [showProceedButton, setShowProceedButton] = useState(false);
   const [total, setTotal] = useState(0);
+  const [totalIva, setTotalIva] = useState(0);
+  const [totalConIva, setTotalConIva] = useState(0);
   const [token, setToken] = useState("");
   const [url, setUrl] = useState("");
   const [showDeliveryForm, setShowDeliveryForm] = useState(false);
   const [direccion, setDireccion] = useState("");
   const [telefono, setTelefono] = useState("");
   const [isDeliveryFormValid, setIsDeliveryFormValid] = useState(false);
+
+  const IVA_PORCENTAJE = 19;
 
   const {
     cartItems,
@@ -49,7 +53,13 @@ function Prepago() {
   }, [token, url]);
 
   useEffect(() => {
-    setTotal(calculateTotal());
+    const totalSinIva = calculateTotal();
+    const iva = totalSinIva * (IVA_PORCENTAJE / 100);
+    const totalConIva = totalSinIva + iva;
+
+    setTotal(totalSinIva);
+    setTotalIva(iva);
+    setTotalConIva(totalConIva);
   }, [cartItems, deliveryCost, calculateTotal]);
 
   useEffect(() => {
@@ -87,7 +97,7 @@ function Prepago() {
   const handlePayment = async () => {
     try {
       const pedidoDetalles = {
-        total,
+        total: totalConIva,
         tipo_entrega: selectedOption,
         comuna: selectedComuna, // Aquí se envía la comuna seleccionada
         direccion,
@@ -97,7 +107,7 @@ function Prepago() {
 
       localStorage.setItem("pedidoDetalles", JSON.stringify(pedidoDetalles));
 
-      const { token, url } = await createTransaction(total);
+      const { token, url } = await createTransaction(totalConIva);
       setToken(token);
       setUrl(url);
       if (url) {
@@ -235,19 +245,22 @@ function Prepago() {
             <div className="card centered-content">
               <h1>Resumen de compra</h1>
               <CarritoPrepago />
+              <hr className="custom-hr"/>
               <h3>Tipo de entrega: {selectedOption === "retiro" ? "Retiro en tienda" : "Despacho a domicilio"}</h3>
-              <h2>Total: ${calculateTotal(cartItems)}</h2>
-              <hr />
+              <h2>Total: ${total.toLocaleString("es-CL", { style: "currency", currency: "CLP" })}</h2>
+              <h2>Total IVA: ${totalIva.toLocaleString("es-CL", { style: "currency", currency: "CLP" })}</h2>
+              <h2>Total con IVA: ${totalConIva.toLocaleString("es-CL", { style: "currency", currency: "CLP" })}</h2>
+              
+              <hr className="custom-hr"/>
               <h2>Compra 100% Segura</h2>
-              <h2>Envíos a toda la región por ventas superiores a los 20.000 pesos</h2>
-              <hr />
+              <h2>Envíos a las comunas de Coronel y San Pedro por compras superiores a los 20.000 pesos</h2>
+              <hr className="custom-hr"/>
               <h2>Aceptamos los siguientes medios de pago</h2>
               <img
                 src="logos_medios_de_pago.png"
                 alt="Medios de pago"
                 style={{ width: "70%", height: "auto" }}
               />
-              <hr />
               {(selectedOption === "retiro" || (selectedOption === "domicilio" && isDeliveryFormValid)) && showProceedButton && (
                 <input
                   onClick={handlePayment}

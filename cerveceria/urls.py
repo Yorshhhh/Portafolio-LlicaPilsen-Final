@@ -21,6 +21,7 @@ urlpatterns = [
     path('pedidos_pendientes/', PedidoPendienteView.as_view(), name='pedidos_pendientes'),
     path('pedidos_entregados/', PedidoEntregadoView.as_view(), name='pedidos_entregados'),
     path('buscar_pedidos_cod/', BuscarPedidosConCodigoView.as_view(), name='buscar_pedido_codigo'),
+    path('buscar_pedidos_correo/', BuscarPedidosConCorreoView.as_view(), name='buscar_pedido_correo'),
     path('ventas_mensuales/', VentasMensualesView.as_view(), name='ventas_mensuales'),
     path('ventas_entre/', VentasFechaView.as_view(), name='ventas_entre'),
     path('ventas_mensuales_comuna/', VentasMensualesComunaView.as_view(), name='ventas_mensuales'),

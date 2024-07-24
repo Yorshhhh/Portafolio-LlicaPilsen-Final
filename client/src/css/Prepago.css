@@ -97,3 +97,9 @@ img {
   display: block;
   margin: 0 auto; /* Centrar la imagen */
 }
+
+.custom-hr {
+  border: none;
+  border-top: 2px solid black;
+  margin: 10px 0;
+}

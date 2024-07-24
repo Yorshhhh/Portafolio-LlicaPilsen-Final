@@ -107,6 +107,20 @@ const HistorialPedidos = () => {
       <div>
         <Navbar />
         <h2>Historial de Pedidos</h2>
+        <div className="flex justify-center">
+          {prevPage && (
+            <button onClick={() => handlePageChange(prevPage)}>
+              Página Anterior
+              <FaArrowAltCircleLeft className="ml-2" />
+            </button>
+          )}
+          {nextPage && (
+            <button onClick={() => handlePageChange(nextPage)}>
+              Siguiente Página
+              <FaArrowAltCircleRight className="ml-2" />
+            </button>
+          )}
+        </div>
         <table className="pedidos-table">
           <thead>
             <tr>
@@ -124,11 +138,12 @@ const HistorialPedidos = () => {
                 <td>
                   <ul>
                     {pedidoAgrupado.detalles.map((detalle, index) => (
-                      <li key={index}>
-                        <strong>Codigo Producto:</strong> {detalle.cod_producto}{" "}
+                      <li key={index} className="mb-4">
+                        <strong>Codigo Producto:</strong> {detalle.cod_producto}
                         <br />
-                        <strong>Nombre Producto:</strong>{" "}
-                        {detalle.nombre_producto} <br />
+                        <strong>Nombre Producto:</strong>
+                        {detalle.nombre_producto}
+                        <br />
                         <strong>Cantidad:</strong> {detalle.cantidad} <br />
                         <strong>Precio:</strong>{" "}
                         {detalle.precio_unitario.toLocaleString("es-CL", {
@@ -138,8 +153,8 @@ const HistorialPedidos = () => {
                         <br />
                       </li>
                     ))}
-                    <li>
-                      Total:{" "}
+                    <li className="mt-4">
+                      <strong>Total Boleta:</strong>
                       <strong>
                         {calcularTotalBoleta(pedidoAgrupado.detalles)}
                       </strong>
@@ -172,18 +187,20 @@ const HistorialPedidos = () => {
             ))}
           </tbody>
         </table>
-        {prevPage && (
-          <button onClick={() => handlePageChange(prevPage)}>
-            Página Anterior
-            <FaArrowAltCircleLeft className="ml-2" />
-          </button>
-        )}
-        {nextPage && (
-          <button onClick={() => handlePageChange(nextPage)}>
-            Siguiente Página
-            <FaArrowAltCircleRight className="ml-2" />
-          </button>
-        )}
+        <div className="flex justify-center">
+          {prevPage && (
+            <button onClick={() => handlePageChange(prevPage)}>
+              Página Anterior
+              <FaArrowAltCircleLeft className="ml-2" />
+            </button>
+          )}
+          {nextPage && (
+            <button onClick={() => handlePageChange(nextPage)}>
+              Siguiente Página
+              <FaArrowAltCircleRight className="ml-2" />
+            </button>
+          )}
+        </div>
       </div>
     </>
   );

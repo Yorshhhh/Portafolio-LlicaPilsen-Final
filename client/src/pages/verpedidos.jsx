@@ -15,6 +15,9 @@ function VerPedidos() {
     if (showPendientes) {
       setShowPendientes(false);
     }
+    if (showBuscarPedidos) {
+      setShowBuscarPedidos(false);
+    }
   };
 
   const togglePendientes = () => {
@@ -22,12 +25,18 @@ function VerPedidos() {
     if (showEntregados) {
       setShowEntregados(false);
     }
+    if (showBuscarPedidos) {
+      setShowBuscarPedidos(false);
+    }
   };
 
   const toggleBuscarPedidos = () => {
     setShowBuscarPedidos(!showBuscarPedidos);
-    if (showBuscarPedidos) {
-      setShowBuscarPedidos(false);
+    if (showEntregados) {
+      setShowEntregados(false);
+    }
+    if (showPendientes) {
+      setShowPendientes(false);
     }
   };
 

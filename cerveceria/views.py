@@ -12,7 +12,7 @@ import re
 
 
 from .paginacion import PedidoPagination,HistorialPagination,PedidoPendientePagination,\
-    PedidoEntregadoPagination
+    PedidoEntregadoPagination, PedidoConCorreoPagination
 from .serializer import ProductoSerializer,UsuarioSerializer,\
     Detalle_PedidoSerializer,PedidoSerializer,CustomAuthTokenSerializer
 
@@ -338,7 +338,7 @@ class BuscarPedidosConCodigoView(APIView):
             with connection.cursor() as cursor:
                 cursor.execute("""
                     SELECT b.correo,
-                           a.cod_pedido,
+                           cod_pedido,
                            c.id_detalle_pedido,
                            c.cod_producto_id,
                            d.nombre_producto,
@@ -346,9 +346,9 @@ class BuscarPedidosConCodigoView(APIView):
                            c.precio_unitario,
                            TO_CHAR(fecha_pedido,'DD-MM-YYYY') fecha_pedido,
                            TO_CHAR(fecha_entrega,'DD-MM-YYYY') fecha_entrega,
-                           a.codigo_envio,
-                           a.tipo_entrega,
-                           NVL(a.comuna_envio, 'retiro en tienda') AS comuna_envio
+                           codigo_envio,
+                           INITCAP(tipo_entrega) tipo_entrega,
+                           NVL(comuna_envio, 'Retiro en Tienda') comuna_envio
                     FROM cerveceria_pedido a
                     JOIN cerveceria_usuario b ON a.id_usuario_id = b.id
                     JOIN cerveceria_detalle_pedido c ON a.cod_pedido = c.cod_pedido_id
@@ -383,6 +383,71 @@ class BuscarPedidosConCodigoView(APIView):
                     pedidos_data.append(pedido_dict)
                 
                 return Response(pedidos_data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class BuscarPedidosConCorreoView(APIView):
+    pagination_class = PedidoConCorreoPagination
+    def get(self, request):
+        correo_user = request.query_params.get('correo')
+
+        if not correo_user:
+            return Response({"error": "El correo enviado no existe."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT b.correo,
+                           cod_pedido,
+                           c.id_detalle_pedido,
+                           c.cod_producto_id,
+                           d.nombre_producto,
+                           c.cantidad,
+                           c.precio_unitario,
+                           TO_CHAR(fecha_pedido,'DD-MM-YYYY') fecha_pedido,
+                           TO_CHAR(fecha_entrega,'DD-MM-YYYY') fecha_entrega,
+                           codigo_envio,
+                           INITCAP(tipo_entrega) tipo_entrega,
+                           NVL(comuna_envio, 'Retiro en Tienda') comuna_envio
+                    FROM cerveceria_pedido a
+                    JOIN cerveceria_usuario b ON a.id_usuario_id = b.id
+                    JOIN cerveceria_detalle_pedido c ON a.cod_pedido = c.cod_pedido_id
+                    JOIN cerveceria_producto d ON c.cod_producto_id = d.cod_producto
+                    WHERE b.correo = %s
+                    ORDER BY a.cod_pedido ASC
+                """, [correo_user])
+
+                # Obtener todos los resultados de la consulta
+                pedidos = cursor.fetchall()
+
+                if not pedidos:
+                    return Response({"error": "No se encontraron pedidos asociados al correo proporcionado."}, status=status.HTTP_404_NOT_FOUND)
+
+                # Estructurar los resultados en una lista de diccionarios
+                pedidos_data = []
+                for pedido in pedidos:
+                    pedido_dict = {
+                        "correo": pedido[0],
+                        "cod_pedido": pedido[1],
+                        "id_detalle_pedido": pedido[2],
+                        "cod_producto_id": pedido[3],
+                        "nombre_producto": pedido[4],
+                        "cantidad": pedido[5],
+                        "precio_unitario": pedido[6],
+                        "fecha_pedido": pedido[7],
+                        "fecha_entrega": pedido[8],
+                        "codigo_envio": pedido[9],
+                        "tipo_entrega": pedido[10],
+                        "comuna_envio": pedido[11],
+                    }
+                    pedidos_data.append(pedido_dict)
+                
+                #return Response(pedidos_data, status=status.HTTP_200_OK)
+                # Paginar los resultados utilizando la clase de paginación personalizada
+                paginator = self.pagination_class()
+                page = paginator.paginate_queryset(pedidos_data, request)
+                return paginator.get_paginated_response(page)
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
