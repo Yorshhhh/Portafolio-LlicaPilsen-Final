@@ -94,7 +94,6 @@ function BuscarPedidos() {
         nombre_producto: pedido.nombre_producto,
         cantidad: pedido.cantidad,
         precio_unitario: pedido.precio_unitario,
-        total: pedido.cantidad * pedido.precio_unitario,
       });
     });
 
@@ -102,11 +101,22 @@ function BuscarPedidos() {
   };
 
   const calcularTotalBoleta = (detalles) => {
+    // Verificar si detalles está definido y no es null
+    if (!detalles || detalles.length === 0) {
+      return 0; // O cualquier valor predeterminado que desees mostrar
+    }
+
     let totalBoleta = 0;
+
     detalles.forEach((detalle) => {
-      totalBoleta += detalle.total;
+      totalBoleta += detalle.precio_unitario * detalle.cantidad;
     });
-    return totalBoleta.toLocaleString("es-CL", {
+
+    return totalBoleta;
+  };
+
+  const formatCurrency = (amount) => {
+    return amount.toLocaleString("es-CL", {
       style: "currency",
       currency: "CLP",
     });
@@ -146,7 +156,7 @@ function BuscarPedidos() {
         </button>
 
         <input
-          type="text"
+          type="email"
           placeholder="Ingresar correo@buscar.cl"
           value={busquedaCorreo}
           onChange={handleCorreoInputChange}
@@ -163,7 +173,7 @@ function BuscarPedidos() {
       {loading && <div>Cargando...</div>}
 
       {pedidosCorreo.length > 0 && (
-        <>
+        <div className="flex justify-center">
           {prevPageCorreo && (
             <button onClick={() => handlePageChange(prevPageCorreo)}>
               Página Anterior
@@ -176,7 +186,7 @@ function BuscarPedidos() {
               <FaArrowAltCircleRight className="ml-2" />
             </button>
           )}
-        </>
+        </div>
       )}
 
       <table className="pedidos-table mx-auto">
@@ -185,6 +195,7 @@ function BuscarPedidos() {
             <th>Correo Cliente</th>
             <th>Codigo Pedido</th>
             <th>Detalles</th>
+            <th>Total del Pedido</th>
             <th>Fecha Pedido</th>
             <th>Fecha Entrega</th>
             <th>Codigo Envio</th>
@@ -193,63 +204,94 @@ function BuscarPedidos() {
           </tr>
         </thead>
         <tbody>
-          {agruparPedidos([...pedidosCodigo, ...pedidosCorreo]).map((pedidoAgrupado) => (
-            <tr key={pedidoAgrupado.cod_pedido}>
-              <td>{pedidoAgrupado.correo}</td>
-              <td>{pedidoAgrupado.cod_pedido}</td>
-              <td>
-                <ul>
-                  {pedidoAgrupado.detalles.map((detalle, index) => (
-                    <li key={index} className="mb-4">
-                      <strong>Producto:</strong> {detalle.nombre_producto}
-                      <br />
-                      <strong>Codigo Producto:</strong>{" "}
-                      {detalle.cod_producto_id}
-                      <br />
-                      <strong>Cantidad:</strong> {detalle.cantidad}
-                      <br />
-                      <strong>Precio:</strong>
-                      {detalle.precio_unitario.toLocaleString("es-CL", {
-                        style: "currency",
-                        currency: "CLP",
-                      })}
-                      <br />
-                    </li>
-                  ))}
-                  <li className="mt-4">
-                    <strong>Total Boleta:</strong>{" "}
-                    <strong>
-                      {calcularTotalBoleta(pedidoAgrupado.detalles)}
-                    </strong>
-                  </li>
-                </ul>
-              </td>
-              <td>{pedidoAgrupado.fecha_pedido}</td>
-              <td
-                className={
-                  pedidoAgrupado.fecha_entrega
-                    ? "estado-entregado"
-                    : "estado-pendiente"
-                }
-              >
-                {pedidoAgrupado.fecha_entrega ? (
-                  <>
-                    ¡Entregado! <br />
-                    Fecha: {pedidoAgrupado.fecha_entrega}
-                  </>
-                ) : (
-                  "Pendiente"
-                )}
-              </td>
-              <td>
-                {pedidoAgrupado.codigo_envio || "codigo no proporcionado aun"}
-              </td>
-              <td>{pedidoAgrupado.tipo_entrega}</td>
-              <td>{pedidoAgrupado.comuna_envio}</td>
-            </tr>
-          ))}
+          {agruparPedidos([...pedidosCodigo, ...pedidosCorreo]).map(
+            (pedidoAgrupado) => (
+              <tr key={pedidoAgrupado.cod_pedido}>
+                <td>{pedidoAgrupado.correo}</td>
+                <td>{pedidoAgrupado.cod_pedido}</td>
+                <td>
+                  <ul>
+                    {pedidoAgrupado.detalles.map((detalle, index) => (
+                      <li key={index} className="mb-4">
+                        <strong>Producto:</strong> {detalle.nombre_producto}
+                        <br />
+                        <strong>Codigo Producto:</strong>{" "}
+                        {detalle.cod_producto_id}
+                        <br />
+                        <strong>Cantidad:</strong> {detalle.cantidad}
+                        <br />
+                        <strong>Precio:</strong>
+                        {detalle.precio_unitario.toLocaleString("es-CL", {
+                          style: "currency",
+                          currency: "CLP",
+                        })}
+                        <br />
+                      </li>
+                    ))}
+                  </ul>
+                </td>
+                <td className="text-center">
+                  <strong>
+                    Total neto:{" "}
+                    {formatCurrency(
+                      calcularTotalBoleta(pedidoAgrupado.detalles)
+                    )}
+                  </strong>{" "}
+                  <br />
+                  <strong>
+                    IVA: {formatCurrency(parseFloat(pedidoAgrupado.iva))}
+                  </strong>
+                  <br />
+                  <strong>
+                    Total + IVA:{" "}
+                    {formatCurrency(
+                      calcularTotalBoleta(pedidoAgrupado.detalles) +
+                        parseFloat(pedidoAgrupado.iva)
+                    )}
+                  </strong>
+                </td>
+
+                <td>{pedidoAgrupado.fecha_pedido}</td>
+                <td
+                  className={
+                    pedidoAgrupado.fecha_entrega
+                      ? "estado-entregado"
+                      : "estado-pendiente"
+                  }
+                >
+                  {pedidoAgrupado.fecha_entrega ? (
+                    <>
+                      ¡Entregado! <br />
+                      Fecha: {pedidoAgrupado.fecha_entrega}
+                    </>
+                  ) : (
+                    "Pendiente"
+                  )}
+                </td>
+                <td>
+                  {pedidoAgrupado.codigo_envio || "codigo no proporcionado aun"}
+                </td>
+                <td>{pedidoAgrupado.tipo_entrega}</td>
+                <td>{pedidoAgrupado.comuna_envio}</td>
+              </tr>
+            )
+          )}
         </tbody>
       </table>
+      <div className="flex justify-center">
+        {prevPageCorreo && (
+          <button onClick={() => handlePageChange(prevPageCorreo)}>
+            Página Anterior
+            <FaArrowAltCircleLeft className="ml-2" />
+          </button>
+        )}
+        {nextPageCorreo && (
+          <button onClick={() => handlePageChange(nextPageCorreo)}>
+            Siguiente Página
+            <FaArrowAltCircleRight className="ml-2" />
+          </button>
+        )}
+      </div>
       <ToastContainer />
     </div>
   );

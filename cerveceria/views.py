@@ -344,6 +344,7 @@ class BuscarPedidosConCodigoView(APIView):
                            d.nombre_producto,
                            c.cantidad,
                            c.precio_unitario,
+                           c.iva,
                            TO_CHAR(fecha_pedido,'DD-MM-YYYY') fecha_pedido,
                            TO_CHAR(fecha_entrega,'DD-MM-YYYY') fecha_entrega,
                            codigo_envio,
@@ -374,11 +375,12 @@ class BuscarPedidosConCodigoView(APIView):
                         "nombre_producto": pedido[4],
                         "cantidad": pedido[5],
                         "precio_unitario": pedido[6],
-                        "fecha_pedido": pedido[7],
-                        "fecha_entrega": pedido[8],
-                        "codigo_envio": pedido[9],
-                        "tipo_entrega": pedido[10],
-                        "comuna_envio": pedido[11],
+                        "iva": pedido[7],
+                        "fecha_pedido": pedido[8],
+                        "fecha_entrega": pedido[9],
+                        "codigo_envio": pedido[10],
+                        "tipo_entrega": pedido[11],
+                        "comuna_envio": pedido[12],
                     }
                     pedidos_data.append(pedido_dict)
                 
@@ -405,6 +407,7 @@ class BuscarPedidosConCorreoView(APIView):
                            d.nombre_producto,
                            c.cantidad,
                            c.precio_unitario,
+                           c.iva,
                            TO_CHAR(fecha_pedido,'DD-MM-YYYY') fecha_pedido,
                            TO_CHAR(fecha_entrega,'DD-MM-YYYY') fecha_entrega,
                            codigo_envio,
@@ -435,11 +438,12 @@ class BuscarPedidosConCorreoView(APIView):
                         "nombre_producto": pedido[4],
                         "cantidad": pedido[5],
                         "precio_unitario": pedido[6],
-                        "fecha_pedido": pedido[7],
-                        "fecha_entrega": pedido[8],
-                        "codigo_envio": pedido[9],
-                        "tipo_entrega": pedido[10],
-                        "comuna_envio": pedido[11],
+                        "iva": pedido[7],
+                        "fecha_pedido": pedido[8],
+                        "fecha_entrega": pedido[9],
+                        "codigo_envio": pedido[10],
+                        "tipo_entrega": pedido[11],
+                        "comuna_envio": pedido[12],
                     }
                     pedidos_data.append(pedido_dict)
                 
@@ -468,7 +472,7 @@ class HistorialPedidosView(APIView):
             with connection.cursor() as cursor:
                 cursor.execute("""
                     SELECT a.cod_pedido_id, a.id_detalle_pedido, c.cod_producto AS Codigo_Producto, c.nombre_producto,
-                           TO_CHAR(b.fecha_pedido,'DD-MM-YYYY') fecha_pedido, cantidad, precio_unitario, cantidad * precio_unitario AS total,
+                           TO_CHAR(b.fecha_pedido,'DD-MM-YYYY') fecha_pedido, cantidad, precio_unitario,iva,
                            TO_CHAR(b.fecha_entrega, 'DD-MM-YYYY') AS fecha_entrega
                     FROM cerveceria_detalle_pedido a    
                     JOIN cerveceria_pedido b ON (a.cod_pedido_id = b.cod_pedido)
@@ -494,7 +498,7 @@ class HistorialPedidosView(APIView):
                     "fecha_pedido": pedido[4],
                     "cantidad": pedido[5],
                     "precio_unitario": pedido[6],
-                    "total": pedido[7],
+                    "iva": pedido[7],
                     "fecha_entrega": pedido[8]
                 }
                 pedidos_data.append(pedido_dict)

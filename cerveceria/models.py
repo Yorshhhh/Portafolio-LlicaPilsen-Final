@@ -74,6 +74,10 @@ class Pedido(models.Model):
         ('coronel', 'Coronel'),
         ('san_pedro', 'San Pedro')
     ]
+    TIPO_DOCUMENTO_CHOICES = [
+        ('boleta', 'Boleta'),
+        ('factura', 'Factura')
+    ]
 
     cod_pedido = models.AutoField(primary_key=True)
     id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='pedidos')
@@ -102,6 +106,14 @@ class Pedido(models.Model):
         default=None,
         help_text="Comuna de destino para el despacho a domicilio: 'lota', 'coronel', 'san_pedro'."
     )
+    tipo_documento = models.CharField(
+        max_length=20,
+        choices=TIPO_DOCUMENTO_CHOICES,
+        null=False,
+        blank=False,
+        default='boleta',
+        help_text="Tipo de documento: 'boleta', 'factura'."
+    )
     class Meta:
         verbose_name = "Pedido"
         verbose_name_plural = "Pedidos"
@@ -115,6 +127,7 @@ class Detalle_Pedido(models.Model):
     cod_producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
     precio_unitario = models.IntegerField()
     cantidad = models.IntegerField()
+    iva = models.FloatField()
     descuento = models.FloatField()
 
     def __str__(self):

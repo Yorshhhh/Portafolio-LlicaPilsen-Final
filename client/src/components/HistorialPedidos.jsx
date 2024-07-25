@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { historialPedidos } from "../api/cerveceria_API";
 import "../css/PedidosPendientes.css";
-import Navbar from "./Navbar";
 import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from "react-icons/fa";
 
 const HistorialPedidos = () => {
@@ -70,7 +69,6 @@ const HistorialPedidos = () => {
         nombre_producto: pedido.nombre_producto,
         cantidad: pedido.cantidad,
         precio_unitario: pedido.precio_unitario,
-        total: pedido.total,
       });
     });
 
@@ -80,15 +78,20 @@ const HistorialPedidos = () => {
   const calcularTotalBoleta = (detalles) => {
     // Verificar si detalles está definido y no es null
     if (!detalles || detalles.length === 0) {
-      return "0,00 CLP"; // O cualquier valor predeterminado que desees mostrar
+      return 0; // O cualquier valor predeterminado que desees mostrar
     }
 
     let totalBoleta = 0;
+
     detalles.forEach((detalle) => {
-      totalBoleta += detalle.total;
+      totalBoleta += detalle.precio_unitario * detalle.cantidad;
     });
 
-    return totalBoleta.toLocaleString("es-CL", {
+    return totalBoleta;
+  };
+
+  const formatCurrency = (amount) => {
+    return amount.toLocaleString("es-CL", {
       style: "currency",
       currency: "CLP",
     });
@@ -105,7 +108,6 @@ const HistorialPedidos = () => {
   return (
     <>
       <div>
-        <Navbar />
         <h2>Historial de Pedidos</h2>
         <div className="flex justify-center">
           {prevPage && (
@@ -121,7 +123,7 @@ const HistorialPedidos = () => {
             </button>
           )}
         </div>
-        <table className="pedidos-table">
+        <table className="pedidos-table mx-auto">
           <thead>
             <tr>
               <th>Cod Pedido</th>
@@ -153,12 +155,6 @@ const HistorialPedidos = () => {
                         <br />
                       </li>
                     ))}
-                    <li className="mt-4">
-                      <strong>Total Boleta:</strong>
-                      <strong>
-                        {calcularTotalBoleta(pedidoAgrupado.detalles)}
-                      </strong>
-                    </li>
                   </ul>
                 </td>
                 <td>{pedidoAgrupado.fecha_pedido}</td>
@@ -178,10 +174,25 @@ const HistorialPedidos = () => {
                     "Pendiente"
                   )}
                 </td>
-                <td>
+                <td className="text-center">
                   <strong>
-                    {calcularTotalBoleta(pedidoAgrupado.detalles)}
+                    Total neto:{" "}
+                    {formatCurrency(
+                      calcularTotalBoleta(pedidoAgrupado.detalles)
+                    )}
                   </strong>{" "}
+                  <br />
+                  <strong>
+                    IVA: {formatCurrency(parseFloat(pedidoAgrupado.iva))}
+                  </strong>
+                  <br />
+                  <strong>
+                    Total + IVA:{" "}
+                    {formatCurrency(
+                      calcularTotalBoleta(pedidoAgrupado.detalles) +
+                        parseFloat(pedidoAgrupado.iva)
+                    )}
+                  </strong>
                 </td>
               </tr>
             ))}
