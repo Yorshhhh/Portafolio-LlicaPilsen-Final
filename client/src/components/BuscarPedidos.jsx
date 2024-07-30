@@ -94,25 +94,30 @@ function BuscarPedidos() {
         nombre_producto: pedido.nombre_producto,
         cantidad: pedido.cantidad,
         precio_unitario: pedido.precio_unitario,
+        iva: pedido.iva,
       });
     });
 
     return Object.values(pedidosAgrupados);
   };
 
-  const calcularTotalBoleta = (detalles) => {
-    // Verificar si detalles está definido y no es null
+  const calcularTotales = (detalles) => {
     if (!detalles || detalles.length === 0) {
-      return 0; // O cualquier valor predeterminado que desees mostrar
+      return { total: 0, iva: 0, totalConIva: 0 };
     }
 
     let totalBoleta = 0;
+    let totalIva = 0;
 
     detalles.forEach((detalle) => {
-      totalBoleta += detalle.precio_unitario * detalle.cantidad;
+      const subtotal = detalle.precio_unitario * detalle.cantidad;
+      totalBoleta += subtotal;
+      totalIva += detalle.iva * detalle.cantidad;
     });
 
-    return totalBoleta;
+    const totalConIva = totalBoleta + totalIva;
+
+    return { total: totalBoleta, iva: totalIva, totalConIva: totalConIva };
   };
 
   const formatCurrency = (amount) => {
@@ -124,10 +129,9 @@ function BuscarPedidos() {
 
   const handleCodigoInputChange = (e) => {
     const value = e.target.value;
-    // Permitir solo números mayores que 0 o vacío
     if (value === "" || (value.match(/^\d+$/) && Number(value) > 0)) {
       setBusquedaCodigo(value);
-      setError(null); // Limpiar el error si el valor es válido
+      setError(null);
     } else {
       setError("Por favor, ingrese un código de pedido válido mayor que 0.");
     }
@@ -205,76 +209,66 @@ function BuscarPedidos() {
         </thead>
         <tbody>
           {agruparPedidos([...pedidosCodigo, ...pedidosCorreo]).map(
-            (pedidoAgrupado) => (
-              <tr key={pedidoAgrupado.cod_pedido}>
-                <td>{pedidoAgrupado.correo}</td>
-                <td>{pedidoAgrupado.cod_pedido}</td>
-                <td>
-                  <ul>
-                    {pedidoAgrupado.detalles.map((detalle, index) => (
-                      <li key={index} className="mb-4">
-                        <strong>Producto:</strong> {detalle.nombre_producto}
-                        <br />
-                        <strong>Codigo Producto:</strong>{" "}
-                        {detalle.cod_producto_id}
-                        <br />
-                        <strong>Cantidad:</strong> {detalle.cantidad}
-                        <br />
-                        <strong>Precio:</strong>
-                        {detalle.precio_unitario.toLocaleString("es-CL", {
-                          style: "currency",
-                          currency: "CLP",
-                        })}
-                        <br />
-                      </li>
-                    ))}
-                  </ul>
-                </td>
-                <td className="text-center">
-                  <strong>
-                    Total neto:{" "}
-                    {formatCurrency(
-                      calcularTotalBoleta(pedidoAgrupado.detalles)
-                    )}
-                  </strong>{" "}
-                  <br />
-                  <strong>
-                    IVA: {formatCurrency(parseFloat(pedidoAgrupado.iva))}
-                  </strong>
-                  <br />
-                  <strong>
-                    Total + IVA:{" "}
-                    {formatCurrency(
-                      calcularTotalBoleta(pedidoAgrupado.detalles) +
-                        parseFloat(pedidoAgrupado.iva)
-                    )}
-                  </strong>
-                </td>
+            (pedidoAgrupado) => {
+              const { total, iva, totalConIva } = calcularTotales(pedidoAgrupado.detalles);
 
-                <td>{pedidoAgrupado.fecha_pedido}</td>
-                <td
-                  className={
-                    pedidoAgrupado.fecha_entrega
-                      ? "estado-entregado"
-                      : "estado-pendiente"
-                  }
-                >
-                  {pedidoAgrupado.fecha_entrega ? (
-                    <>
-                      ¡Entregado! <br />
-                      Fecha: {pedidoAgrupado.fecha_entrega}
-                    </>
-                  ) : (
-                    "Pendiente"
-                  )}
-                </td>
-                <td>
-                  {pedidoAgrupado.codigo_envio || "codigo no proporcionado aun"}
-                </td>
-                <td>{pedidoAgrupado.tipo_entrega}</td>
-                <td>{pedidoAgrupado.comuna_envio}</td>
-              </tr>
-            )
+              return (
+                <tr key={pedidoAgrupado.cod_pedido}>
+                  <td>{pedidoAgrupado.correo}</td>
+                  <td>{pedidoAgrupado.cod_pedido}</td>
+                  <td>
+                    <ul>
+                      {pedidoAgrupado.detalles.map((detalle, index) => (
+                        <li key={index} className="mb-4">
+                          <strong>Producto:</strong> {detalle.nombre_producto}
+                          <br />
+                          <strong>Codigo Producto:</strong> {detalle.cod_producto_id}
+                          <br />
+                          <strong>Cantidad:</strong> {detalle.cantidad}
+                          <br />
+                          <strong>Precio:</strong>
+                          {detalle.precio_unitario.toLocaleString("es-CL", {
+                            style: "currency",
+                            currency: "CLP",
+                          })}
+                          <br />
+                        </li>
+                      ))}
+                    </ul>
+                  </td>
+                  <td className="text-center">
+                    <strong>Total neto: {formatCurrency(total)}</strong>
+                    <br />
+                    <strong>IVA: {formatCurrency(iva)}</strong>
+                    <br />
+                    <strong>Total + IVA: {formatCurrency(totalConIva)}</strong>
+                  </td>
+
+                  <td>{pedidoAgrupado.fecha_pedido}</td>
+                  <td
+                    className={
+                      pedidoAgrupado.fecha_entrega
+                        ? "estado-entregado"
+                        : "estado-pendiente"
+                    }
+                  >
+                    {pedidoAgrupado.fecha_entrega ? (
+                      <>
+                        ¡Entregado! <br />
+                        Fecha: {pedidoAgrupado.fecha_entrega}
+                      </>
+                    ) : (
+                      "Pendiente"
+                    )}
+                  </td>
+                  <td>
+                    {pedidoAgrupado.codigo_envio || "codigo no proporcionado aun"}
+                  </td>
+                  <td>{pedidoAgrupado.tipo_entrega}</td>
+                  <td>{pedidoAgrupado.comuna_envio}</td>
+                </tr>
+              );
+            }
           )}
         </tbody>
       </table>

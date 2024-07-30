@@ -278,7 +278,7 @@ class PedidoPendienteView(APIView):
                     "nombre_producto": pedido.nombre_producto,
                     "cantidad": pedido.cantidad,
                     "precio_unitario": pedido.precio_unitario,
-                    "total": pedido.total,
+                    "iva": pedido.iva,
                     "fecha_pedido": pedido.fecha_pedido,
                 }
                 for pedido in pedidos_pendientes
@@ -312,7 +312,7 @@ class PedidoEntregadoView(APIView):
                     "nombre_producto": pedido.nombre_producto,
                     "cantidad": pedido.cantidad,
                     "precio_unitario": pedido.precio_unitario,
-                    "total": pedido.total,
+                    "iva": pedido.iva,
                     "fecha_pedido": pedido.fecha_pedido,
                     "fecha_entrega": pedido.fecha_entrega,
                 }

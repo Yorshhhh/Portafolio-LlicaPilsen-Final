@@ -17,7 +17,6 @@ function ExitoPage() {
   const fechaPedido = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
-    // Cargar el carrito y el usuario del localStorage al montar el componente
     const userCarrito = localStorage.getItem("carrito");
     if (userCarrito) {
       try {
@@ -59,9 +58,7 @@ function ExitoPage() {
       }
 
       if (!user) {
-        setError(
-          "Usuario no encontrado. No se puede procesar la transacción."
-        );
+        setError("Usuario no encontrado. No se puede procesar la transacción.");
         return;
       }
 
@@ -80,26 +77,58 @@ function ExitoPage() {
           setTransactionData(response.data.viewData.commitResponse);
 
           const pedidoDetalles = localStorage.getItem("pedidoDetalles");
+
           if (pedidoDetalles) {
-            const { tipo_entrega, comuna } = JSON.parse(pedidoDetalles);
+            const {
+              total,
+              iva, // Desestructuramos el valor del IVA
+              tipo_entrega,
+              comuna,
+              tipo_documento,
+              direccion,
+              telefono,
+              productos,
+              razon_social,
+              rut_empresa,
+              giro_comercial,
+              direccion_empresa,
+              numero_empresa,
+              ciudad_empresa,
+              comuna_empresa,
+            } = JSON.parse(pedidoDetalles);
 
             const nuevoPedido = {
               fecha_pedido: fechaPedido,
               id_usuario: user.id,
+              total: total,
+              iva: iva,
               tipo_entrega: tipo_entrega,
+              tipo_documento: tipo_documento,
               comuna_envio: comuna,
+              direccion: direccion,
+              telefono: telefono,
+              ...(tipo_documento === "factura" && {
+                razon_social: razon_social,
+                rut_empresa: rut_empresa,
+                giro_comercial: giro_comercial,
+                direccion_empresa: direccion_empresa,
+                numero_empresa: numero_empresa,
+                ciudad_empresa: ciudad_empresa,
+                comuna_empresa: comuna_empresa,
+              }),
             };
 
             try {
               const pedido = await registrarPedido(nuevoPedido);
               console.log("Pedido registrado:", pedido);
 
-              const detalles = carro.map((producto) => ({
+              const detalles = productos.map((producto) => ({
                 cod_producto: producto.cod_producto,
                 cod_pedido: pedido.cod_pedido,
                 descuento: 0,
                 cantidad: producto.quantity,
                 precio_unitario: producto.precio_producto,
+                iva: iva / productos.length, // Distribuir el IVA proporcionalmente
               }));
 
               const promises = detalles.map((detalle) =>
@@ -133,7 +162,6 @@ function ExitoPage() {
       }
     };
 
-    // Confirmar la transacción solo si el usuario y el carrito están cargados
     if (user && carro.length > 0) {
       confirmTransaction();
     }

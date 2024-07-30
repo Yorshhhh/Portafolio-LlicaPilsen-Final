@@ -69,25 +69,30 @@ const HistorialPedidos = () => {
         nombre_producto: pedido.nombre_producto,
         cantidad: pedido.cantidad,
         precio_unitario: pedido.precio_unitario,
+        iva: pedido.iva,
       });
     });
 
     return Object.values(pedidosAgrupados);
   };
 
-  const calcularTotalBoleta = (detalles) => {
-    // Verificar si detalles está definido y no es null
+  const calcularTotales = (detalles) => {
     if (!detalles || detalles.length === 0) {
-      return 0; // O cualquier valor predeterminado que desees mostrar
+      return { total: 0, iva: 0, totalConIva: 0 };
     }
 
     let totalBoleta = 0;
+    let totalIva = 0;
 
     detalles.forEach((detalle) => {
-      totalBoleta += detalle.precio_unitario * detalle.cantidad;
+      const subtotal = detalle.precio_unitario * detalle.cantidad;
+      totalBoleta += subtotal;
+      totalIva += detalle.iva * detalle.cantidad;
     });
 
-    return totalBoleta;
+    const totalConIva = totalBoleta + totalIva;
+
+    return { total: totalBoleta, iva: totalIva, totalConIva: totalConIva };
   };
 
   const formatCurrency = (amount) => {
@@ -128,74 +133,67 @@ const HistorialPedidos = () => {
             <tr>
               <th>Cod Pedido</th>
               <th>Detalle Pedido</th>
+              <th>Total del Pedido</th>
               <th>Fecha de Pedido</th>
               <th>Fecha de Entrega</th>
-              <th>Total del Pedido</th>
             </tr>
           </thead>
           <tbody>
-            {agruparPedidos(historial).map((pedidoAgrupado) => (
-              <tr key={pedidoAgrupado.cod_pedido_id}>
-                <td>{pedidoAgrupado.cod_pedido_id}</td>
-                <td>
-                  <ul>
-                    {pedidoAgrupado.detalles.map((detalle, index) => (
-                      <li key={index} className="mb-4">
-                        <strong>Codigo Producto:</strong> {detalle.cod_producto}
-                        <br />
-                        <strong>Nombre Producto:</strong>
-                        {detalle.nombre_producto}
-                        <br />
-                        <strong>Cantidad:</strong> {detalle.cantidad} <br />
-                        <strong>Precio:</strong>{" "}
-                        {detalle.precio_unitario.toLocaleString("es-CL", {
-                          style: "currency",
-                          currency: "CLP",
-                        })}
-                        <br />
-                      </li>
-                    ))}
-                  </ul>
-                </td>
-                <td>{pedidoAgrupado.fecha_pedido}</td>
-                <td
-                  className={
-                    pedidoAgrupado.fecha_entrega
-                      ? "estado-entregado"
-                      : "estado-pendiente"
-                  }
-                >
-                  {pedidoAgrupado.fecha_entrega ? (
-                    <>
-                      ¡Entregado! <br />
-                      Fecha: {pedidoAgrupado.fecha_entrega}
-                    </>
-                  ) : (
-                    "Pendiente"
-                  )}
-                </td>
-                <td className="text-center">
-                  <strong>
-                    Total neto:{" "}
-                    {formatCurrency(
-                      calcularTotalBoleta(pedidoAgrupado.detalles)
+            {agruparPedidos(historial).map((pedidoAgrupado) => {
+              const { total, iva, totalConIva } = calcularTotales(
+                pedidoAgrupado.detalles
+              );
+              return (
+                <tr key={pedidoAgrupado.cod_pedido_id}>
+                  <td>{pedidoAgrupado.cod_pedido_id}</td>
+                  <td>
+                    <ul>
+                      {pedidoAgrupado.detalles.map((detalle, index) => (
+                        <li key={index} className="mb-4">
+                          <strong>Codigo Producto:</strong>{" "}
+                          {detalle.cod_producto}
+                          <br />
+                          <strong>Nombre Producto:</strong>
+                          {detalle.nombre_producto}
+                          <br />
+                          <strong>Cantidad:</strong> {detalle.cantidad} <br />
+                          <strong>Precio:</strong>{" "}
+                          {detalle.precio_unitario.toLocaleString("es-CL", {
+                            style: "currency",
+                            currency: "CLP",
+                          })}
+                          <br />
+                        </li>
+                      ))}
+                    </ul>
+                  </td>
+                  <td className="text-center">
+                    <strong>Total neto: {formatCurrency(total)}</strong>
+                    <br />
+                    <strong>IVA: {formatCurrency(iva)}</strong>
+                    <br />
+                    <strong>Total + IVA: {formatCurrency(totalConIva)}</strong>
+                  </td>
+                  <td>{pedidoAgrupado.fecha_pedido}</td>
+                  <td
+                    className={
+                      pedidoAgrupado.fecha_entrega
+                        ? "estado-entregado"
+                        : "estado-pendiente"
+                    }
+                  >
+                    {pedidoAgrupado.fecha_entrega ? (
+                      <>
+                        ¡Entregado! <br />
+                        Fecha: {pedidoAgrupado.fecha_entrega}
+                      </>
+                    ) : (
+                      "Pendiente"
                     )}
-                  </strong>{" "}
-                  <br />
-                  <strong>
-                    IVA: {formatCurrency(parseFloat(pedidoAgrupado.iva))}
-                  </strong>
-                  <br />
-                  <strong>
-                    Total + IVA:{" "}
-                    {formatCurrency(
-                      calcularTotalBoleta(pedidoAgrupado.detalles) +
-                        parseFloat(pedidoAgrupado.iva)
-                    )}
-                  </strong>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
         <div className="flex justify-center">

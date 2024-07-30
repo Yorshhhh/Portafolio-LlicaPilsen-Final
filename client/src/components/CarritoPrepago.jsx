@@ -37,7 +37,7 @@ function CarritoPrepago() {
                   <p>{producto.quantity}</p>
                 </td>
                 <td>
-                  <p>${producto.precio_producto * producto.quantity}</p>
+                  <p>${producto.precio_producto}</p>
                 </td>
                 <td>
                   <button

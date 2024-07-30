@@ -149,7 +149,7 @@ function VentasProductos() {
     <div className="flex justify-between flex-row flex-wrap">
       <div className="basis-1/4">
         <h1 className="text-center text-2xl font-bold mb-4">
-          Ventas Históricas por Producto
+          Ventas Totales Acumuladas por Producto
         </h1>
 
         <label htmlFor="productFilter" className="mr-2">

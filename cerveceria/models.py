@@ -38,6 +38,16 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     direccion = models.CharField(max_length=255, blank=True, null=True)
     password = models.CharField(max_length=255)
 
+    # Campos para empresas
+    es_empresa = models.BooleanField(default=False)
+    razon_social = models.CharField(max_length=255, blank=True, null=True)
+    rut_empresa = models.CharField(max_length=20, blank=True, null=True)
+    giro_comercial = models.CharField(max_length=255, blank=True, null=True)
+    direccion_empresa = models.CharField(max_length=255, blank=True, null=True)
+    numero_empresa = models.CharField(max_length=20, blank=True, null=True)
+    ciudad_empresa = models.CharField(max_length=100, blank=True, null=True)
+    comuna_empresa = models.CharField(max_length=100, blank=True, null=True)
+
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -49,6 +59,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.correo
+    
 # MODELO PRODUCTO CERVEZAS
 class Producto(models.Model):
     cod_producto = models.AutoField(primary_key=True)
@@ -160,7 +171,7 @@ class PedidoPendiente(models.Model):
     nombre_producto = models.CharField(max_length=20)
     cantidad = models.IntegerField()
     precio_unitario = models.IntegerField()
-    total = models.IntegerField()
+    iva = models.IntegerField()
     fecha_pedido = models.DateField()
 
     class Meta:
@@ -177,7 +188,7 @@ class PedidoEntregado(models.Model):
     nombre_producto = models.CharField(max_length=255)
     cantidad = models.PositiveIntegerField()
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
-    total = models.DecimalField(max_digits=10, decimal_places=2)
+    iva = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_pedido = models.DateTimeField()
     fecha_entrega = models.DateTimeField()
 
