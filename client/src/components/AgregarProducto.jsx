@@ -1,18 +1,19 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Navbar from "./Navbar";
 
-export default function AgregarProducto() {
-  const [producto, setProducto] = useState({
-    nombre_producto: "",
-    descripcion_producto: "",
-    precio_producto: 0,
-    stock_producto: 0,
-    grado_alcoholico: 0,
-    litros: 0,
-    imagen: null,
-  });
+export default function AgregarProducto({ initialProduct }) {
+  const [producto, setProducto] = useState(
+    initialProduct || {
+      nombre_producto: "",
+      descripcion_producto: "",
+      precio_producto: 0,
+      stock_producto: 0,
+      grado_alcoholico: 0,
+      litros: 0,
+      imagen: null,
+    }
+  );
 
   const [error, setError] = useState("");
   const [errorNombreProducto, setErrorNombreProducto] = useState(false);
@@ -23,6 +24,7 @@ export default function AgregarProducto() {
   const [errorGradoAlcoholico, setErrorGradoAlcoholico] = useState(false); // Nuevo estado de error
   const [errorLitros, setErrorLitros] = useState(false); // Nuevo estado de error
   const [errorImagen, setErrorImagen] = useState(false); // Nuevo estado para error de imagen
+  const [open, setOpen] = useState(true); // Estado para controlar la visibilidad del modal
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -93,8 +95,7 @@ export default function AgregarProducto() {
     if (
       producto.stock_producto === "" ||
       producto.stock_producto === 0 ||
-      producto.stock_producto < 1 ||
-      producto.stock_producto > 10
+      producto.stock_producto < 1
     ) {
       setErrorStockProducto(true);
       valid = false;
@@ -173,208 +174,234 @@ export default function AgregarProducto() {
     }
   };
 
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  if (!open) {
+    return null;
+  }
+
   return (
-    <>
-      <Navbar />
-      <div
-        className="border-1 rounded-md shadow-md hover:shadow-xl"
-        style={styles.container}
-      >
-        <h1 style={styles.title}>Agregar Producto</h1>
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.formGroup}>
-            <label htmlFor="nombre_producto" style={styles.label}>
-              Nombre:
-            </label>
-            <input
-              type="text"
-              id="nombre_producto"
-              name="nombre_producto"
-              value={producto.nombre_producto}
-              onChange={handleChange}
-              style={styles.input}
-            />
-            {errorNombreProducto && (
-              <div style={styles.errorMessage}>
-                El campo Nombre Producto no puede estar vacío y debe tener al
-                menos 5 caracteres.
-              </div>
-            )}
+    <div
+      tabIndex="-1"
+      aria-hidden="true"
+      className="absolute top-64 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+    >
+      <div className="relative p-4 w-full max-w-md max-h-full">
+        <div className="relative bg-white rounded-lg shadow">
+          <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Agregar Producto
+            </h3>
+            <button
+              type="button"
+              className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+              onClick={handleClose}
+            >
+              <svg
+                className="w-3 h-3"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 14 14"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                />
+              </svg>
+              <span className="sr-only">Cerrar</span>
+            </button>
           </div>
-          <div style={styles.formGroup}>
-            <label htmlFor="descripcion_producto" style={styles.label}>
-              Descripción:
-            </label>
-            <textarea
-              id="descripcion_producto"
-              name="descripcion_producto"
-              value={producto.descripcion_producto}
-              onChange={handleChange}
-              style={styles.textarea}
-            ></textarea>
-            {errorDescripcionProducto && (
-              <div style={styles.errorMessage}>
-                El campo Descripción no puede estar vacío y debe tener entre 10
-                y 255 caracteres.
+
+          <form className="p-4 md:p-5" onSubmit={handleSubmit}>
+            <div className="grid gap-4 mb-4 grid-cols-2">
+              <div className="col-span-2">
+                <label
+                  htmlFor="nombre_producto"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  Nombre Producto
+                </label>
+                <input
+                  type="text"
+                  name="nombre_producto"
+                  id="nombre_producto"
+                  value={producto.nombre_producto}
+                  onChange={handleChange}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  placeholder="Escriba el nombre del producto"
+                />
+                {errorNombreProducto && (
+                  <div style={styles.errorMessage}>
+                    El campo Nombre Producto no puede estar vacío y debe tener
+                    al menos 5 caracteres.
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div style={styles.formGroup}>
-            <label htmlFor="precio_producto" style={styles.label}>
-              Precio:
-            </label>
-            <input
-              type="number"
-              id="precio_producto"
-              name="precio_producto"
-              value={producto.precio_producto}
-              onChange={handleChange}
-              style={styles.input}
-            />
-            {errorPrecioProducto && (
-              <div style={styles.errorMessage}>
-                Por favor, ingresa un precio válido (entre $5000 y $20000).
+              <div className="col-span-2">
+                <label
+                  htmlFor="descripcion_producto"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  Descripción
+                </label>
+                <input
+                  type="text"
+                  name="descripcion_producto"
+                  id="descripcion_producto"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400  dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  placeholder="Escriba la descripcion del producto"
+                  value={producto.descripcion_producto}
+                  onChange={handleChange}
+                />
+                {errorDescripcionProducto && (
+                  <div style={styles.errorMessage}>
+                    El campo Descripción no puede estar vacío y debe tener entre
+                    10 y 255 caracteres.
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div style={styles.formGroup}>
-            <label htmlFor="stock_producto" style={styles.label}>
-              Stock:
-            </label>
-            <input
-              type="number"
-              id="stock_producto"
-              name="stock_producto"
-              value={producto.stock_producto}
-              onChange={handleChange}
-              style={styles.input}
-            />
-            {errorStockProducto && (
-              <div style={styles.errorMessage}>
-                El Stock debe estar entre 1 y 10.
+              <div className="col-span-2">
+                <label
+                  htmlFor="precio_producto"
+                  className="block mb-2 text-sm font-medium text-gray-900 "
+                >
+                  Precio
+                </label>
+                <input
+                  type="number"
+                  name="precio_producto"
+                  id="precio_producto"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400  dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  placeholder="Escriba el precio del producto"
+                  value={producto.precio_producto}
+                  onChange={handleChange}
+                />
+                {errorPrecioProducto && (
+                  <div style={styles.errorMessage}>
+                    El campo Precio debe ser un número mayor a 0 y estar entre
+                    5000 y 20000.
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div style={styles.formGroup}>
-            <label htmlFor="grado_alcoholico" style={styles.label}>
-              Grado Alcohólico:
-            </label>
-            <input
-              type="number"
-              id="grado_alcoholico"
-              name="grado_alcoholico"
-              value={producto.grado_alcoholico}
-              onChange={handleChange}
-              style={styles.input}
-            />
-            {errorGradoAlcoholico && (
-              <div style={styles.errorMessage}>
-                El campo Grado Alcohólico no puede estar vacío y estar entre 4.5
-                y 7.2 grados.
+              <div className="col-span-2">
+                <label
+                  htmlFor="stock_producto"
+                  className="block mb-2 text-sm font-medium text-gray-900 "
+                >
+                  Stock Producto
+                </label>
+                <input
+                  type="number"
+                  name="stock_producto"
+                  id="stock_producto"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400  dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  placeholder="Escriba el stock del producto"
+                  value={producto.stock_producto}
+                  onChange={handleChange}
+                />
+                {errorStockProducto && (
+                  <div style={styles.errorMessage}>
+                    El campo Stock Producto no puede estar vacío, debe ser mayor
+                    a 0 y no puede estar vacío.
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <div style={styles.formGroup}>
-            <label htmlFor="litros" style={styles.label}>
-              Litros:
-            </label>
-            <input
-              type="number"
-              id="litros"
-              name="litros"
-              value={producto.litros}
-              onChange={handleChange}
-              style={styles.input}
-            />
-            {errorLitros && (
-              <div style={styles.errorMessage}>
-                El campo Litros no puede estar vacío y estar entre los 473cc y
-                563cc.
+              <div className="col-span-2">
+                <label
+                  htmlFor="grado_alcoholico"
+                  className="block mb-2 text-sm font-medium text-gray-900 "
+                >
+                  Grado Alcoholico
+                </label>
+                <input
+                  type="number"
+                  name="grado_alcoholico"
+                  id="grado_alcoholico"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400  dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  placeholder="Escriba el grado alcoholico"
+                  value={producto.grado_alcoholico}
+                  onChange={handleChange}
+                />
+                {errorGradoAlcoholico && (
+                  <div style={styles.errorMessage}>
+                    El campo Grado Alcoholico debe ser un número mayor a 0 y
+                    estar entre 4.5 y 7.2.
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          {/* Campo para la imagen del producto */}
-          <div style={styles.formGroup}>
-            <label htmlFor="imagen" style={styles.label}>
-              Imagen:
-            </label>
-            <input
-              type="file"
-              id="imagen"
-              name="imagen"
-              accept="image/*"
-              onChange={handleChange}
-              style={styles.input}
-            />
-            {errorImagen && (
-              <div style={styles.errorMessage}>
-                Por favor, selecciona una imagen para el producto.
+              <div className="col-span-2">
+                <label
+                  htmlFor="litros"
+                  className="block mb-2 text-sm font-medium text-gray-900 "
+                >
+                  Litros
+                </label>
+                <input
+                  type="number"
+                  name="litros"
+                  id="litros"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400  dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                  placeholder="Escriba los litros"
+                  value={producto.litros}
+                  onChange={handleChange}
+                />
+                {errorLitros && (
+                  <div style={styles.errorMessage}>
+                    El campo Litros debe ser un número mayor a 0 y estar entre
+                    473 y 574.
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-          <button type="submit" style={styles.button}>
-            Agregar Producto
-          </button>
-        </form>
-        {error && <div style={styles.error}>{error}</div>}
+              <div className="col-span-2">
+                <label
+                  htmlFor="imagen"
+                  className="block mb-2 text-sm font-medium text-gray-900 "
+                >
+                  Imagen
+                </label>
+                <input
+                  type="file"
+                  name="imagen"
+                  id="imagen"
+                  accept="image/*"
+                  onChange={handleChange}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400  dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                />
+                {errorImagen && (
+                  <div style={styles.errorMessage}>
+                    Por favor, seleccione una imagen.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4 justify-end">
+              <button
+                type="submit"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              >
+                Agregar Producto
+              </button>
+            </div>
+          </form>
+          {error && <div style={styles.errorMessage}>{error}</div>}
+          <ToastContainer />
+        </div>
       </div>
-      <ToastContainer />
-    </>
+    </div>
   );
 }
 
 const styles = {
-  container: {
-    maxWidth: "600px",
-    margin: "0 auto",
-    padding: "20px",
-    fontFamily: "Arial, sans-serif",
-  },
-  title: {
-    textAlign: "center",
-    marginBottom: "20px",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  formGroup: {
-    marginBottom: "15px",
-  },
-  label: {
-    marginBottom: "5px",
-  },
-  input: {
-    width: "100%",
-    padding: "8px",
-    boxSizing: "border-box",
-    borderRadius: "4px",
-    border: "1px solid #ccc",
-  },
-  textarea: {
-    width: "100%",
-    padding: "8px",
-    boxSizing: "border-box",
-    borderRadius: "4px",
-    border: "1px solid #ccc",
-  },
-  button: {
-    padding: "10px 15px",
-    border: "none",
-    borderRadius: "4px",
-    background: "#000000", // Fondo negro
-    color: "#ff0000", // Letras rojas
-    cursor: "pointer",
-    textAlign: "center",
-  },
-  error: {
-    marginTop: "20px",
-    color: "red",
-    textAlign: "center",
-  },
-
   errorMessage: {
     color: "red",
-    marginTop: "5px",
+    fontSize: "0.8rem",
+    marginTop: "0.5rem",
   },
 };

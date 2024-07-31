@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { getAllProductos } from "../api/cerveceria_API";
-import Navbar from "../components/Navbar";
 import { useCart } from "../context/CarritoContext";
 import "../css/styleproducto.css";
 import CardProducts from "../components/CardProducts";
+import Footer from '../components/Footer'
 import ReactPaginate from "react-paginate";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -68,14 +68,6 @@ function ProductosPage() {
 
   return (
     <>
-      <Navbar
-        cartItems={cartItems}
-        removeFromCart={removeFromCart}
-        toggleCart={toggleCart}
-        showCart={showCart}
-        setShowCart={setShowCart}
-        clearCartHandler={clearCartHandler}
-      />
       <h1 className="text-4xl font-bold text-center mb-8">
         Todos los productos
       </h1>
@@ -106,6 +98,7 @@ function ProductosPage() {
           activeClassName={"pagination__link--active"}
         />
       </div>
+      <Footer />
       <ToastContainer />  
     </>
   );

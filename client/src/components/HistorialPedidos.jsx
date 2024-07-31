@@ -68,8 +68,7 @@ const HistorialPedidos = () => {
         cod_producto: pedido.cod_producto,
         nombre_producto: pedido.nombre_producto,
         cantidad: pedido.cantidad,
-        precio_unitario: pedido.precio_unitario,
-        iva: pedido.iva,
+        precio_unitario: pedido.precio_unitario
       });
     });
 
@@ -82,19 +81,17 @@ const HistorialPedidos = () => {
     }
 
     let totalBoleta = 0;
-    let totalIva = 0;
 
     detalles.forEach((detalle) => {
       const subtotal = detalle.precio_unitario * detalle.cantidad;
       totalBoleta += subtotal;
-      totalIva += detalle.iva * detalle.cantidad;
     });
 
+    const totalIva = totalBoleta * 0.19;
     const totalConIva = totalBoleta + totalIva;
 
     return { total: totalBoleta, iva: totalIva, totalConIva: totalConIva };
   };
-
   const formatCurrency = (amount) => {
     return amount.toLocaleString("es-CL", {
       style: "currency",

@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import useLocalStorage from '../hooks/useLocalStorage'
 import { toast } from 'react-toastify'; // Importar Toast
+import axios from "axios";
+
 
 const CartContext = createContext();
 
@@ -19,6 +21,16 @@ export const CartProvider = ({ children }) => {
   const [cartVisible, setCartVisible] = useState(false);
   const [showCart, setShowCart] = useState(false);
   const [deliveryCost, setDeliveryCost] = useState(0);
+  const [products, setProducts] = useState([])
+
+
+  const getProducts = async () => {
+    await axios.get("http://127.0.0.1:8000/productos/")
+    .then((response) => {
+      setProducts(response.data)
+    })
+   
+  }
 
   const addToCart = (producto, quantity) => {
     setCartItems(prevItems => {
@@ -83,7 +95,9 @@ export const CartProvider = ({ children }) => {
         setShowCart,
         calculateTotal,
         deliveryCost,
-        setDeliveryCost
+        setDeliveryCost,
+        products,
+        getProducts
       }}
     >
       {children}

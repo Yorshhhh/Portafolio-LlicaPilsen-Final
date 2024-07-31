@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
 import LoginForm from "../components/LoginForm";
 import CarritoPrepago from "../components/CarritoPrepago";
 import { useCart } from "../context/CarritoContext";
@@ -122,7 +121,6 @@ function Prepago() {
           comuna_empresa: comunaEmpresa,
         }),
       };
-
       localStorage.setItem("pedidoDetalles", JSON.stringify(pedidoDetalles));
 
       const { token, url } = await createTransaction(totalRounded);
@@ -276,14 +274,6 @@ function Prepago() {
 
   return (
     <div>
-      <Navbar
-        cartItems={cartItems}
-        removeFromCart={removeFromCart}
-        toggleCart={toggleCart}
-        showCart={showCart}
-        setShowCart={setShowCart}
-        clearCartHandler={clearCartHandler}
-      />
       {user ? (
         <div className="horizontal-container">
           <div className="flex flex-col">

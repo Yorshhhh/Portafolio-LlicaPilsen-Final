@@ -128,7 +128,7 @@ function ExitoPage() {
                 descuento: 0,
                 cantidad: producto.quantity,
                 precio_unitario: producto.precio_producto,
-                iva: iva / productos.length, // Distribuir el IVA proporcionalmente
+                iva: iva / productos.length,
               }));
 
               const promises = detalles.map((detalle) =>

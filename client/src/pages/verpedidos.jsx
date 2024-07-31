@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import PedidosEntregados from "../components/PedidosEntregados";
 import PedidosPendientes from "../components/PedidosPendientes";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 import BuscarPedidos from "../components/BuscarPedidos";
 
 function VerPedidos() {
@@ -34,8 +32,6 @@ function VerPedidos() {
 
   return (
     <>
-      <Navbar />
-
       <div className="user-profile-staff-actions flex flex-col items-center justify-center">
         <div className="flex justify-center gap-4 mb-8">
           <button
@@ -96,8 +92,6 @@ function VerPedidos() {
           </div>
         )}
       </div>
-
-      <Footer />
     </>
   );
 }

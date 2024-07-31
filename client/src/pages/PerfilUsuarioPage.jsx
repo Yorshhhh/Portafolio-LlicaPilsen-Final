@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
-
 import "../css/PerfilUsuario.css";
 import UserCard from "../components/UserCard";
 import VentasProductos from "../components/VentasProductos";
@@ -30,7 +28,6 @@ function PerfilUsuarioPage() {
   if (!user) {
     return (
       <>
-        <Navbar />
         <div className="center-container">
           <h2>No se pudo cargar la información del usuario.</h2>
         </div>
@@ -40,7 +37,6 @@ function PerfilUsuarioPage() {
 
   return (
     <>
-      <Navbar />
       {user.is_staff ? (
         <div className="flex flex-row items-center justify-center">
           <div className="flex justify-center gap-4 mb-8">
