@@ -94,6 +94,8 @@ function BuscarPedidos() {
         nombre_producto: pedido.nombre_producto,
         cantidad: pedido.cantidad,
         precio_unitario: pedido.precio_unitario,
+        iva: pedido.iva,
+        total_boleta: pedido.total_boleta,
       });
     });
 
@@ -119,6 +121,9 @@ function BuscarPedidos() {
   };
 
   const formatCurrency = (amount) => {
+    if (typeof amount !== "number" || isNaN(amount)) {
+      return ""; // o un valor predeterminado
+    }
     return amount.toLocaleString("es-CL", {
       style: "currency",
       currency: "CLP",
@@ -208,7 +213,9 @@ function BuscarPedidos() {
         <tbody>
           {agruparPedidos([...pedidosCodigo, ...pedidosCorreo]).map(
             (pedidoAgrupado) => {
-              const { total, iva, totalConIva } = calcularTotales(pedidoAgrupado.detalles);
+              const { total, iva, totalConIva } = calcularTotales(
+                pedidoAgrupado.detalles
+              );
 
               return (
                 <tr key={pedidoAgrupado.cod_pedido}>
@@ -220,7 +227,8 @@ function BuscarPedidos() {
                         <li key={index} className="mb-4">
                           <strong>Producto:</strong> {detalle.nombre_producto}
                           <br />
-                          <strong>Codigo Producto:</strong> {detalle.cod_producto_id}
+                          <strong>Codigo Producto:</strong>{" "}
+                          {detalle.cod_producto_id}
                           <br />
                           <strong>Cantidad:</strong> {detalle.cantidad}
                           <br />
@@ -235,11 +243,12 @@ function BuscarPedidos() {
                     </ul>
                   </td>
                   <td className="text-center">
-                    <strong>Total neto: {formatCurrency(total)}</strong>
+                    <strong>
+                      Total Boleta:{" "}
+                      {formatCurrency(pedidoAgrupado.total_boleta)}
+                    </strong>
                     <br />
-                    <strong>IVA: {formatCurrency(iva)}</strong>
-                    <br />
-                    <strong>Total + IVA: {formatCurrency(totalConIva)}</strong>
+                    <strong>IVA: {formatCurrency(pedidoAgrupado.iva)}</strong>
                   </td>
 
                   <td>{pedidoAgrupado.fecha_pedido}</td>
@@ -260,7 +269,8 @@ function BuscarPedidos() {
                     )}
                   </td>
                   <td>
-                    {pedidoAgrupado.codigo_envio || "codigo no proporcionado aun"}
+                    {pedidoAgrupado.codigo_envio ||
+                      "codigo no proporcionado aun"}
                   </td>
                   <td>{pedidoAgrupado.tipo_entrega}</td>
                   <td>{pedidoAgrupado.comuna_envio}</td>

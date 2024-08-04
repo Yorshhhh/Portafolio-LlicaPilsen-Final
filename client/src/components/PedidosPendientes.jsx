@@ -55,24 +55,26 @@ function PedidosPendientes() {
     return <div>{error}</div>;
   }
 
-  // Función para agrupar los pedidos por cod_pedido_id
+  // Función para agrupar los pedidos por cod_pedido
   const agruparPedidos = (pedidos) => {
     const pedidosAgrupados = {};
 
     pedidos.forEach((pedido) => {
-      if (!pedidosAgrupados[pedido.cod_pedido_id]) {
-        pedidosAgrupados[pedido.cod_pedido_id] = {
+      if (!pedidosAgrupados[pedido.cod_pedido]) {
+        pedidosAgrupados[pedido.cod_pedido] = {
           ...pedido,
           detalles: [],
         };
       }
 
-      pedidosAgrupados[pedido.cod_pedido_id].detalles.push({
+      pedidosAgrupados[pedido.cod_pedido].detalles.push({
         id_detalle_pedido: pedido.id_detalle_pedido,
         cod_producto: pedido.cod_producto,
         nombre_producto: pedido.nombre_producto,
         cantidad: pedido.cantidad,
-        precio_unitario: pedido.precio_unitario
+        precio_unitario: pedido.precio_unitario,
+        iva: pedido.iva,
+        total_boleta: pedido.total_boleta
       });
     });
 
@@ -82,16 +84,16 @@ function PedidosPendientes() {
   // Manejar la confirmación de un pedido
   const handleConfirmar = async (pedido) => {
     const confirmar = window.confirm(
-      `¿Estás seguro de confirmar el pedido ${pedido.cod_pedido_id}?`
+      `¿Estás seguro de confirmar el pedido ${pedido.cod_pedido}?`
     );
     if (confirmar) {
       console.log("Pedido confirmado:", pedido);
       try {
-        await confirmarPedido(pedido.cod_pedido_id, fechaEntrega);
-        alert(`Pedido ${pedido.cod_pedido_id} confirmado exitosamente.`);
+        await confirmarPedido(pedido.cod_pedido, fechaEntrega);
+        alert(`Pedido ${pedido.cod_pedido} confirmado exitosamente.`);
         // Actualizar la lista de pedidos después de confirmar
         const nuevosPedidos = p_pendientes.filter(
-          (p) => p.cod_pedido_id !== pedido.cod_pedido_id
+          (p) => p.cod_pedido !== pedido.cod_pedido
         );
         setPendientes(nuevosPedidos);
       } catch (error) {
@@ -99,23 +101,6 @@ function PedidosPendientes() {
         setError("Error al confirmar este");
       }
     }
-  };
-  const calcularTotales = (detalles) => {
-    if (!detalles || detalles.length === 0) {
-      return { total: 0, iva: 0, totalConIva: 0 };
-    }
-
-    let totalBoleta = 0;
-
-    detalles.forEach((detalle) => {
-      const subtotal = detalle.precio_unitario * detalle.cantidad;
-      totalBoleta += subtotal;
-    });
-
-    const totalIva = totalBoleta * 0.19;
-    const totalConIva = totalBoleta + totalIva;
-
-    return { total: totalBoleta, iva: totalIva, totalConIva: totalConIva };
   };
 
   const formatCurrency = (amount) => {
@@ -164,12 +149,9 @@ function PedidosPendientes() {
         </thead>
         <tbody>
           {agruparPedidos(p_pendientes).map((pedidoAgrupado) => {
-            const { total, iva, totalConIva } = calcularTotales(
-              pedidoAgrupado.detalles
-            );
             return (
               <tr key={pedidoAgrupado.cod_pedido}>
-                <td>{pedidoAgrupado.cod_pedido_id}</td>
+                <td>{pedidoAgrupado.cod_pedido}</td>
                 <td>{pedidoAgrupado.nombre_cliente}</td>
                 <td>{pedidoAgrupado.correo}</td>
                 <td>{pedidoAgrupado.telefono}</td>
@@ -193,11 +175,9 @@ function PedidosPendientes() {
                   </ul>
                 </td>
                 <td className="text-center">
-                  <strong>Total neto: {formatCurrency(total)}</strong>
+                  <strong>Total Boleta: {formatCurrency(pedidoAgrupado.total_boleta)}</strong>
                   <br />
-                  <strong>IVA: {formatCurrency(iva)}</strong>
-                  <br />
-                  <strong>Total + IVA: {formatCurrency(totalConIva)}</strong>
+                  <strong>IVA: {formatCurrency(pedidoAgrupado.iva)}</strong>
                 </td>
                 <td>{formatearFecha(pedidoAgrupado.fecha_pedido)}</td>
                 <td>

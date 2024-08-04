@@ -38,16 +38,6 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     direccion = models.CharField(max_length=255, blank=True, null=True)
     password = models.CharField(max_length=255)
 
-    # Campos para empresas
-    es_empresa = models.BooleanField(default=False)
-    razon_social = models.CharField(max_length=255, blank=True, null=True)
-    rut_empresa = models.CharField(max_length=20, blank=True, null=True)
-    giro_comercial = models.CharField(max_length=255, blank=True, null=True)
-    direccion_empresa = models.CharField(max_length=255, blank=True, null=True)
-    numero_empresa = models.CharField(max_length=20, blank=True, null=True)
-    ciudad_empresa = models.CharField(max_length=100, blank=True, null=True)
-    comuna_empresa = models.CharField(max_length=100, blank=True, null=True)
-
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -59,7 +49,20 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.correo
-    
+
+# MODELO EMPRESA
+class Empresa(models.Model):
+    usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='empresa')
+    razon_social = models.CharField(max_length=255)
+    rut_empresa = models.CharField(max_length=20)
+    giro_comercial = models.CharField(max_length=255)
+    direccion_empresa = models.CharField(max_length=255)
+    numero_empresa = models.CharField(max_length=20)
+    comuna_empresa = models.ForeignKey('Comuna', on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return self.razon_social
+
 # MODELO PRODUCTO CERVEZAS
 class Producto(models.Model):
     cod_producto = models.AutoField(primary_key=True)
@@ -73,17 +76,38 @@ class Producto(models.Model):
 
     def __str__(self):
         return self.nombre_producto
+    
+# MODELO REGION DE CLIENTES
+class Region(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.nombre
+
+# MODELO CIUDAD DE CLIENTES
+class Ciudad(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=100, unique=True)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE, related_name='ciudades')
+
+    def __str__(self):
+        return self.nombre
+
+# MODELO COMUNA CLIENTES
+class Comuna(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=100, unique=True)
+    ciudad = models.ForeignKey(Ciudad, on_delete=models.CASCADE, related_name='comunas')
+
+    def __str__(self):
+        return self.nombre
 
 # MODELO PEDIDOS
 class Pedido(models.Model):
     TIPO_ENTREGA_CHOICES = [
         ('retiro', 'Retiro en tienda'),
         ('domicilio', 'Despacho a domicilio'),
-    ]
-    COMUNA_ENVIO_CHOICES = [
-        ('lota', 'Lota'),
-        ('coronel', 'Coronel'),
-        ('san_pedro', 'San Pedro')
     ]
     TIPO_DOCUMENTO_CHOICES = [
         ('boleta', 'Boleta'),
@@ -92,12 +116,13 @@ class Pedido(models.Model):
 
     cod_pedido = models.AutoField(primary_key=True)
     id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='pedidos')
+    cod_comuna = models.ForeignKey(Comuna, on_delete=models.SET_NULL, null=True, blank=True)
     fecha_pedido = models.DateField()
     fecha_entrega = models.DateField(null=True, blank=True)
     tipo_entrega = models.CharField(
         max_length=20,
         choices=TIPO_ENTREGA_CHOICES,
-        null=True,  # Permitir valores nulos inicialmente
+        null=True,  
         blank=True,
         default=None,
         help_text="Tipo de entrega: 'retiro', 'domicilio'."
@@ -109,14 +134,6 @@ class Pedido(models.Model):
         default=None,
         help_text="Código de envío proporcionado por el servicio de mensajería."
     )
-    comuna_envio = models.CharField(
-        max_length=20,
-        choices=COMUNA_ENVIO_CHOICES,
-        null=True,
-        blank=True,
-        default=None,
-        help_text="Comuna de destino para el despacho a domicilio: 'lota', 'coronel', 'san_pedro'."
-    )
     tipo_documento = models.CharField(
         max_length=20,
         choices=TIPO_DOCUMENTO_CHOICES,
@@ -125,12 +142,14 @@ class Pedido(models.Model):
         default='boleta',
         help_text="Tipo de documento: 'boleta', 'factura'."
     )
+    iva = models.FloatField()
+    total_boleta = models.IntegerField()
+
     class Meta:
         verbose_name = "Pedido"
         verbose_name_plural = "Pedidos"
         ordering = ['fecha_pedido']
 
-    
 # MODELO DETALLE PEDIDO
 class Detalle_Pedido(models.Model):
     id_detalle_pedido = models.AutoField(primary_key=True)
@@ -138,7 +157,6 @@ class Detalle_Pedido(models.Model):
     cod_producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
     precio_unitario = models.IntegerField()
     cantidad = models.IntegerField()
-    iva = models.FloatField()
     descuento = models.FloatField()
 
     def __str__(self):
@@ -165,13 +183,14 @@ class PedidoPendiente(models.Model):
     nombre_cliente = models.CharField(max_length=100)
     correo = models.EmailField()
     telefono = models.CharField(max_length=20)
-    cod_pedido_id = models.IntegerField(primary_key=True)
+    cod_pedido = models.IntegerField(primary_key=True)
     id_detalle_pedido = models.IntegerField()
     cod_producto = models.IntegerField()
     nombre_producto = models.CharField(max_length=20)
     cantidad = models.IntegerField()
-    precio_unitario = models.IntegerField()
-    iva = models.IntegerField()
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    iva = models.DecimalField(max_digits=10, decimal_places=2)
+    total_boleta = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_pedido = models.DateField()
 
     class Meta:
@@ -189,6 +208,7 @@ class PedidoEntregado(models.Model):
     cantidad = models.PositiveIntegerField()
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
     iva = models.DecimalField(max_digits=10, decimal_places=2)
+    total_boleta = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_pedido = models.DateTimeField()
     fecha_entrega = models.DateTimeField()
 

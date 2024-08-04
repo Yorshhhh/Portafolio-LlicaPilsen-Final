@@ -59,28 +59,12 @@ function PedidosEntregados() {
         nombre_producto: pedido.nombre_producto,
         cantidad: pedido.cantidad,
         precio_unitario: pedido.precio_unitario,
+        iva: pedido.iva,
+        total_boleta: pedido.total_boleta
       });
     });
 
     return Object.values(pedidosAgrupados);
-  };
-
-  const calcularTotales = (detalles) => {
-    if (!detalles || detalles.length === 0) {
-      return { total: 0, iva: 0, totalConIva: 0 };
-    }
-
-    let totalBoleta = 0;
-
-    detalles.forEach((detalle) => {
-      const subtotal = detalle.precio_unitario * detalle.cantidad;
-      totalBoleta += subtotal;
-    });
-
-    const totalIva = totalBoleta * 0.19;
-    const totalConIva = totalBoleta + totalIva;
-
-    return { total: totalBoleta, iva: totalIva, totalConIva: totalConIva };
   };
 
   const formatCurrency = (amount) => {
@@ -137,45 +121,40 @@ function PedidosEntregados() {
             </tr>
           </thead>
           <tbody>
-            {agruparPedidos(p_entregados).map((pedidoAgrupado) => {
-              const { total, iva, totalConIva } = calcularTotales(pedidoAgrupado.detalles);
-              return (
-                <tr key={pedidoAgrupado.cod_pedido}>
-                  <td>{pedidoAgrupado.cod_pedido}</td>
-                  <td>{pedidoAgrupado.nombre_cliente}</td>
-                  <td>{pedidoAgrupado.correo}</td>
-                  <td>{pedidoAgrupado.telefono}</td>
-                  <td>
-                    <ul>
-                      {pedidoAgrupado.detalles.map((detalle, index) => (
-                        <li key={index} className="mb-4">
-                          <strong>Producto:</strong> {detalle.nombre_producto}
-                          <br />
-                          <strong>Codigo Producto:</strong> {detalle.cod_producto}
-                          <br />
-                          <strong>Cantidad:</strong> {detalle.cantidad} <br />
-                          <strong>Precio:</strong>{" "}
-                          {detalle.precio_unitario.toLocaleString("es-CL", {
-                            style: "currency",
-                            currency: "CLP",
-                          })}
-                          <br />
-                        </li>
-                      ))}
-                    </ul>
-                  </td>
-                  <td className="text-center">
-                    <strong>Total neto: {formatCurrency(total)}</strong>
-                    <br />
-                    <strong>IVA: {formatCurrency(iva)}</strong>
-                    <br />
-                    <strong>Total + IVA: {formatCurrency(totalConIva)}</strong>
-                  </td>
-                  <td>{formatearFecha(pedidoAgrupado.fecha_pedido)}</td>
-                  <td>{formatearFecha(pedidoAgrupado.fecha_entrega)}</td>
-                </tr>
-              );
-            })}
+            {agruparPedidos(p_entregados).map((pedidoAgrupado) => (
+              <tr key={pedidoAgrupado.cod_pedido}>
+                <td>{pedidoAgrupado.cod_pedido}</td>
+                <td>{pedidoAgrupado.nombre_cliente}</td>
+                <td>{pedidoAgrupado.correo}</td>
+                <td>{pedidoAgrupado.telefono}</td>
+                <td>
+                  <ul>
+                    {pedidoAgrupado.detalles.map((detalle, index) => (
+                      <li key={index} className="mb-4">
+                        <strong>Producto:</strong> {detalle.nombre_producto}
+                        <br />
+                        <strong>Codigo Producto:</strong> {detalle.cod_producto}
+                        <br />
+                        <strong>Cantidad:</strong> {detalle.cantidad} <br />
+                        <strong>Precio:</strong>{" "}
+                        {detalle.precio_unitario.toLocaleString("es-CL", {
+                          style: "currency",
+                          currency: "CLP",
+                        })}
+                        <br />
+                      </li>
+                    ))}
+                  </ul>
+                </td>
+                <td className="text-center">
+                  <strong>Total Boleta: {formatCurrency(pedidoAgrupado.total_boleta)}</strong>
+                  <br />
+                  <strong>IVA: {formatCurrency(pedidoAgrupado.iva)}</strong>
+                </td>
+                <td>{formatearFecha(pedidoAgrupado.fecha_pedido)}</td>
+                <td>{formatearFecha(pedidoAgrupado.fecha_entrega)}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
         <div className="flex justify-center">

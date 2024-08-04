@@ -3,9 +3,58 @@ from django.contrib.auth import authenticate
 from django.db import transaction
 from django.contrib.auth.models import Group
 from rest_framework import serializers
-from .models import Usuario,Producto,Detalle_Pedido,Pedido
+from .models import Usuario, Empresa, Producto, Detalle_Pedido, Pedido, Region, Ciudad, Comuna
+
+class RegionSerializer(serializers.ModelSerializer):
+    nombre = serializers.CharField(label='Nombre de la Región')
+
+    class Meta:
+        model = Region
+        fields = '__all__'
+
+
+class CiudadSerializer(serializers.ModelSerializer):
+    nombre = serializers.CharField(label='Nombre de la Ciudad')
+    region = serializers.PrimaryKeyRelatedField(queryset=Region.objects.all(), label='Región')
+
+    class Meta:
+        model = Ciudad
+        fields = '__all__'
+
+    def create(self, validated_data):
+        return Ciudad.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.nombre = validated_data.get('nombre', instance.nombre)
+        instance.region = validated_data.get('region', instance.region)
+        instance.save()
+        return instance
+
+class ComunaSerializer(serializers.ModelSerializer):
+    nombre = serializers.CharField(label='Nombre de la Comuna')
+    ciudad = serializers.PrimaryKeyRelatedField(queryset=Ciudad.objects.all(), label='Ciudad')
+
+    class Meta:
+        model = Comuna
+        fields = '__all__'
+
+    def create(self, validated_data):
+        return Comuna.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.nombre = validated_data.get('nombre', instance.nombre)
+        instance.ciudad = validated_data.get('ciudad', instance.ciudad)
+        instance.save()
+        return instance
+
+class EmpresaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Empresa
+        fields = '__all__'
 
 class UsuarioSerializer(serializers.ModelSerializer):
+    empresa = EmpresaSerializer(required=False)
+
     class Meta: 
         model = Usuario
         fields = '__all__'
@@ -18,6 +67,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        empresa_data = validated_data.pop('empresa', None)
         password = validated_data.pop('password', None)
         if not password:
             raise serializers.ValidationError({"password": "Se requiere una contraseña."})
@@ -26,6 +76,9 @@ class UsuarioSerializer(serializers.ModelSerializer):
         usuario.password = make_password(password)
         usuario.save()
 
+        if empresa_data:
+            Empresa.objects.create(usuario=usuario, **empresa_data)
+
         try:
             group = Group.objects.get(name="Clientes")
             usuario.groups.add(group)
@@ -33,6 +86,17 @@ class UsuarioSerializer(serializers.ModelSerializer):
             pass
 
         return usuario
+
+    def update(self, instance, validated_data):
+        empresa_data = validated_data.pop('empresa', None)
+        instance = super().update(instance, validated_data)
+
+        if empresa_data:
+            empresa, created = Empresa.objects.update_or_create(
+                usuario=instance, defaults=empresa_data
+            )
+
+        return instance
     
 class CustomAuthTokenSerializer(serializers.Serializer):
     correo = serializers.EmailField()
@@ -43,16 +107,13 @@ class CustomAuthTokenSerializer(serializers.Serializer):
         password = attrs.get('password')
 
         if correo and password:
-            # Intenta autenticar al usuario con las credenciales proporcionadas
             user = authenticate(correo=correo, password=password)
             if not user:
                 raise serializers.ValidationError("Credenciales inválidas.")
         else:
             raise serializers.ValidationError("Debe proporcionar tanto el correo como la contraseña.")
 
-        # Agrega el usuario autenticado a los datos validados
         attrs['user'] = user
-
         return attrs
 
 class ProductoSerializer(serializers.ModelSerializer):
@@ -90,14 +151,37 @@ class Detalle_PedidoSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 class PedidoSerializer(serializers.ModelSerializer):
+    cod_comuna = serializers.PrimaryKeyRelatedField(queryset=Comuna.objects.all(), label='Comuna')
+
     class Meta:
         model = Pedido
         fields = '__all__'
 
-    # Ejemplo de validación adicional
     def validate_fecha_entrega(self, value):
-        if value and value < self.instance.fecha_pedido:
+        if self.instance and value < self.instance.fecha_pedido:
             raise serializers.ValidationError("La fecha de entrega no puede ser anterior a la fecha del pedido.")
         return value
 
-    
+    def create(self, validated_data):
+        # Obtener la comuna seleccionada
+        comuna = validated_data.pop('cod_comuna')
+
+        # Crear el pedido con la comuna
+        pedido = Pedido.objects.create(cod_comuna=comuna, **validated_data)
+        return pedido
+
+    def update(self, instance, validated_data):
+        # Obtener la comuna seleccionada
+        comuna = validated_data.pop('cod_comuna')
+
+        # Actualizar la comuna y los demás campos del pedido
+        instance.cod_comuna = comuna
+        instance.fecha_pedido = validated_data.get('fecha_pedido', instance.fecha_pedido)
+        instance.fecha_entrega = validated_data.get('fecha_entrega', instance.fecha_entrega)
+        instance.tipo_entrega = validated_data.get('tipo_entrega', instance.tipo_entrega)
+        instance.codigo_envio = validated_data.get('codigo_envio', instance.codigo_envio)
+        instance.tipo_documento = validated_data.get('tipo_documento', instance.tipo_documento)
+        instance.iva = validated_data.get('iva', instance.iva)
+        instance.total_boleta = validated_data.get('total_boleta', instance.total_boleta)
+        instance.save()
+        return instance

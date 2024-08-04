@@ -14,39 +14,30 @@ import re
 from .paginacion import PedidoPagination,HistorialPagination,PedidoPendientePagination,\
     PedidoEntregadoPagination, PedidoConCorreoPagination
 from .serializer import ProductoSerializer,UsuarioSerializer,\
-    Detalle_PedidoSerializer,PedidoSerializer,CustomAuthTokenSerializer
+    Detalle_PedidoSerializer,PedidoSerializer,CustomAuthTokenSerializer\
+    ,RegionSerializer,CiudadSerializer,ComunaSerializer,EmpresaSerializer
 
 from .models import Producto,Usuario,Detalle_Pedido,Pedido,GananciasProducto,PedidoPendiente,\
-    PedidoEntregado, VentasComuna
+    PedidoEntregado, VentasComuna,Region,Ciudad,Comuna, Empresa
 
-# Create your views here.
 class UsuarioView(viewsets.ModelViewSet):
     serializer_class = UsuarioSerializer
     queryset = Usuario.objects.all()
     lookup_field = 'id'
 
-    # Protege la vista con permisos adecuados
     @action(detail=False, methods=['post'])
     def register(self, request):
-        """
-        Handle user registration.
-        """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
-        # Perform create and save the user instance
         user = serializer.save()
-        
-        # Optional: Assign user to a default group (e.g., "customers")
+
         default_group_name = "Cliente"
         try:
             group = Group.objects.get(name=default_group_name)
             user.groups.add(group)
         except Group.DoesNotExist:
-            # Optionally handle the case where the group does not exist
             pass
 
-        # Prepare response headers
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
@@ -69,26 +60,6 @@ class UsuarioView(viewsets.ModelViewSet):
             return Response({'detail': 'Administrador creado con éxito'}, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
-    def create(self, request, *args, **kwargs):
-        """
-        Override the create method to handle user registration.
-        """
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        
-        user = serializer.save()
-        
-        default_group_name = "Cliente"
-        try:
-            group = Group.objects.get(name=default_group_name)
-            user.groups.add(group)
-        except Group.DoesNotExist:
-            # Optionally handle the case where the group does not exist
-            pass
-
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
@@ -272,13 +243,14 @@ class PedidoPendienteView(APIView):
                     "nombre_cliente": pedido.nombre_cliente,
                     "correo": pedido.correo,
                     "telefono": pedido.telefono,
-                    "cod_pedido_id": pedido.cod_pedido_id,
+                    "cod_pedido": pedido.cod_pedido,
                     "id_detalle_pedido": pedido.id_detalle_pedido,
                     "cod_producto": pedido.cod_producto,
                     "nombre_producto": pedido.nombre_producto,
                     "cantidad": pedido.cantidad,
                     "precio_unitario": pedido.precio_unitario,
                     "iva": pedido.iva,
+                    "total_boleta": pedido.total_boleta,
                     "fecha_pedido": pedido.fecha_pedido,
                 }
                 for pedido in pedidos_pendientes
@@ -313,6 +285,7 @@ class PedidoEntregadoView(APIView):
                     "cantidad": pedido.cantidad,
                     "precio_unitario": pedido.precio_unitario,
                     "iva": pedido.iva,
+                    "total_boleta": pedido.total_boleta,
                     "fecha_pedido": pedido.fecha_pedido,
                     "fecha_entrega": pedido.fecha_entrega,
                 }
@@ -344,12 +317,13 @@ class BuscarPedidosConCodigoView(APIView):
                            d.nombre_producto,
                            c.cantidad,
                            c.precio_unitario,
-                           c.iva,
+                           iva,
+                           total_boleta,
                            TO_CHAR(fecha_pedido,'DD-MM-YYYY') fecha_pedido,
                            TO_CHAR(fecha_entrega,'DD-MM-YYYY') fecha_entrega,
                            codigo_envio,
                            INITCAP(tipo_entrega) tipo_entrega,
-                           NVL(comuna_envio, 'Retiro en Tienda') comuna_envio
+                           cod_comuna_id
                     FROM cerveceria_pedido a
                     JOIN cerveceria_usuario b ON a.id_usuario_id = b.id
                     JOIN cerveceria_detalle_pedido c ON a.cod_pedido = c.cod_pedido_id
@@ -376,11 +350,12 @@ class BuscarPedidosConCodigoView(APIView):
                         "cantidad": pedido[5],
                         "precio_unitario": pedido[6],
                         "iva": pedido[7],
-                        "fecha_pedido": pedido[8],
-                        "fecha_entrega": pedido[9],
-                        "codigo_envio": pedido[10],
-                        "tipo_entrega": pedido[11],
-                        "comuna_envio": pedido[12],
+                        "total_boleta": pedido[8],
+                        "fecha_pedido": pedido[9],
+                        "fecha_entrega": pedido[10],
+                        "codigo_envio": pedido[11],
+                        "tipo_entrega": pedido[12],
+                        "comuna_envio": pedido[13],
                     }
                     pedidos_data.append(pedido_dict)
                 
@@ -407,12 +382,13 @@ class BuscarPedidosConCorreoView(APIView):
                            d.nombre_producto,
                            c.cantidad,
                            c.precio_unitario,
-                           c.iva,
+                           iva,
+                           total_boleta,
                            TO_CHAR(fecha_pedido,'DD-MM-YYYY') fecha_pedido,
                            TO_CHAR(fecha_entrega,'DD-MM-YYYY') fecha_entrega,
                            codigo_envio,
                            INITCAP(tipo_entrega) tipo_entrega,
-                           NVL(comuna_envio, 'Retiro en Tienda') comuna_envio
+                           cod_comuna_id
                     FROM cerveceria_pedido a
                     JOIN cerveceria_usuario b ON a.id_usuario_id = b.id
                     JOIN cerveceria_detalle_pedido c ON a.cod_pedido = c.cod_pedido_id
@@ -439,11 +415,12 @@ class BuscarPedidosConCorreoView(APIView):
                         "cantidad": pedido[5],
                         "precio_unitario": pedido[6],
                         "iva": pedido[7],
-                        "fecha_pedido": pedido[8],
-                        "fecha_entrega": pedido[9],
-                        "codigo_envio": pedido[10],
-                        "tipo_entrega": pedido[11],
-                        "comuna_envio": pedido[12],
+                        "total_boleta": pedido[8],
+                        "fecha_pedido": pedido[9],
+                        "fecha_entrega": pedido[10],
+                        "codigo_envio": pedido[11],
+                        "tipo_entrega": pedido[12],
+                        "comuna_envio": pedido[13],
                     }
                     pedidos_data.append(pedido_dict)
                 
@@ -511,7 +488,22 @@ class HistorialPedidosView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
- 
+class EmpresaView(viewsets.ModelViewSet):
+    serializer_class = EmpresaSerializer
+    queryset = Empresa.objects.all()
+
+class RegionView(viewsets.ModelViewSet):
+    serializer_class = RegionSerializer
+    queryset = Region.objects.all()
+
+class CiudadView(viewsets.ModelViewSet):
+    serializer_class = CiudadSerializer
+    queryset = Ciudad.objects.all()
+
+class ComunaView(viewsets.ModelViewSet):
+    serializer_class = ComunaSerializer
+    queryset = Comuna.objects.all()
+
 class ProductoView(viewsets.ModelViewSet):
     serializer_class = ProductoSerializer
     queryset = Producto.objects.all()

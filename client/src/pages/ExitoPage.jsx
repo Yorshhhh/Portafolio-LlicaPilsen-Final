@@ -3,7 +3,6 @@ import axios from "axios";
 import { registrarPedido, registrarDetalles } from "../api/cerveceria_API";
 import { useLocation } from "react-router-dom";
 import CarritoExito from "../components/CarritoExito";
-import Navbar from "../components/Navbar";
 import "../css/ExitoPage.css";
 
 function ExitoPage() {
@@ -169,7 +168,6 @@ function ExitoPage() {
 
   return (
     <>
-      <Navbar />
       <div className="center-container">
         {transactionData && (
           <div>
