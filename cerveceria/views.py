@@ -502,7 +502,11 @@ class CiudadView(viewsets.ModelViewSet):
 
 class ComunaView(viewsets.ModelViewSet):
     serializer_class = ComunaSerializer
+<<<<<<< HEAD
     queryset = Comuna.objects.exclude(id=3)  # Excluir la comuna con id 3
+=======
+    queryset = Comuna.objects.all()
+>>>>>>> 203dabe8d2f5207258a5dc613a201960035be03a
 
 class ProductoView(viewsets.ModelViewSet):
     serializer_class = ProductoSerializer
