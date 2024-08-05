@@ -1,0 +1,244 @@
+:root {
+	--vistaproducto-body-font-family: 'Open Sans', sans-serif;
+	--vistaproducto-body-max-width: 1200px;
+	--vistaproducto-body-margin: 0 auto;
+	--vistaproducto-font-size: 18px; /* Aumentar tamaño de fuente global */
+  }
+  
+  * {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+  }
+  
+  body {
+	font-size: var(--vistaproducto-font-size);
+  }
+  
+  .vista-producto {
+	font-family: var(--vistaproducto-body-font-family);
+	max-width: var(--vistaproducto-body-max-width);
+	margin: var(--vistaproducto-body-margin);
+	font-size: var(--vistaproducto-font-size);
+  }
+  
+  img {
+	max-width: 100%;
+  }
+  
+  header {
+	display: flex;
+	align-items: center;
+	padding: 30px;
+	justify-content: center;
+  }
+  
+  .container-title {
+	padding: 30px;
+	background-color: #eee;
+	margin-bottom: 50px;
+	color: #222;
+	font-family: 'Plain';
+  }
+  
+  main {
+	display: flex;
+	gap: 30px;
+	margin-bottom: 80px;
+  }
+  
+  .imagen {
+	width: 400px; /* Ancho más pequeño */
+	height: 400px; /* Alto más pequeño */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #f7f7f9; /* Asegúrate de que esto coincida con tu diseño */
+  }
+  
+  .imagen img {
+	width: 100%; /* Ajusta el ancho al 100% del contenedor */
+	height: 100%; /* Ajusta el alto al 100% del contenedor */
+	object-fit: cover; /* Cubre todo el contenedor */
+	max-width: 100%; /* Asegura que la imagen no exceda el contenedor */
+  }
+  
+  .container-info-product {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+  }
+  
+  .container-price {
+	padding-bottom: 20px;
+	border-bottom: 1px solid #e4e4e4;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+  }
+  
+  .container-price span {
+	font-size: 30px;
+	font-weight: 400;
+  }
+  
+  .container-add-cart {
+	display: flex;
+	gap: 20px;
+	padding-bottom: 30px;
+	border-bottom: 1px solid #e4e4e4;
+  }
+  
+  .container-quantity {
+	position: relative;
+  }
+  
+  .input-quantity {
+	background-color: #f7f7f7;
+	border: none;
+	padding: 10px;
+	width: 60px;
+	height: 100%;
+	color: #666;
+	font-weight: 500;
+	line-height: 0;
+  }
+  
+  .input-quantity:focus {
+	outline: none;
+  }
+  
+  .input-quantity::-webkit-inner-spin-button,
+  .input-quantity::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	appearance: none;
+  }
+  
+  .btn-increment-decrement {
+	display: flex;
+	flex-direction: column;
+	position: absolute;
+	top: 7px;
+	right: 7px;
+  }
+  
+  .btn-increment-decrement i {
+	font-size: 11px;
+	color: #666;
+	cursor: pointer;
+  }
+  
+  .fa-chevron-down:hover {
+	color: #1bbeb4;
+  }
+  
+  .fa-chevron-up:hover {
+	color: #1bbeb4;
+  }
+  
+  .btn-add-to-cart {
+	border: none;
+	background-color: #252525;
+	padding: 10px;
+	color: #f7f7f7;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+	font-weight: 700;
+	cursor: pointer;
+  }
+  
+  .btn-add-to-cart:hover {
+	color: #1bbeb4;
+  }
+  
+  .hidden {
+	display: none;
+  }
+  
+  .container-description {
+	display: flex;
+	flex-direction: column;
+	border-bottom: 1px solid #e4e4e4;
+	padding: 10px 0;
+	margin-bottom: 20px
+  }
+  
+  .title-description {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	cursor: pointer;
+  }
+  
+  .title-description h4 {
+	font-weight: 300;
+	color: #666;
+	font-size: 16px; /* Aumentar tamaño de fuente específico */
+  }
+  
+  .text-description {
+	font-size: 16px; /* Aumentar tamaño de fuente específico */
+	color: #252525;
+	line-height: 22px;
+	margin-top: 25px;
+	margin-bottom: 20px
+  }
+  
+  .container-related-products h2 {
+	text-align: center;
+	margin-bottom: 30px;
+  }
+  
+  .card-list-products {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 25px;
+  }
+  
+  .card {
+	cursor: pointer;
+  }
+  
+  .card-img {
+	background: transparent;
+	margin-bottom: 15px;
+  }
+  
+  .card-img img {
+	height: 400px;
+	object-fit: cover;
+	box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+  }
+  
+  .info-card {
+	display: flex;
+	justify-content: space-between;
+  }
+  
+  .text-product {
+	color: #252525;
+	font-weight: 300;
+	line-height: 1.4;
+  }
+  
+  .text-product h3 {
+	color: inherit;
+	font-weight: inherit;
+	font-size: 17px; /* Aumentar tamaño de fuente específico */
+  }
+  
+  /* Animaciones al pasar el mouse */
+  .text-product h3:hover {
+	color: #1bbeb4;
+  }
+  
+  .text-product p {
+	color: #666;
+	font-size: 15px; /* Aumentar tamaño de fuente específico */
+  }
+  
+  .text-product p:hover {
+	color: #1bbeb4;
+  }
