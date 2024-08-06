@@ -171,8 +171,10 @@ class PedidoSerializer(serializers.ModelSerializer):
         return pedido
 
     def update(self, instance, validated_data):
-        # Obtener la comuna seleccionada
-        comuna = validated_data.pop('cod_comuna')
+        comuna = validated_data.pop('cod_comuna', None)
+
+        if comuna is not None:
+            instance.cod_comuna = comuna
 
         # Actualizar la comuna y los demás campos del pedido
         instance.cod_comuna = comuna

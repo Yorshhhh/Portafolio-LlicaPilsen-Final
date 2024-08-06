@@ -57,18 +57,18 @@ const HistorialPedidos = () => {
     const pedidosAgrupados = {};
 
     pedidos.forEach((pedido) => {
-      if (!pedidosAgrupados[pedido.cod_pedido_id]) {
-        pedidosAgrupados[pedido.cod_pedido_id] = {
+      if (!pedidosAgrupados[pedido.cod_pedido_]) {
+        pedidosAgrupados[pedido.cod_pedido] = {
           ...pedido,
           detalles: [],
         };
       }
-      pedidosAgrupados[pedido.cod_pedido_id].detalles.push({
+      pedidosAgrupados[pedido.cod_pedido].detalles.push({
         id_detalle_pedido: pedido.id_detalle_pedido,
         cod_producto: pedido.cod_producto,
         nombre_producto: pedido.nombre_producto,
         cantidad: pedido.cantidad,
-        precio_unitario: pedido.precio_unitario
+        precio_unitario: pedido.precio_unitario,
       });
     });
 
@@ -129,6 +129,7 @@ const HistorialPedidos = () => {
           <thead>
             <tr>
               <th>Cod Pedido</th>
+              <th>Datos Despacho</th>
               <th>Detalle Pedido</th>
               <th>Total del Pedido</th>
               <th>Fecha de Pedido</th>
@@ -141,8 +142,18 @@ const HistorialPedidos = () => {
                 pedidoAgrupado.detalles
               );
               return (
-                <tr key={pedidoAgrupado.cod_pedido_id}>
-                  <td>{pedidoAgrupado.cod_pedido_id}</td>
+                <tr key={pedidoAgrupado.cod_pedido}>
+                  <td>{pedidoAgrupado.cod_pedido}</td>
+                  <td>
+                    Comuna:
+                    {pedidoAgrupado.comuna}
+                    <br />
+                    Dirección: {user.direccion}
+                    <br />
+                    Tipo Documento:{pedidoAgrupado.tipo_documento}
+                    <br />
+                    Tipo Entrega: {pedidoAgrupado.tipo_entrega}
+                  </td>
                   <td>
                     <ul>
                       {pedidoAgrupado.detalles.map((detalle, index) => (

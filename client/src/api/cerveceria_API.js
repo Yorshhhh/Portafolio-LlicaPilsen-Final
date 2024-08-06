@@ -46,9 +46,10 @@ export const actualizarDireccion = (id, nuevaDireccion) => {
   return cerveceriaAPI.patch(`/usuarios/${id}/`, { direccion: nuevaDireccion });
 };
 
-export const confirmarPedido = (cod_pedido_id, fecha_Entregado) => {
+export const confirmarPedido = (cod_pedido_id, fecha_Entregado, cod_comuna) => {
   return cerveceriaAPI.patch(`/pedidos/${cod_pedido_id}/`, {
     fecha_entrega: fecha_Entregado,
+    cod_comuna: cod_comuna,
   });
 };
 
@@ -168,7 +169,7 @@ export const obtenerPedidosPendientes = async () => {
 
 export const obtenerPedidosEntregados = async () => {
   try {
-    const response = await cerveceriaAPI.get("/pedidos_entregados/");
+    const response = await cerveceriaAPI.get("/pedidos_despachados/");
     return response.data;
   } catch (error) {
     throw error;

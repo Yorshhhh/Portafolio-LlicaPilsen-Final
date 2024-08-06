@@ -199,15 +199,15 @@ function BuscarPedidos() {
       <table className="pedidos-table mx-auto">
         <thead>
           <tr>
-            <th>Correo Cliente</th>
             <th>Codigo Pedido</th>
+            <th>Nombre Cliente</th>
+            <th>Correo Cliente</th>
+            <th>Datos Despacho</th>
             <th>Detalles</th>
             <th>Total del Pedido</th>
             <th>Fecha Pedido</th>
             <th>Fecha Despacho</th>
             <th>Codigo Envio</th>
-            <th>Tipo Entrega</th>
-            <th>Comuna Envio</th>
           </tr>
         </thead>
         <tbody>
@@ -219,8 +219,19 @@ function BuscarPedidos() {
 
               return (
                 <tr key={pedidoAgrupado.cod_pedido}>
-                  <td>{pedidoAgrupado.correo}</td>
                   <td>{pedidoAgrupado.cod_pedido}</td>
+                  <td>{pedidoAgrupado.nombre_cliente}</td>
+                  <td>{pedidoAgrupado.correo}</td>
+                  <td>
+                    Comuna:
+                    {pedidoAgrupado.comuna}
+                    <br />
+                    Dirección: {pedidoAgrupado.direccion}
+                    <br />
+                    Tipo Documento:{pedidoAgrupado.tipo_documento}
+                    <br />
+                    Tipo Entrega: {pedidoAgrupado.tipo_entrega}
+                  </td>
                   <td>
                     <ul>
                       {pedidoAgrupado.detalles.map((detalle, index) => (
@@ -272,8 +283,6 @@ function BuscarPedidos() {
                     {pedidoAgrupado.codigo_envio ||
                       "codigo no proporcionado aun"}
                   </td>
-                  <td>{pedidoAgrupado.tipo_entrega}</td>
-                  <td>{pedidoAgrupado.comuna_envio}</td>
                 </tr>
               );
             }

@@ -241,6 +241,11 @@ class PedidoPendienteView(APIView):
             pedidos_data = [
                 {
                     "nombre_cliente": pedido.nombre_cliente,
+                    "cod_comuna": pedido.cod_comuna_id,
+                    "comuna": pedido.comuna,
+                    "direccion": pedido.direccion,
+                    "tipo_documento": pedido.tipo_documento,
+                    "tipo_entrega": pedido.tipo_entrega,
                     "correo": pedido.correo,
                     "telefono": pedido.telefono,
                     "cod_pedido": pedido.cod_pedido,
@@ -277,6 +282,11 @@ class PedidoEntregadoView(APIView):
                 {
                     "cod_pedido": pedido.cod_pedido,
                     "nombre_cliente": pedido.nombre_cliente,
+                    "cod_comuna": pedido.cod_comuna_id,
+                    "comuna": pedido.comuna,
+                    "direccion": pedido.direccion,
+                    "tipo_documento": pedido.tipo_documento,
+                    "tipo_entrega": pedido.tipo_entrega,
                     "correo": pedido.correo,
                     "telefono": pedido.telefono,
                     "id_detalle_pedido": pedido.id_detalle_pedido,
@@ -310,52 +320,55 @@ class BuscarPedidosConCodigoView(APIView):
         try:
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    SELECT b.correo,
-                           cod_pedido,
+                    SELECT b.correo, b.nombres || ' ' || b.apellidos AS nombre_cliente, b.direccion, e.nombre AS comuna,
+                           INITCAP(a.tipo_documento) AS tipo_documento, INITCAP(a.tipo_entrega) AS tipo_entrega,
+                           a.cod_pedido,
+                           a.cod_comuna_id,
                            c.id_detalle_pedido,
                            c.cod_producto_id,
                            d.nombre_producto,
                            c.cantidad,
                            c.precio_unitario,
-                           iva,
-                           total_boleta,
-                           TO_CHAR(fecha_pedido,'DD-MM-YYYY') fecha_pedido,
-                           TO_CHAR(fecha_entrega,'DD-MM-YYYY') fecha_entrega,
-                           codigo_envio,
-                           INITCAP(tipo_entrega) tipo_entrega,
-                           cod_comuna_id
+                           a.iva,
+                           a.total_boleta,
+                           TO_CHAR(a.fecha_pedido, 'DD-MM-YYYY') AS fecha_pedido,
+                           TO_CHAR(a.fecha_entrega, 'DD-MM-YYYY') AS fecha_entrega,
+                           a.codigo_envio
                     FROM cerveceria_pedido a
                     JOIN cerveceria_usuario b ON a.id_usuario_id = b.id
                     JOIN cerveceria_detalle_pedido c ON a.cod_pedido = c.cod_pedido_id
                     JOIN cerveceria_producto d ON c.cod_producto_id = d.cod_producto
+                    JOIN cerveceria_comuna e ON a.cod_comuna_id = e.id
                     WHERE a.cod_pedido = %s
                     ORDER BY a.cod_pedido ASC
                 """, [pedido_id])
 
-                # Obtener todos los resultados de la consulta
                 pedidos = cursor.fetchall()
 
                 if not pedidos:
                     return Response({"error": "No se encontró el pedido con el código proporcionado."}, status=status.HTTP_404_NOT_FOUND)
 
-                # Estructurar los resultados en una lista de diccionarios
                 pedidos_data = []
                 for pedido in pedidos:
                     pedido_dict = {
                         "correo": pedido[0],
-                        "cod_pedido": pedido[1],
-                        "id_detalle_pedido": pedido[2],
-                        "cod_producto_id": pedido[3],
-                        "nombre_producto": pedido[4],
-                        "cantidad": pedido[5],
-                        "precio_unitario": pedido[6],
-                        "iva": pedido[7],
-                        "total_boleta": pedido[8],
-                        "fecha_pedido": pedido[9],
-                        "fecha_entrega": pedido[10],
-                        "codigo_envio": pedido[11],
-                        "tipo_entrega": pedido[12],
-                        "comuna_envio": pedido[13],
+                        "nombre_cliente": pedido[1],
+                        "direccion": pedido[2],
+                        "comuna": pedido[3],
+                        "tipo_documento": pedido[4],
+                        "tipo_entrega": pedido[5],
+                        "cod_pedido": pedido[6],
+                        "cod_comuna_id": pedido[7],
+                        "id_detalle_pedido": pedido[8],
+                        "cod_producto_id": pedido[9],
+                        "nombre_producto": pedido[10],
+                        "cantidad": pedido[11],
+                        "precio_unitario": pedido[12],
+                        "iva": pedido[13],
+                        "total_boleta": pedido[14],
+                        "fecha_pedido": pedido[15],
+                        "fecha_entrega": pedido[16],
+                        "codigo_envio": pedido[17],
                     }
                     pedidos_data.append(pedido_dict)
                 
@@ -363,9 +376,10 @@ class BuscarPedidosConCodigoView(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
 class BuscarPedidosConCorreoView(APIView):
     pagination_class = PedidoConCorreoPagination
+
     def get(self, request):
         correo_user = request.query_params.get('correo')
 
@@ -375,64 +389,64 @@ class BuscarPedidosConCorreoView(APIView):
         try:
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    SELECT b.correo,
-                           cod_pedido,
+                    SELECT b.correo, b.nombres || ' ' || b.apellidos AS nombre_cliente, b.direccion, e.nombre AS comuna,
+                           INITCAP(a.tipo_documento) AS tipo_documento, INITCAP(a.tipo_entrega) AS tipo_entrega,
+                           a.cod_pedido,
+                           a.cod_comuna_id,
                            c.id_detalle_pedido,
                            c.cod_producto_id,
                            d.nombre_producto,
                            c.cantidad,
                            c.precio_unitario,
-                           iva,
-                           total_boleta,
-                           TO_CHAR(fecha_pedido,'DD-MM-YYYY') fecha_pedido,
-                           TO_CHAR(fecha_entrega,'DD-MM-YYYY') fecha_entrega,
-                           codigo_envio,
-                           INITCAP(tipo_entrega) tipo_entrega,
-                           cod_comuna_id
+                           a.iva,
+                           a.total_boleta,
+                           TO_CHAR(a.fecha_pedido, 'DD-MM-YYYY') AS fecha_pedido,
+                           TO_CHAR(a.fecha_entrega, 'DD-MM-YYYY') AS fecha_entrega,
+                           a.codigo_envio     
                     FROM cerveceria_pedido a
                     JOIN cerveceria_usuario b ON a.id_usuario_id = b.id
                     JOIN cerveceria_detalle_pedido c ON a.cod_pedido = c.cod_pedido_id
                     JOIN cerveceria_producto d ON c.cod_producto_id = d.cod_producto
+                    JOIN cerveceria_comuna e ON a.cod_comuna_id = e.id
                     WHERE b.correo = %s
                     ORDER BY a.cod_pedido ASC
                 """, [correo_user])
 
-                # Obtener todos los resultados de la consulta
                 pedidos = cursor.fetchall()
 
                 if not pedidos:
                     return Response({"error": "No se encontraron pedidos asociados al correo proporcionado."}, status=status.HTTP_404_NOT_FOUND)
 
-                # Estructurar los resultados en una lista de diccionarios
                 pedidos_data = []
                 for pedido in pedidos:
                     pedido_dict = {
                         "correo": pedido[0],
-                        "cod_pedido": pedido[1],
-                        "id_detalle_pedido": pedido[2],
-                        "cod_producto_id": pedido[3],
-                        "nombre_producto": pedido[4],
-                        "cantidad": pedido[5],
-                        "precio_unitario": pedido[6],
-                        "iva": pedido[7],
-                        "total_boleta": pedido[8],
-                        "fecha_pedido": pedido[9],
-                        "fecha_entrega": pedido[10],
-                        "codigo_envio": pedido[11],
-                        "tipo_entrega": pedido[12],
-                        "comuna_envio": pedido[13],
+                        "nombre_cliente": pedido[1],
+                        "direccion": pedido[2],
+                        "comuna": pedido[3],
+                        "tipo_documento": pedido[4],
+                        "tipo_entrega": pedido[5],
+                        "cod_pedido": pedido[6],
+                        "cod_comuna_id": pedido[7],
+                        "id_detalle_pedido": pedido[8],
+                        "cod_producto_id": pedido[9],
+                        "nombre_producto": pedido[10],
+                        "cantidad": pedido[11],
+                        "precio_unitario": pedido[12],
+                        "iva": pedido[13],
+                        "total_boleta": pedido[14],
+                        "fecha_pedido": pedido[15],
+                        "fecha_entrega": pedido[16],
+                        "codigo_envio": pedido[17],
                     }
                     pedidos_data.append(pedido_dict)
                 
-                #return Response(pedidos_data, status=status.HTTP_200_OK)
-                # Paginar los resultados utilizando la clase de paginación personalizada
                 paginator = self.pagination_class()
                 page = paginator.paginate_queryset(pedidos_data, request)
                 return paginator.get_paginated_response(page)
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 class HistorialPedidosView(APIView):
     pagination_class = HistorialPagination  # Especifica la clase de paginación personalizada
@@ -448,14 +462,31 @@ class HistorialPedidosView(APIView):
 
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    SELECT a.cod_pedido_id, a.id_detalle_pedido, c.cod_producto AS Codigo_Producto, c.nombre_producto,
-                           TO_CHAR(b.fecha_pedido,'DD-MM-YYYY') fecha_pedido, cantidad, precio_unitario,iva,
-                           TO_CHAR(b.fecha_entrega, 'DD-MM-YYYY') AS fecha_entrega
-                    FROM cerveceria_detalle_pedido a    
-                    JOIN cerveceria_pedido b ON (a.cod_pedido_id = b.cod_pedido)
-                    JOIN cerveceria_producto c ON (a.cod_producto_id = c.cod_producto)
-                    WHERE b.id_usuario_id = %s
-                    ORDER BY a.cod_pedido_id
+                    SELECT 
+                        a.cod_pedido, 
+                        a.tipo_documento,
+                        a.tipo_entrega,
+                        a.cod_comuna_id, 
+                        d.nombre AS comuna, 
+                        e.nombre AS ciudad, 
+                        f.nombre AS region,
+                        b.id_detalle_pedido, 
+                        c.cod_producto AS codigo_producto, 
+                        c.nombre_producto,
+                        TO_CHAR(a.fecha_pedido,'DD-MM-YYYY') AS fecha_pedido, 
+                        b.cantidad, 
+                        b.precio_unitario,
+                        a.iva,
+                        a.total_boleta,
+                        TO_CHAR(a.fecha_entrega, 'DD-MM-YYYY') AS fecha_entrega
+                    FROM cerveceria_pedido a 
+                    JOIN cerveceria_detalle_pedido b ON a.cod_pedido = b.cod_pedido_id
+                    JOIN cerveceria_producto c ON b.cod_producto_id = c.cod_producto
+                    JOIN cerveceria_comuna d ON a.cod_comuna_id = d.id
+                    JOIN cerveceria_ciudad e ON d.ciudad_id = e.id
+                    JOIN cerveceria_region f ON e.region_id = f.id
+                    WHERE a.id_usuario_id = %s
+                    ORDER BY a.cod_pedido
                 """, [user_id])
 
                 # Obtener todos los resultados de la consulta
@@ -468,15 +499,22 @@ class HistorialPedidosView(APIView):
             pedidos_data = []
             for pedido in pedidos:
                 pedido_dict = {
-                    "cod_pedido_id": pedido[0],
-                    "id_detalle_pedido": pedido[1],
-                    "cod_producto": pedido[2],
-                    "nombre_producto": pedido[3],
-                    "fecha_pedido": pedido[4],
-                    "cantidad": pedido[5],
-                    "precio_unitario": pedido[6],
-                    "iva": pedido[7],
-                    "fecha_entrega": pedido[8]
+                    "cod_pedido": pedido[0],
+                    "tipo_documento": pedido[1],
+                    "tipo_entrega": pedido[2],
+                    "cod_comuna_id": pedido[3],
+                    "comuna": pedido[4],
+                    "ciudad": pedido[5],
+                    "region": pedido[6],
+                    "id_detalle_pedido": pedido[7],
+                    "codigo_producto": pedido[8],
+                    "nombre_producto": pedido[9],
+                    "fecha_pedido": pedido[10],
+                    "cantidad": pedido[11],
+                    "precio_unitario": pedido[12],
+                    "iva": pedido[13],
+                    "total_boleta": pedido[14],
+                    "fecha_entrega": pedido[15]
                 }
                 pedidos_data.append(pedido_dict)
 
@@ -487,6 +525,7 @@ class HistorialPedidosView(APIView):
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class EmpresaView(viewsets.ModelViewSet):
     serializer_class = EmpresaSerializer
@@ -502,11 +541,7 @@ class CiudadView(viewsets.ModelViewSet):
 
 class ComunaView(viewsets.ModelViewSet):
     serializer_class = ComunaSerializer
-<<<<<<< HEAD
     queryset = Comuna.objects.exclude(id=3)  # Excluir la comuna con id 3
-=======
-    queryset = Comuna.objects.all()
->>>>>>> 203dabe8d2f5207258a5dc613a201960035be03a
 
 class ProductoView(viewsets.ModelViewSet):
     serializer_class = ProductoSerializer

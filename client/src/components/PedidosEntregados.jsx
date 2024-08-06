@@ -60,7 +60,7 @@ function PedidosEntregados() {
         cantidad: pedido.cantidad,
         precio_unitario: pedido.precio_unitario,
         iva: pedido.iva,
-        total_boleta: pedido.total_boleta
+        total_boleta: pedido.total_boleta,
       });
     });
 
@@ -112,6 +112,7 @@ function PedidosEntregados() {
             <tr>
               <th>Cod Pedido</th>
               <th>Nombre Cliente</th>
+              <th>Datos Despacho</th>
               <th>Correo</th>
               <th>Teléfono</th>
               <th>Detalles</th>
@@ -125,6 +126,16 @@ function PedidosEntregados() {
               <tr key={pedidoAgrupado.cod_pedido}>
                 <td>{pedidoAgrupado.cod_pedido}</td>
                 <td>{pedidoAgrupado.nombre_cliente}</td>
+                <td>
+                  Comuna:
+                  {pedidoAgrupado.comuna}
+                  <br />
+                  Dirección: {pedidoAgrupado.direccion}
+                  <br />
+                  Tipo Documento:{pedidoAgrupado.tipo_documento}
+                  <br />
+                  Tipo Entrega: {pedidoAgrupado.tipo_entrega}
+                </td>
                 <td>{pedidoAgrupado.correo}</td>
                 <td>{pedidoAgrupado.telefono}</td>
                 <td>
@@ -147,7 +158,9 @@ function PedidosEntregados() {
                   </ul>
                 </td>
                 <td className="text-center">
-                  <strong>Total Boleta: {formatCurrency(pedidoAgrupado.total_boleta)}</strong>
+                  <strong>
+                    Total Boleta: {formatCurrency(pedidoAgrupado.total_boleta)}
+                  </strong>
                   <br />
                   <strong>IVA: {formatCurrency(pedidoAgrupado.iva)}</strong>
                 </td>

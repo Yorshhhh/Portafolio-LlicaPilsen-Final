@@ -182,6 +182,11 @@ class VentasComuna(models.Model):
 
 class PedidoPendiente(models.Model):
     nombre_cliente = models.CharField(max_length=100)
+    cod_comuna_id = models.IntegerField()
+    comuna = models.CharField(max_length=255)
+    direccion = models.CharField(max_length=255)
+    tipo_documento = models.CharField(max_length=255)
+    tipo_entrega = models.CharField(max_length=255)
     correo = models.EmailField()
     telefono = models.CharField(max_length=20)
     cod_pedido = models.IntegerField(primary_key=True)
@@ -201,6 +206,11 @@ class PedidoPendiente(models.Model):
 class PedidoEntregado(models.Model):
     cod_pedido = models.IntegerField(primary_key=True)
     nombre_cliente = models.CharField(max_length=255)
+    cod_comuna_id = models.IntegerField()
+    comuna = models.CharField(max_length=255)
+    direccion = models.CharField(max_length=255)
+    tipo_documento = models.CharField(max_length=255)
+    tipo_entrega = models.CharField(max_length=255)
     correo = models.EmailField()
     telefono = models.CharField(max_length=20)
     id_detalle_pedido = models.CharField(max_length=255)
@@ -215,4 +225,4 @@ class PedidoEntregado(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'view_pedidos_entregados'
+        db_table = 'view_pedidos_despachados'

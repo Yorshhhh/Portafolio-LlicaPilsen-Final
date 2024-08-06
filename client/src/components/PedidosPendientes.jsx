@@ -74,14 +74,13 @@ function PedidosPendientes() {
         cantidad: pedido.cantidad,
         precio_unitario: pedido.precio_unitario,
         iva: pedido.iva,
-        total_boleta: pedido.total_boleta
+        total_boleta: pedido.total_boleta,
       });
     });
 
     return Object.values(pedidosAgrupados);
   };
 
-  // Manejar la confirmación de un pedido
   const handleConfirmar = async (pedido) => {
     const confirmar = window.confirm(
       `¿Estás seguro de confirmar el pedido ${pedido.cod_pedido}?`
@@ -89,9 +88,17 @@ function PedidosPendientes() {
     if (confirmar) {
       console.log("Pedido confirmado:", pedido);
       try {
-        await confirmarPedido(pedido.cod_pedido, fechaEntrega);
+        if (!pedido.cod_comuna) {
+          console.error("Error: El campo cod_comuna es null");
+          setError("Error: El campo cod_comuna es null");
+          return;
+        }
+        await confirmarPedido(
+          pedido.cod_pedido,
+          fechaEntrega,
+          pedido.cod_comuna
+        );
         alert(`Pedido ${pedido.cod_pedido} confirmado exitosamente.`);
-        // Actualizar la lista de pedidos después de confirmar
         const nuevosPedidos = p_pendientes.filter(
           (p) => p.cod_pedido !== pedido.cod_pedido
         );
@@ -139,6 +146,7 @@ function PedidosPendientes() {
           <tr>
             <th>Cod Pedido</th>
             <th>Nombre Cliente</th>
+            <th>Datos Despacho</th>
             <th>Correo</th>
             <th>Teléfono</th>
             <th>Detalles</th>
@@ -153,6 +161,16 @@ function PedidosPendientes() {
               <tr key={pedidoAgrupado.cod_pedido}>
                 <td>{pedidoAgrupado.cod_pedido}</td>
                 <td>{pedidoAgrupado.nombre_cliente}</td>
+                <td>
+                  Comuna:
+                  {pedidoAgrupado.comuna}
+                  <br />
+                  Dirección: {pedidoAgrupado.direccion}
+                  <br />
+                  Tipo Documento:{pedidoAgrupado.tipo_documento}
+                  <br />
+                  Tipo Entrega: {pedidoAgrupado.tipo_entrega}
+                </td>
                 <td>{pedidoAgrupado.correo}</td>
                 <td>{pedidoAgrupado.telefono}</td>
                 <td>
@@ -175,7 +193,9 @@ function PedidosPendientes() {
                   </ul>
                 </td>
                 <td className="text-center">
-                  <strong>Total Boleta: {formatCurrency(pedidoAgrupado.total_boleta)}</strong>
+                  <strong>
+                    Total Boleta: {formatCurrency(pedidoAgrupado.total_boleta)}
+                  </strong>
                   <br />
                   <strong>IVA: {formatCurrency(pedidoAgrupado.iva)}</strong>
                 </td>
