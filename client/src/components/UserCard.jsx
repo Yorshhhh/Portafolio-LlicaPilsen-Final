@@ -54,7 +54,7 @@ function UserCard({ user }) {
 
   return (
     <div>
-      <div className="user-profile-card">
+      <div className="user-card">
         <h1>Información del usuario</h1>
         <h2>Nombres: {user.nombres}</h2>
         <h2>Apellidos: {user.apellidos}</h2>
@@ -69,11 +69,11 @@ function UserCard({ user }) {
               placeholder="Ingresa tu dirección"
               value={direccion}
               onChange={handleDireccionChange}
-              className="user-profile-direccion-input"
+              className="user-profile-direccion-input w-full h-12 p-4 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
             <button
               onClick={handleGuardarDireccionClick}
-              className="user-profile-button user-profile-btn-primary"
+              className="btn btn-success mt-2"
               disabled={loading}
             >
               {loading ? "Guardando..." : "Guardar dirección"}
@@ -85,7 +85,7 @@ function UserCard({ user }) {
             <h2>{user.direccion || "Dirección no proporcionada"}</h2>
             <button
               onClick={handleEditarDireccionClick}
-              className="user-profile-button user-profile-btn-secondary"
+              className="btn btn-success"
             >
               Editar dirección
             </button>

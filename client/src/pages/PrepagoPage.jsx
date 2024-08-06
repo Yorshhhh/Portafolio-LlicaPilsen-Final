@@ -27,6 +27,7 @@ function Prepago() {
   const [comunaEmpresa, setComunaEmpresa] = useState("");
   const [isDeliveryFormValid, setIsDeliveryFormValid] = useState(false);
   const [isFacturaFormValid, setIsFacturaFormValid] = useState(false);
+  const [empresa, setEmpresa] = useState(null);
 
   const IVA_PORCENTAJE = 19;
 
@@ -74,16 +75,43 @@ function Prepago() {
     if (userJson) {
       try {
         const userParsed = JSON.parse(userJson);
+        const { direccion, telefono, empresa } = userParsed;
         setUser(userParsed);
         setDireccion(userParsed.direccion || "");
         setTelefono(userParsed.telefono || "");
+
+        if (empresa) {
+          setEmpresa(empresa); // Almacena el objeto empresa en el estado
+          setRazonSocial(empresa.razon_social || "");
+          setRutEmpresa(empresa.rut_empresa || "");
+          setGiroComercial(empresa.giro_comercial || "");
+          setDireccionEmpresa(empresa.direccion_empresa || "");
+          setNumeroEmpresa(empresa.numero_empresa || "");
+          setCiudadEmpresa(empresa.ciudad_empresa || "");
+          setComunaEmpresa(empresa.comuna_empresa || "");
+          validateFacturaForm(
+            empresa.razon_social,
+            empresa.rut_empresa,
+            empresa.giro_comercial,
+            empresa.direccion_empresa,
+            empresa.numero_empresa,
+            empresa.ciudad_empresa,
+            empresa.comuna_empresa
+          );
+        }
+
+        validateDeliveryForm(
+          selectedComuna,
+          userParsed.direccion,
+          userParsed.telefono
+        );
       } catch (error) {
         console.error("Error al parsear el usuario del localStorage: ", error);
       }
     } else {
       console.warn("No existe un usuario en el localStorage");
     }
-  }, []);
+  }, [selectedComuna]);
 
   useEffect(() => {
     async function getComunas() {
@@ -119,32 +147,34 @@ function Prepago() {
     const ivaRounded = Math.round(totalIva);
 
     // Establecer cod_comuna basado en el tipo de entrega
-    const codComunaFinal = selectedOption === "retiro" ? 3 : selectedComuna; // Usar 3 para retiro y el valor seleccionado para despacho
+    const codComunaFinal = selectedOption === "retiro" ? 3 : selectedComuna;
+
+    // Preparar los detalles del pedido
+    const pedidoDetalles = {
+      total: totalRounded,
+      iva: ivaRounded,
+      tipo_entrega: selectedOption,
+      tipo_documento: selectedDocument,
+      direccion: selectedOption === "domicilio" ? direccion : null, // Solo incluir si es domicilio
+      telefono: selectedOption === "domicilio" ? telefono : null, // Solo incluir si es domicilio
+      productos: cartItems,
+      costo_envio: deliveryCost,
+      cod_comuna: codComunaFinal,
+      ...(selectedDocument === "factura" && {
+        razon_social: razonSocial,
+        rut_empresa: rutEmpresa,
+        giro_comercial: giroComercial,
+        direccion_empresa: direccionEmpresa,
+        numero_empresa: numeroEmpresa,
+        ciudad_empresa: ciudadEmpresa,
+        comuna_empresa: comunaEmpresa,
+      }),
+    };
+
+    console.log(pedidoDetalles.cod_comuna); // Esto debería mostrar 3 para retiro
+    localStorage.setItem("pedidoDetalles", JSON.stringify(pedidoDetalles));
 
     try {
-      const pedidoDetalles = {
-        total: totalRounded,
-        iva: ivaRounded,
-        tipo_documento: selectedDocument,
-        direccion,
-        telefono,
-        productos: cartItems,
-        costo_envio: deliveryCost,
-        cod_comuna: codComunaFinal, // Incluir cod_comuna siempre
-        ...(selectedDocument === "factura" && {
-          razon_social: razonSocial,
-          rut_empresa: rutEmpresa,
-          giro_comercial: giroComercial,
-          direccion_empresa: direccionEmpresa,
-          numero_empresa: numeroEmpresa,
-          ciudad_empresa: ciudadEmpresa,
-          comuna_empresa: comunaEmpresa,
-        }),
-      };
-
-      console.log(pedidoDetalles.cod_comuna); // Esto debería mostrar 3 para retiro
-      localStorage.setItem("pedidoDetalles", JSON.stringify(pedidoDetalles));
-
       const { token, url } = await createTransaction(totalRounded);
       setToken(token);
       setUrl(url);
@@ -153,8 +183,10 @@ function Prepago() {
       }
     } catch (error) {
       console.error("Error creating transaction:", error);
+      alert("Hubo un error al procesar el pago. Intente nuevamente."); // Mensaje al usuario
     }
   };
+
   const clearCartHandler = () => {
     clearCart(setCartItems, setShowCart);
   };
@@ -266,7 +298,11 @@ function Prepago() {
   };
 
   const validateDeliveryForm = (comuna, direccion, telefono) => {
-    setIsDeliveryFormValid(comuna && direccion && telefono);
+    if (selectedOption === "domicilio") {
+      setIsDeliveryFormValid(!!(comuna && direccion && telefono));
+    } else {
+      setIsDeliveryFormValid(true);
+    }
   };
 
   const validateFacturaForm = (
@@ -279,13 +315,15 @@ function Prepago() {
     comunaEmpresa
   ) => {
     setIsFacturaFormValid(
-      razonSocial &&
+      !!(
+        razonSocial &&
         rutEmpresa &&
         giroComercial &&
         direccionEmpresa &&
         numeroEmpresa &&
         ciudadEmpresa &&
         comunaEmpresa
+      )
     );
   };
 
@@ -420,7 +458,7 @@ function Prepago() {
 
             {selectedDocument === "factura" && (
               <div className="card">
-                <h2>Formulario Factura</h2>
+                <h2>Información de la Empresa</h2>
                 <hr className="custom-hr" />
                 <form onSubmit={handleSubmit}>
                   <div className="form-group">
@@ -429,7 +467,7 @@ function Prepago() {
                       type="text"
                       id="razonSocial"
                       className="form-control"
-                      value={razonSocial}
+                      value={razonSocial || empresa?.razon_social || ""} // Establecer el valor del campo
                       onChange={handleRazonSocialChange}
                     />
                   </div>
@@ -440,7 +478,7 @@ function Prepago() {
                       type="text"
                       id="rutEmpresa"
                       className="form-control"
-                      value={rutEmpresa}
+                      value={rutEmpresa || empresa?.rut_empresa || ""} // Establecer el valor del campo
                       onChange={handleRutEmpresaChange}
                     />
                   </div>
@@ -451,7 +489,7 @@ function Prepago() {
                       type="text"
                       id="giroComercial"
                       className="form-control"
-                      value={giroComercial}
+                      value={giroComercial || empresa?.giro_comercial || ""} // Establecer el valor del campo
                       onChange={handleGiroComercialChange}
                     />
                   </div>
@@ -462,7 +500,9 @@ function Prepago() {
                       type="text"
                       id="direccionEmpresa"
                       className="form-control"
-                      value={direccionEmpresa}
+                      value={
+                        direccionEmpresa || empresa?.direccion_empresa || ""
+                      } // Establecer el valor del campo
                       onChange={handleDireccionEmpresaChange}
                     />
                   </div>
@@ -473,7 +513,7 @@ function Prepago() {
                       type="text"
                       id="numeroEmpresa"
                       className="form-control"
-                      value={numeroEmpresa}
+                      value={numeroEmpresa || empresa?.numero_empresa || ""} // Establecer el valor del campo
                       onChange={handleNumeroEmpresaChange}
                     />
                   </div>
@@ -484,7 +524,7 @@ function Prepago() {
                       type="text"
                       id="ciudadEmpresa"
                       className="form-control"
-                      value={ciudadEmpresa}
+                      value={ciudadEmpresa || empresa?.ciudad_empresa || ""} // Establecer el valor del campo
                       onChange={handleCiudadEmpresaChange}
                     />
                   </div>
@@ -495,7 +535,7 @@ function Prepago() {
                       type="text"
                       id="comunaEmpresa"
                       className="form-control"
-                      value={comunaEmpresa}
+                      value={comunaEmpresa || empresa?.comuna_empresa || ""} // Establecer el valor del campo
                       onChange={handleComunaEmpresaChange}
                     />
                   </div>

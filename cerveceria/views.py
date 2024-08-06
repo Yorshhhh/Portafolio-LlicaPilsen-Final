@@ -533,11 +533,11 @@ class EmpresaView(viewsets.ModelViewSet):
 
 class RegionView(viewsets.ModelViewSet):
     serializer_class = RegionSerializer
-    queryset = Region.objects.all()
+    queryset = Region.objects.exclude(id=2)
 
 class CiudadView(viewsets.ModelViewSet):
     serializer_class = CiudadSerializer
-    queryset = Ciudad.objects.all()
+    queryset = Ciudad.objects.exclude(id=2)
 
 class ComunaView(viewsets.ModelViewSet):
     serializer_class = ComunaSerializer

@@ -59,6 +59,8 @@ class Empresa(models.Model):
     direccion_empresa = models.CharField(max_length=255)
     numero_empresa = models.CharField(max_length=20)
     comuna_empresa = models.ForeignKey('Comuna', on_delete=models.SET_NULL, null=True, blank=True)
+    ciudad_empresa = models.ForeignKey('Ciudad', on_delete=models.SET_NULL, null=True, blank=True)
+    region_empresa = models.ForeignKey('Region', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.razon_social

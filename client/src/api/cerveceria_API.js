@@ -41,6 +41,10 @@ export const registrarAdmin = (admin) => {
 export const loginUsuario = (credenciales) => {
   return cerveceriaAPI.post("/login/", credenciales);
 };
+
+export const registrarEmpresa = (empresaData) =>{
+  return cerveceriaAPI.post("/empresas/", empresaData)
+}
 // Función para actualizar la dirección del usuario
 export const actualizarDireccion = (id, nuevaDireccion) => {
   return cerveceriaAPI.patch(`/usuarios/${id}/`, { direccion: nuevaDireccion });
@@ -70,6 +74,8 @@ export const registrarDetalles = async (detalles) => {
     throw error; // Propaga el error para ser manejado en otro lugar
   }
 };
+
+
 
 export const obtenerVentasPorProducto = async () => {
   try {
@@ -184,6 +190,25 @@ export const obtenerComunas = async () => {
     throw error;
   }
 };
+
+export const obtenerCiudades = async () => {
+  try {
+    const response = await cerveceriaAPI.get("/ciudades/");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const obtenerRegiones = async () => {
+  try {
+    const response = await cerveceriaAPI.get("/regiones/");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 
 /* export const actualizarDireccion = (correoUsuario, nuevaDireccion) => {

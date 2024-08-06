@@ -2,11 +2,22 @@ import React, { useState, useEffect } from "react";
 import "../css/PerfilUsuario.css";
 import UserCard from "../components/UserCard";
 import VentasProductos from "../components/VentasProductos";
+import EmpresaForm from "../components/EmpresaForm";
 
 function PerfilUsuarioPage() {
   const [user, setUser] = useState(null);
   const [showVentasProducto, setShowVentasProducto] = useState(false);
   const [showVentasComuna, setShowVentasComuna] = useState(false);
+  const [showEmpresaForm, setShowEmpresaForm] = useState(false);
+  const [empresaData, setEmpresaData] = useState({
+    razonSocial: "",
+    rutEmpresa: "",
+    giroComercial: "",
+    direccionEmpresa: "",
+    numeroEmpresa: "",
+    ciudadEmpresa: "",
+    comunaEmpresa: "",
+  });
 
   useEffect(() => {
     const userJson = localStorage.getItem("usuario");
@@ -23,6 +34,10 @@ function PerfilUsuarioPage() {
 
   const toggleVentasComuna = () => {
     setShowVentasComuna(!showVentasComuna);
+  };
+
+  const toggleEmpresaForm = () => {
+    setShowEmpresaForm(!showEmpresaForm);
   };
 
   if (!user) {
@@ -72,8 +87,29 @@ function PerfilUsuarioPage() {
           {showVentasComuna && <div>Se viene esta implementacion</div>}
         </div>
       ) : (
-        <div className="m-auto h-screen w-full flex justify-center items-center">
-          <UserCard user={user} />
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+            <div className="mb-4">
+              <UserCard user={user} />
+            </div>
+            <div className="flex justify-center gap-4 mb-8">
+              <button
+                className={`user-profile-button user-profile-staff-button py-2 px-4 text-sm rounded-md ${
+                  showEmpresaForm
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-black"
+                }`}
+                onClick={toggleEmpresaForm}
+              >
+                {showEmpresaForm
+                  ? "Ocultar Agregar Empresa"
+                  : "Agregar Empresa"}
+              </button>
+            </div>
+            {showEmpresaForm && (
+              <EmpresaForm onChange={setEmpresaData} usuario_id={user.id} />
+            )}
+          </div>
         </div>
       )}
     </>

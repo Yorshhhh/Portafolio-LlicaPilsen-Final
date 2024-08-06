@@ -10,6 +10,7 @@ router.register(r'ciudades', CiudadView, 'ciudad')
 router.register(r'comunas', ComunaView, 'comuna')
 router.register(r'productos', ProductoView, 'producto')
 router.register(r'usuarios', UsuarioView, 'usuario')
+router.register(r'empresas', EmpresaView, 'empresa')
 router.register(r'pedidos', PedidoView, 'pedido')
 router.register(r'detalle_pedidos', Detalle_PedidoView, 'detalle_pedido')
 
