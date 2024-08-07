@@ -1,9 +1,15 @@
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate
+from .utils import Util
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.urls import reverse
+from django.contrib.sites.shortcuts import get_current_site
 from django.db import transaction
 from django.contrib.auth.models import Group
 from rest_framework import serializers
 from .models import Usuario, Empresa, Producto, Detalle_Pedido, Pedido, Region, Ciudad, Comuna
+
+
 
 class RegionSerializer(serializers.ModelSerializer):
     nombre = serializers.CharField(label='Nombre de la Región')
@@ -55,7 +61,7 @@ class EmpresaSerializer(serializers.ModelSerializer):
 class UsuarioSerializer(serializers.ModelSerializer):
     empresa = EmpresaSerializer(required=False)
 
-    class Meta: 
+    class Meta:
         model = Usuario
         fields = '__all__'
         extra_kwargs = {
@@ -74,6 +80,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
 
         usuario = Usuario(**validated_data)
         usuario.password = make_password(password)
+        usuario.is_active = False  # Desactivar la cuenta hasta que el correo sea verificado
         usuario.save()
 
         if empresa_data:
@@ -84,6 +91,16 @@ class UsuarioSerializer(serializers.ModelSerializer):
             usuario.groups.add(group)
         except Group.DoesNotExist:
             pass
+
+        # Enviar correo de verificación
+        current_site = get_current_site(self.context['request']).domain
+        token = RefreshToken.for_user(usuario).access_token
+        relativeLink = reverse('email-verify')
+        absurl = 'http://' + current_site + relativeLink + "?token=" + str(token)
+        email_body = 'Hi ' + usuario.nombres + ' Use the link below to verify your email \n' + absurl
+        data = {'email_body': email_body, 'to_email': usuario.correo, 'email_subject': 'Verify your email'}
+
+        Util.send_email(data)
 
         return usuario
 
@@ -110,6 +127,8 @@ class CustomAuthTokenSerializer(serializers.Serializer):
             user = authenticate(correo=correo, password=password)
             if not user:
                 raise serializers.ValidationError("Credenciales inválidas.")
+            if not user.is_verified:
+                raise serializers.ValidationError("Por favor, verifique su correo electrónico para activar su cuenta.")
         else:
             raise serializers.ValidationError("Debe proporcionar tanto el correo como la contraseña.")
 

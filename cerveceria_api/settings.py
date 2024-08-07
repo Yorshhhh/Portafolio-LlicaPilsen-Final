@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-nu!)3j^kg0hm0-hmlg($^0z+25z!+7bil($1n-s(m-5nnk@1m8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 #CONFIGURACION CORREO ELECTRONICO
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -69,8 +69,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt',
     'coreapi',
     'cerveceria',
+    
 ]
 
 MIDDLEWARE = [

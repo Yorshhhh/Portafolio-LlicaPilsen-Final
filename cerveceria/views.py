@@ -1,14 +1,20 @@
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import AllowAny
 from django.contrib.auth.models import Group
+from django.urls import reverse
+from django.contrib.sites.shortcuts import get_current_site
+from rest_framework_simplejwt.tokens import RefreshToken
+import jwt
+from django.conf import settings
 from django.db import connection
-from rest_framework import viewsets,status
+from rest_framework import viewsets, status, generics, views
 from django.db.utils import OperationalError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.utils.dateparse import parse_date
-from rest_framework.decorators import api_view,action
-from .utils import generate_pdf, send_email_with_pdf
+from rest_framework.decorators import api_view, action
+from .utils import generate_pdf, send_email_with_pdf, Util
 import logging
 
 import re
@@ -77,9 +83,25 @@ class CustomAuthToken(ObtainAuthToken):
         
         # Serialize user data for response
         user_data = UsuarioSerializer(user).data
-        print("tu eres el encargado de enviarme la informacion del usuario o no?")
 
         return Response({'token': token.key, 'user': user_data}, status=status.HTTP_200_OK)
+
+class VerifyEmail(views.APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        token = request.GET.get('token')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+            user = Usuario.objects.get(id=payload['user_id'])
+            if not user.is_verified:
+                user.is_verified = True
+                user.save()
+            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+        except jwt.ExpiredSignatureError:
+            return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
+        except jwt.exceptions.DecodeError:
+            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
 class VentasComunaView(APIView): 
     def get(self,request):

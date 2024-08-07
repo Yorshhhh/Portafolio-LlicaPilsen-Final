@@ -30,5 +30,6 @@ urlpatterns = [
     path('ventas_mensuales/', VentasMensualesView.as_view(), name='ventas_mensuales'),
     path('ventas_entre/', VentasFechaView.as_view(), name='ventas_entre'),
     path('ventas_mensuales_comuna/', VentasMensualesComunaView.as_view(), name='ventas_mensuales'),
+    path('verify-email/', VerifyEmail.as_view(), name='email-verify'),
 ]
 #MOISES SEPULVEDA, OJO

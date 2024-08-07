@@ -6,6 +6,25 @@ import logging
 from rest_framework.response import Response
 import os
 
+import threading
+from django.core.mail import EmailMessage
+
+class EmailThread(threading.Thread):
+    def __init__(self, email):
+        self.email = email
+        threading.Thread.__init__(self)
+
+    def run(self):
+        self.email.send()
+
+class Util:
+    @staticmethod
+    def send_email(data):
+        email = EmailMessage(
+            subject=data['email_subject'], body=data['email_body'], to=[data['to_email']]
+        )
+        EmailThread(email).start()
+
 logger = logging.getLogger(__name__)
 
 def generate_pdf(pedido, usuario, detalles_pedido, comuna, ciudad, region):

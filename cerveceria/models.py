@@ -2,7 +2,6 @@ from django.db import models
 import uuid
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
-# Definir un UserManager personalizado
 class CustomUserManager(BaseUserManager):
     def create_user(self, correo, password=None, **extra_fields):
         if not correo:
@@ -40,6 +39,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)  # Nuevo campo
     date_joined = models.DateTimeField(auto_now_add=True)
 
     objects = CustomUserManager()
@@ -49,6 +49,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.correo
+
 
 # MODELO EMPRESA
 class Empresa(models.Model):
@@ -145,6 +146,7 @@ class Pedido(models.Model):
         help_text="Tipo de documento: 'boleta', 'factura'."
     )
     iva = models.FloatField()
+    total_neto = models.IntegerField()
     total_boleta = models.IntegerField()
     costo_envio = models.IntegerField(default=0)
 
