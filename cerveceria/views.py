@@ -8,8 +8,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.utils.dateparse import parse_date
 from rest_framework.decorators import api_view,action
-import re
+from .utils import generate_pdf, send_email_with_pdf
+import logging
 
+import re
 
 from .paginacion import PedidoPagination,HistorialPagination,PedidoPendientePagination,\
     PedidoEntregadoPagination, PedidoConCorreoPagination
@@ -553,30 +555,46 @@ class Detalle_PedidoView(viewsets.ModelViewSet):
 
 class PedidoView(viewsets.ModelViewSet):
     serializer_class = PedidoSerializer
-    pagination_class = PedidoPagination
-
-    def get_queryset(self):
-        id_usuario_id = self.request.query_params.get('id_usuario_id', None)
-        if id_usuario_id:
-            return Pedido.objects.filter(id_usuario_id=id_usuario_id, fecha_entrega__isnull=False)
-        return Pedido.objects.all()
-
-    def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+    queryset = Pedido.objects.all()
 
     @action(detail=True, methods=['post'])
     def confirmar(self, request, pk=None):
-        pedido = self.get_object()
-        pedido.confirmado = True
-        pedido.save()
-        return Response({'status': 'pedido confirmado'})
+        logger = logging.getLogger(__name__)
+        try:
+            print("Antes de obtener el objeto del pedido")
+            pedido = self.get_object()
+            print("Después de obtener el objeto del pedido")
+            pedido.confirmado = True
+            pedido.save()
+
+            # Obtener información del pedido, detalle_producto, producto, usuario, comuna, ciudad y región
+            usuario = pedido.id_usuario
+            detalles_pedido = Detalle_Pedido.objects.filter(cod_pedido=pedido).select_related('cod_producto')
+            print(usuario)
+            
+            # Acceso a la comuna, ciudad y región
+            comuna = pedido.cod_comuna
+            ciudad = comuna.ciudad if comuna else None
+            region = ciudad.region if ciudad else None
+
+            # Logging para verificar variables
+            logger.info("Pedido: %s", pedido)
+            logger.info("Usuario: %s", usuario)
+            logger.info("Detalles del pedido: %s", detalles_pedido)
+            logger.info("Comuna: %s", comuna)
+            logger.info("Ciudad: %s", ciudad)
+            logger.info("Región: %s", region)
+
+            # Generar el PDF con la información del pedido y enviarlo por correo
+            logger.info("Intentando enviar correo a %s", usuario.correo)
+            pdf_content = generate_pdf(pedido, usuario, detalles_pedido, comuna, ciudad, region)
+            logger.info("Contenido del PDF generado: %s", pdf_content[:100])
+            send_email_with_pdf(usuario, pdf_content)
+
+            return Response({'status': 'pedido confirmado'})
+        except Exception as e:
+            logger.error("Error confirmando el pedido: %s", str(e))
+            return Response({'status': 'error confirmando pedido'}, status=500)
 
 @api_view(['POST'])
 def update_stock(request):

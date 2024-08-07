@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { registrarPedido, registrarDetalles } from "../api/cerveceria_API";
+import { registrarPedido, registrarDetalles,confirmar } from "../api/cerveceria_API";
 import { useLocation } from "react-router-dom";
 import CarritoExito from "../components/CarritoExito";
 import "../css/ExitoPage.css";
@@ -105,7 +105,6 @@ function ExitoPage() {
               costo_envio: costo_envio,
               tipo_entrega: tipo_entrega || "",
               tipo_documento: tipo_documento || "",
-              tipo_entrega: tipo_entrega || "",
               cod_comuna,
               direccion: direccion || "",
               telefono: telefono || "",
@@ -139,6 +138,17 @@ function ExitoPage() {
               console.log(
                 "Todos los detalles de pedidos han sido registrados."
               );
+
+              // Aquí llamamos a la acción confirmar después de registrar el pedido
+              try {
+                const confirmarResponse = await confirmar(
+                  pedido.cod_pedido
+                ); // Asegúrate de que esta función esté definida
+                console.log("Pedido confirmado:", confirmarResponse);
+              } catch (error) {
+                console.error("Error al confirmar el pedido:", error);
+              }
+
               localStorage.removeItem("carrito");
               localStorage.removeItem("pedidoDetalles");
               console.log("Carrito y detalles eliminados del localStorage.");

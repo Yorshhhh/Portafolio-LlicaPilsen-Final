@@ -28,6 +28,34 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+#CONFIGURACION CORREO ELECTRONICO
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'seinagi77@gmail.com'
+EMAIL_HOST_PASSWORD = 'yhtnkvugoedjmuto'
+EMAIL_USE_TLS = True
+
+#LOGGER
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'cerveceria': {  # Cambia esto por el nombre de tu app
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
 
 # Application definition
 

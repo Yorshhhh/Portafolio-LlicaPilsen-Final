@@ -42,9 +42,9 @@ export const loginUsuario = (credenciales) => {
   return cerveceriaAPI.post("/login/", credenciales);
 };
 
-export const registrarEmpresa = (empresaData) =>{
-  return cerveceriaAPI.post("/empresas/", empresaData)
-}
+export const registrarEmpresa = (empresaData) => {
+  return cerveceriaAPI.post("/empresas/", empresaData);
+};
 // Función para actualizar la dirección del usuario
 export const actualizarDireccion = (id, nuevaDireccion) => {
   return cerveceriaAPI.patch(`/usuarios/${id}/`, { direccion: nuevaDireccion });
@@ -55,6 +55,14 @@ export const confirmarPedido = (cod_pedido_id, fecha_Entregado, cod_comuna) => {
     fecha_entrega: fecha_Entregado,
     cod_comuna: cod_comuna,
   });
+};
+
+export const confirmar = async (pedidoId) => {
+  const response = await cerveceriaAPI.post(
+    `/pedidos/${pedidoId}/confirmar/`,
+    {}
+  );
+  return response.data;
 };
 
 export const registrarPedido = async (pedido) => {
@@ -74,8 +82,6 @@ export const registrarDetalles = async (detalles) => {
     throw error; // Propaga el error para ser manejado en otro lugar
   }
 };
-
-
 
 export const obtenerVentasPorProducto = async () => {
   try {
@@ -208,8 +214,6 @@ export const obtenerRegiones = async () => {
     throw error;
   }
 };
-
-
 
 /* export const actualizarDireccion = (correoUsuario, nuevaDireccion) => {
   return axios.put(`http://localhost:8000/usuarios/actualizar-direccion/${correoUsuario}/`, { direccion: nuevaDireccion })
