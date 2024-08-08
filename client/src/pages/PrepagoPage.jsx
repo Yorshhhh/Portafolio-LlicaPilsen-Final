@@ -4,6 +4,7 @@ import CarritoPrepago from "../components/CarritoPrepago";
 import { useCart } from "../context/CarritoContext";
 import { createTransaction, obtenerComunas } from "../api/cerveceria_API";
 import "../css/Prepago.css";
+import medioPagoImage from '../img/mediopago.png';
 
 function Prepago() {
   const [selectedOption, setSelectedOption] = useState("");
@@ -596,7 +597,7 @@ function Prepago() {
             <hr className="custom-hr" />
             <h2>Aceptamos los siguientes medios de pago</h2>
             <img
-              src="logos_medios_de_pago.png"
+              src={medioPagoImage}
               alt="Medios de pago"
               style={{ width: "70%", height: "auto" }}
             />
