@@ -82,6 +82,7 @@ function RegisterAdmin() {
       password,
       is_staff: true, // Marcamos que es administrador (staff)
       is_superuser: false, // No es superusuario
+      is_verified: true,
     };
 
     try {
@@ -97,7 +98,6 @@ function RegisterAdmin() {
         setCorreo("")
         setPassword("")
         setConfirmPassword("")
-        navigate("/perfil"); // Redirige al dashboard de administradores
       } else {
         console.error("Error al registrar el administrador");
       }

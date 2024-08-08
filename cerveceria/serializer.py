@@ -112,7 +112,6 @@ class UsuarioSerializer(serializers.ModelSerializer):
             empresa, created = Empresa.objects.update_or_create(
                 usuario=instance, defaults=empresa_data
             )
-
         return instance
     
 class CustomAuthTokenSerializer(serializers.Serializer):

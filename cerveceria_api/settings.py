@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-nu!)3j^kg0hm0-hmlg($^0z+25z!+7bil($1n-s(m-5nnk@1m8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1','1c52-191-114-35-218.ngrok-free.app']
+ALLOWED_HOSTS = ['localhost', 'df93-191-114-35-218.ngrok-free.app','127.0.0.1']
 
 #CONFIGURACION CORREO ELECTRONICO
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -64,7 +64,6 @@ LOGGING = {
 }
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -78,7 +77,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'coreapi',
     'cerveceria',
-    
 ]
 
 MIDDLEWARE = [

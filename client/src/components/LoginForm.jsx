@@ -31,7 +31,7 @@ function LoginForm() {
         console.log(response.data.user);
         localStorage.setItem("usuario", JSON.stringify(response.data.user));
         //INFO DEL TOKEN = response.data.token
-        localStorage.setItem("token", JSON.stringify(response.data.token));
+        localStorage.setItem("token", response.data.token); // Guardar token como cadena
         console.log(response.data.token);
         navigate("/perfil");
       } else {
