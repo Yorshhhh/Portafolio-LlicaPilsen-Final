@@ -3,8 +3,6 @@ import { useNavigate, NavLink } from "react-router-dom";
 import { useCart } from "../context/CarritoContext";
 import Carrito from "./Carrito";
 import UserCard from "./UserCard";
-import Ganancias from "./GananciasAdmin";
-import HistorialPedidos from "./HistorialPedidos";
 
 function Navbar() {
   const {
@@ -158,7 +156,7 @@ function Navbar() {
                     <span className="sr-only">Open user menu</span>
                     <img
                       className="h-8 w-8 rounded-full"
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                      src="https://img.icons8.com/ios/50/000000/user.png"
                       alt="Profile"
                     />
                   </button>

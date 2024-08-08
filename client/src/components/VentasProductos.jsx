@@ -15,6 +15,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+import { ToastContainer, toast } from "react-toastify";
 
 const COLORS = [
   "#0088FE",
@@ -65,12 +66,11 @@ function VentasProductos() {
   const fetchVentasPorProducto = async () => {
     try {
       setLoading(true);
-      setError(null);
       const data = await obtenerVentasPorProducto();
       setVentasProducto(data);
     } catch (error) {
       console.error("Error al obtener las ventas por producto: ", error);
-      setError("Error al cargar las ventas por producto.");
+      toast.error("Error al cargar las ventas por producto.");
     } finally {
       setLoading(false);
     }
@@ -79,12 +79,16 @@ function VentasProductos() {
   const fetchVentasMensuales = async (mes) => {
     try {
       setLoading(true);
-      setError(null);
       const data = await ventasMensualesProducto(mes);
-      setVentasMensuales(data);
+      if (data.length === 0) {
+        toast.info(`No se encontraron ventas para el mes ${mes}.`);
+      } else {
+        setVentasMensuales(data);
+      }
     } catch (error) {
+      const errorMessage = error.response?.data?.error || "Error desconocido";
       console.error("Error al obtener las ventas mensuales: ", error);
-      setError("Error al cargar las ventas mensuales.");
+      toast.error(`Error al obtener ventas mensuales: \n${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -94,11 +98,15 @@ function VentasProductos() {
     try {
       setLoading(true);
       const data = await ventasPorFecha(fechaInicio, fechaFin);
-      setVentasPorFechaData(data);
-      setError(null);
+      if (data.length === 0) {
+        toast.info("No se encontraron ventas para el rango de fechas especificado.");
+      } else {
+        setVentasPorFechaData(data);
+      }
     } catch (error) {
+      const errorMessage = error.response?.data?.error || "Error desconocido";
       console.error("Error al obtener las ventas por fecha: ", error);
-      setError("Error al obtener las ventas.");
+      toast.error(`Error al obtener ventas por periodo: \n${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -141,10 +149,6 @@ function VentasProductos() {
     return <div>Cargando...</div>;
   }
 
-  if (error) {
-    return <div>{error}</div>;
-  }
-
   return (
     <div className="flex justify-between flex-row flex-wrap">
       <div className="basis-1/4">
@@ -153,7 +157,7 @@ function VentasProductos() {
         </h1>
 
         <label htmlFor="productFilter" className="mr-2">
-          Selecciona Productos:
+          Seleccionar Productos:
         </label>
         <select
           id="productFilter"
@@ -184,7 +188,7 @@ function VentasProductos() {
             <YAxis tickFormatter={formatCurrency} />
             <Tooltip formatter={(value) => formatCurrency(value)} />
             <Legend />
-            <Bar dataKey="total" fill="#8884d8" barSize={30}>
+            <Bar dataKey="total_ventas" fill="#8884d8" barSize={30}>
               {filteredVentasProducto.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
@@ -242,7 +246,7 @@ function VentasProductos() {
             <YAxis tickFormatter={formatCurrency} />
             <Tooltip formatter={(value) => formatCurrency(value)} />
             <Legend />
-            <Bar dataKey="total" fill="#8884d8" barSize={30}>
+            <Bar dataKey="total_ventas" fill="#8884d8" barSize={30}>
               {ventasPorFechaData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
@@ -295,7 +299,7 @@ function VentasProductos() {
             <YAxis tickFormatter={formatCurrency} />
             <Tooltip formatter={(value) => formatCurrency(value)} />
             <Legend />
-            <Bar dataKey="total" fill="#8884d8" barSize={30}>
+            <Bar dataKey="total_ventas" fill="#8884d8" barSize={30}>
               {ventasMensuales.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
@@ -306,6 +310,7 @@ function VentasProductos() {
           </BarChart>
         </ResponsiveContainer>
       </div>
+      <ToastContainer />
     </div>
   );
 }

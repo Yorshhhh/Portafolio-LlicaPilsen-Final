@@ -3,6 +3,7 @@ import "../css/PerfilUsuario.css";
 import UserCard from "../components/UserCard";
 import VentasProductos from "../components/VentasProductos";
 import EmpresaForm from "../components/EmpresaForm";
+import VentasExtra from "../components/VentasExtra";
 
 function PerfilUsuarioPage() {
   const [user, setUser] = useState(null);
@@ -30,14 +31,41 @@ function PerfilUsuarioPage() {
 
   const toggleVentasProducto = () => {
     setShowVentasProducto(!showVentasProducto);
+    setShowVentasComuna(false); // Cierra VentasComuna
+    setShowEmpresaForm(false); // Cierra EmpresaForm
   };
 
   const toggleVentasComuna = () => {
     setShowVentasComuna(!showVentasComuna);
+    setShowVentasProducto(false); // Cierra VentasProducto
+    setShowEmpresaForm(false); // Cierra EmpresaForm
   };
 
   const toggleEmpresaForm = () => {
     setShowEmpresaForm(!showEmpresaForm);
+    setShowVentasProducto(false); // Cierra VentasProducto
+    setShowVentasComuna(false); // Cierra VentasComuna
+  };
+
+  const handleDireccionChange = (newDireccion) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      direccion: newDireccion,
+    }));
+  };
+
+  const handleTelefonoChange = (newTelefono) => {
+    setUser((prevUser) => ({
+      ...prevUser,
+      telefono: newTelefono,
+    }));
+  };
+  
+  const handleEmpresaChange = (newData) => {
+    setEmpresaData(newData);
+    // Actualiza los datos de la empresa en localStorage
+    const updatedUser = { ...user, empresa: newData };
+    localStorage.setItem("usuario", JSON.stringify(updatedUser));
   };
 
   if (!user) {
@@ -53,7 +81,7 @@ function PerfilUsuarioPage() {
   return (
     <>
       {user.is_staff ? (
-        <div className="flex flex-row items-center justify-center">
+        <div>
           <div className="flex justify-center gap-4 mb-8">
             <button
               className={`user-profile-button user-profile-staff-button py-2 px-4 text-sm rounded-md ${
@@ -67,10 +95,7 @@ function PerfilUsuarioPage() {
                 ? "Ocultar Ventas por Producto"
                 : "Ver Ventas por Producto"}
             </button>
-          </div>
-          {showVentasProducto && <VentasProductos />}
 
-          <div className="flex justify-center gap-4 mb-8">
             <button
               className={`user-profile-button user-profile-staff-button py-2 px-4 text-sm rounded-md ${
                 showVentasComuna
@@ -84,13 +109,16 @@ function PerfilUsuarioPage() {
                 : "Ver Ventas por Comuna"}
             </button>
           </div>
-          {showVentasComuna && <div>Se viene esta implementacion</div>}
+          {showVentasProducto && <VentasProductos />}
+
+          <div className="flex justify-center gap-4 mb-8"></div>
+          {showVentasComuna && <VentasExtra />}
         </div>
       ) : (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
           <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
             <div className="mb-4">
-              <UserCard user={user} />
+              <UserCard user={user} onDireccionChange={handleDireccionChange} onTelefonoChange={handleTelefonoChange}/>
             </div>
             <div className="flex justify-center gap-4 mb-8">
               <button
@@ -107,7 +135,7 @@ function PerfilUsuarioPage() {
               </button>
             </div>
             {showEmpresaForm && (
-              <EmpresaForm onChange={setEmpresaData} usuario_id={user.id} />
+              <EmpresaForm onChange={setEmpresaData} usuario_id={user.id} initialData={empresaData}/>
             )}
           </div>
         </div>

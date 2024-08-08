@@ -13,7 +13,8 @@ cerveceriaAPI.interceptors.request.use(
     // Obtener el token del almacenamiento local o algún otro lugar seguro
     const token = localStorage.getItem("token");
     if (token) {
-      config.headers["Authorization"] = `Token ${token}`;
+      config.headers["Authorization"] = `Bearer ${token}`; // Cambiado a 'Bearer'
+      console.log("Token agregado a la solicitud:", token); // Añadir un console.log para verificar
     }
     return config;
   },
@@ -21,6 +22,7 @@ cerveceriaAPI.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
 
 export const getAllProductos = () => {
   return cerveceriaAPI.get("/productos/");
@@ -49,6 +51,10 @@ export const registrarEmpresa = (empresaData) => {
 export const actualizarDireccion = (id, nuevaDireccion) => {
   return cerveceriaAPI.patch(`/usuarios/${id}/`, { direccion: nuevaDireccion });
 };
+
+export const actualizarTelefono = (id, nuevoTelefono) => {
+  return cerveceriaAPI.patch(`/usuarios/${id}/`, { telefono: nuevoTelefono });
+}
 
 export const confirmarPedido = (cod_pedido_id, fecha_Entregado, cod_comuna) => {
   return cerveceriaAPI.patch(`/pedidos/${cod_pedido_id}/`, {
@@ -95,6 +101,24 @@ export const obtenerVentasPorProducto = async () => {
 export const obtenerVentasPorComuna = async () => {
   try {
     const response = await cerveceriaAPI.get("/ventas_comuna/");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const obtenerVentasPorDocumento = async () => {
+  try {
+    const response = await cerveceriaAPI.get("/ventas_documento/");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const obtenerVentasPorEntrega = async () => {
+  try {
+    const response = await cerveceriaAPI.get("/ventas_entrega/");
     return response.data;
   } catch (error) {
     throw error;

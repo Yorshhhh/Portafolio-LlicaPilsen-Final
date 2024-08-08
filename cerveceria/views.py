@@ -1,4 +1,5 @@
 from rest_framework.authtoken.views import ObtainAuthToken
+from datetime import datetime
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny
 from django.contrib.auth.models import Group
@@ -14,6 +15,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.utils.dateparse import parse_date
 from rest_framework.decorators import api_view, action
+from django.http import HttpResponseBadRequest
+
 from .utils import generate_pdf, send_email_with_pdf, Util
 import logging
 
@@ -25,8 +28,9 @@ from .serializer import ProductoSerializer,UsuarioSerializer,\
     Detalle_PedidoSerializer,PedidoSerializer,CustomAuthTokenSerializer\
     ,RegionSerializer,CiudadSerializer,ComunaSerializer,EmpresaSerializer
 
-from .models import Producto,Usuario,Detalle_Pedido,Pedido,GananciasProducto,PedidoPendiente,\
-    PedidoEntregado, VentasComuna,Region,Ciudad,Comuna, Empresa
+from .models import Producto,Usuario,Detalle_Pedido,Pedido,PedidoPendiente,\
+    PedidoEntregado, VentasComuna,Region,Ciudad,Comuna, Empresa,\
+    VentasTipoDocumento,GananciasProducto,VentasTipoEntrega,VentasComuna
 
 class UsuarioView(viewsets.ModelViewSet):
     serializer_class = UsuarioSerializer
@@ -108,8 +112,9 @@ class VentasComunaView(APIView):
         try:
             ventas = VentasComuna.objects.all()
             ventas_data = [{
-                "comuna_envio": venta.comuna_envio,
-                "total": venta.total
+                "cod_comuna": venta.cod_comuna_id,
+                "comuna_envio": venta.nombre,
+                "total_ventas": venta.total_ventas
             }
             for venta in ventas
             ]
@@ -125,7 +130,37 @@ class VentasProductoView(APIView):
                 {
                     "cod_producto": venta.cod_producto,
                     "nombre_producto": venta.nombre_producto,
-                    "total": venta.total
+                    "total_ventas": venta.total_ventas
+                }
+                for venta in ventas
+            ]
+            return Response(ventas_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class VentasDocumentoView(APIView):
+    def get(self, request):
+        try:
+            ventas = VentasTipoDocumento.objects.all()
+            ventas_data = [
+                {
+                    "tipo_documento": venta.tipo_documento,
+                    "total_ventas": venta.total_ventas
+                }
+                for venta in ventas
+            ]
+            return Response(ventas_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class VentasEntregaView(APIView):
+    def get(self, request):
+        try:
+            ventas = VentasTipoEntrega.objects.all()
+            ventas_data = [
+                {
+                    "tipo_entrega": venta.tipo_entrega,
+                    "total_ventas": venta.total_ventas
                 }
                 for venta in ventas
             ]
@@ -184,14 +219,12 @@ class VentasMensualesView(APIView):
         try:
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    SELECT b.cod_producto, b.nombre_producto, TO_CHAR(c.fecha_entrega,'MM-YYYY') AS mes_solicitado,
-                           NVL(SUM(a.precio_unitario * a.cantidad), 0) AS Total
-                    FROM cerveceria_detalle_pedido a
-                        JOIN cerveceria_producto b ON (a.cod_producto_id = b.cod_producto)
-                        JOIN cerveceria_pedido c ON (a.cod_pedido_id = c.cod_pedido)
-                    WHERE c.fecha_entrega IS NOT NULL AND TO_CHAR(c.fecha_entrega,'MM-YYYY') = %s
-                    GROUP BY b.cod_producto, b.nombre_producto, TO_CHAR(c.fecha_entrega, 'MM-YYYY')
-                    ORDER BY b.cod_producto
+                    SELECT c.nombre_producto, SUM(a.total_boleta) as total_ventas
+                    FROM cerveceria_pedido a
+                    JOIN cerveceria_detalle_pedido b ON (a.cod_pedido = b.cod_pedido_id)
+                    JOIN cerveceria_producto c ON (b.cod_producto_id = c.cod_producto)
+                    WHERE TO_CHAR(a.fecha_entrega, 'MM-YYYY') = %s
+                    GROUP BY c.nombre_producto
                 """, [month_year])
 
                 ventas_mensuales = cursor.fetchall()
@@ -202,12 +235,11 @@ class VentasMensualesView(APIView):
                 ventas_data = []
                 for venta in ventas_mensuales:
                     venta_dict = {
-                        "cod_producto": venta[0],
-                        "nombre_producto": venta[1],
-                        "mes_solicitado": venta[2],
-                        "total": venta[3],
+                        "nombre_producto": venta[0],  # nombre del producto
+                        "total_ventas": venta[1],      # total de ventas
                     }
                     ventas_data.append(venta_dict)
+
                 return Response(ventas_data, status=status.HTTP_200_OK)
 
         except OperationalError as e:
@@ -215,24 +247,28 @@ class VentasMensualesView(APIView):
         
 class VentasFechaView(APIView):
     def get(self, request):
-        fecha_inicio = request.query_params.get('fecha_inicio')  # Parámetro para la fecha de inicio en formato DD-MM-YYYY
-        fecha_fin = request.query_params.get('fecha_fin')  # Parámetro para la fecha de fin en formato DD-MM-YYYY
+        fecha_inicio = request.query_params.get('fecha_inicio')  # Formato DD-MM-YYYY
+        fecha_fin = request.query_params.get('fecha_fin')  # Formato DD-MM-YYYY
 
         if not fecha_inicio or not fecha_fin:
             return Response({"error": "Faltan los parámetros 'fecha_inicio' o 'fecha_fin' en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
+            # Convertir las fechas al formato YYYY-MM-DD
+            fecha_inicio_dt = datetime.strptime(fecha_inicio, '%d-%m-%Y').strftime('%Y-%m-%d')
+            fecha_fin_dt = datetime.strptime(fecha_fin, '%d-%m-%Y').strftime('%Y-%m-%d')
+
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    SELECT b.cod_producto, b.nombre_producto, TO_CHAR(c.fecha_entrega,'DD-MM-YYYY') AS fecha_entrega,
-                           NVL(SUM(a.precio_unitario * a.cantidad), 0) AS total
-                    FROM cerveceria_detalle_pedido a
-                        JOIN cerveceria_producto b ON a.cod_producto_id = b.cod_producto
-                        JOIN cerveceria_pedido c ON a.cod_pedido_id = c.cod_pedido
-                    WHERE c.fecha_entrega IS NOT NULL AND TO_CHAR(c.fecha_entrega, 'DD-MM-YYYY') BETWEEN %s AND %s
-                    GROUP BY b.cod_producto, b.nombre_producto, TO_CHAR(c.fecha_entrega, 'DD-MM-YYYY')
-                    ORDER BY TO_CHAR(c.fecha_entrega, 'DD-MM-YYYY') ASC
-                """, [fecha_inicio, fecha_fin])
+                    SELECT c.cod_producto, c.nombre_producto, SUM(total_boleta) AS total_ventas
+                    FROM cerveceria_pedido a
+                    JOIN cerveceria_detalle_pedido b ON a.cod_pedido = b.cod_pedido_id
+                    JOIN cerveceria_producto c ON b.cod_producto_id = c.cod_producto
+                    WHERE fecha_entrega IS NOT NULL 
+                    AND fecha_entrega BETWEEN %s AND %s
+                    GROUP BY c.cod_producto, c.nombre_producto
+                    ORDER BY c.nombre_producto ASC
+                """, [fecha_inicio_dt, fecha_fin_dt])
 
                 ventas_por_fecha = cursor.fetchall()
 
@@ -244,14 +280,16 @@ class VentasFechaView(APIView):
                     venta_dict = {
                         "cod_producto": venta[0],
                         "nombre_producto": venta[1],
-                        "fecha_entrega": venta[2],
-                        "total": venta[3],
+                        "total_ventas": venta[2],
                     }
                     ventas_data.append(venta_dict)
+
                 return Response(ventas_data, status=status.HTTP_200_OK)
 
         except OperationalError as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except ValueError as ve:
+            return Response({"error": "Formato de fecha inválido. Use DD-MM-YYYY."}, status=status.HTTP_400_BAD_REQUEST)
 
 class PedidoPendienteView(APIView):
     pagination_class =  PedidoPendientePagination
