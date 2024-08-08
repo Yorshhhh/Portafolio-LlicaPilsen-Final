@@ -4,8 +4,7 @@ import cervezas from '../img/carusel1.jpg';
 import vino from '../img/CervezaKrossCrrusel.jpg';
 import whisky from '../img/3.png';
 
-
-const images = [cerveza2,cervezas, vino, whisky ];
+const images = [cerveza2, cervezas, vino, whisky];
 
 function Carrusel() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -23,7 +22,7 @@ function Carrusel() {
   };
 
   return (
-    <div className="relative w-full mt-12 mb-12">
+    <div className="relative w-full">
       <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[600px] xl:h-[800px] overflow-hidden rounded-lg">
         {images.map((image, index) => (
           <div

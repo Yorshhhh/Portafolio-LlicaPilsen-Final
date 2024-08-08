@@ -333,7 +333,7 @@ function Prepago() {
   };
 
   return (
-    <div>
+    <div >
       {user ? (
         <div className="horizontal-container">
           <div className="flex flex-col">
