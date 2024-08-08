@@ -61,20 +61,24 @@ function LoginForm() {
     header: {
       textAlign: "center",
       marginBottom: "20px",
+      color: "black",
     },
     formGroup: {
       marginBottom: "15px",
+      color: "black",
     },
     label: {
       display: "block",
       marginBottom: "5px",
       fontWeight: "bold",
+      color: "black",
     },
     input: {
       width: "100%",
       padding: "10px",
       borderRadius: "4px",
       border: "1px solid #ccc",
+      color: "black",
     },
     button: {
       padding: "10px 15px",
@@ -94,6 +98,11 @@ function LoginForm() {
       color: "#721c24",
       padding: "8px",
       borderRadius: "4px",
+    },
+    navLink: {
+      textAlign: "center",
+      marginTop: "20px",
+      color: "black",
     },
   };
 
@@ -143,10 +152,10 @@ function LoginForm() {
               Entrar
             </button>
           </form>
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <div style={styles.navLink}>
             <NavLink to="/register">Registrate</NavLink>
           </div>
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <div style={styles.navLink}>
             <NavLink to="/home">Volver al Inicio</NavLink>
           </div>
         </div>

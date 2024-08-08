@@ -8,17 +8,18 @@
   --prepago-body-display: flex;
   --prepago-body-flex-direction: column;
   --prepago-body-justify-content: center;
+  --prepago-body-background-image: url('../img/fondo-cuellonegro-scaled.jpg');
 }
 
-.prepago{
-  font-family: var(--prepago-body-font-family);
-  line-height: var(--prepago-body-line-height);
-  background-color: var(--prepago-body-background-color);
-  margin: var(--prepago-body-margin);
-  padding: var(--prepago-body-padding);
-  display: var(--prepago-body-display);
-  flex-direction: var(--prepago-body-flex-direction);
-  justify-content: var(--prepago-body-justify-content);
+.prepago {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  background-image: url('../img/fondo-cuellonegro-scaled.jpg'); /* Cambia esta URL por la ruta de tu imagen */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* Estilos para el contenedor horizontal */

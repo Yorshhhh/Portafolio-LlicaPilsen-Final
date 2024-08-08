@@ -18,8 +18,6 @@ function RegisterForm() {
 
   const navigate = useNavigate();
 
-  /*   const [confirmPassword, setConfirmPassword] = useState("") */
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -113,24 +111,29 @@ function RegisterForm() {
       boxShadow: "0 0 10px rgba(0,0,0,0.1)",
       maxWidth: "400px",
       width: "100%",
+      color: "black",
     },
     header: {
       textAlign: "center",
       marginBottom: "20px",
+      color: "black",
     },
     formGroup: {
       marginBottom: "15px",
+      color: "black",
     },
     label: {
       display: "block",
       marginBottom: "5px",
       fontWeight: "bold",
+      color: "black",
     },
     input: {
       width: "100%",
       padding: "10px",
       borderRadius: "4px",
       border: "1px solid #ccc",
+      color: "black",
     },
     button: {
       padding: "10px 15px",
@@ -242,7 +245,9 @@ function RegisterForm() {
                 onChange={(e) => setCorreo(e.target.value)}
                 value={correo}
               />
-              {correoError && <div className="text-danger">{correoError}</div>}
+              {correoError && (
+                <div style={styles.errorMessage}>{correoError}</div>
+              )}
             </div>
             <div style={styles.formGroup}>
               <label style={styles.label} htmlFor="password">
@@ -256,7 +261,7 @@ function RegisterForm() {
                 value={password}
               />
               {passwordError && (
-                <div className="text-danger">{passwordError}</div>
+                <div style={styles.errorMessage}>{passwordError}</div>
               )}
             </div>
             <div style={styles.formGroup}>
@@ -271,7 +276,7 @@ function RegisterForm() {
                 value={confirmPassword}
               />
               {confirmPasswordError && (
-                <div className="text-danger">{confirmPasswordError}</div>
+                <div style={styles.errorMessage}>{confirmPasswordError}</div>
               )}
             </div>
             <button type="submit" style={styles.button}>
@@ -279,7 +284,7 @@ function RegisterForm() {
             </button>
           </form>
           <NavLink to="/login" style={styles.link}>
-            Iniciar Sesion
+            Iniciar Sesión
           </NavLink>
           <NavLink to="/" style={styles.link}>
             Volver al Inicio

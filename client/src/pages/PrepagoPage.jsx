@@ -5,6 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useCart } from "../context/CarritoContext";
 import { createTransaction, obtenerComunas } from "../api/cerveceria_API";
 import "../css/Prepago.css";
+import medioPagoImage from '../img/mediopago.png';
 
 function Prepago() {
   const [selectedOption, setSelectedOption] = useState("");
@@ -340,7 +341,7 @@ function Prepago() {
   };
 
   return (
-    <div>
+    <div >
       {user ? (
         <div className="horizontal-container">
           <div className="flex flex-col">
@@ -604,7 +605,7 @@ function Prepago() {
             <hr className="custom-hr" />
             <h2>Aceptamos los siguientes medios de pago</h2>
             <img
-              src="logos_medios_de_pago.png"
+              src={medioPagoImage}
               alt="Medios de pago"
               style={{ width: "70%", height: "auto" }}
             />
