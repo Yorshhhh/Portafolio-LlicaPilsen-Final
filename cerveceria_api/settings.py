@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +27,7 @@ SECRET_KEY = 'django-insecure-nu!)3j^kg0hm0-hmlg($^0z+25z!+7bil($1n-s(m-5nnk@1m8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1','1c52-191-114-35-218.ngrok-free.app']
 
 #CONFIGURACION CORREO ELECTRONICO
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -35,6 +36,11 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'seinagi77@gmail.com'
 EMAIL_HOST_PASSWORD = 'yhtnkvugoedjmuto'
 EMAIL_USE_TLS = True
+
+#JWT
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Establece el tiempo que desees
+}
 
 #LOGGER
 LOGGING = {
