@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const cerveceriaAPI = axios.create({
-  baseURL: "http://127.0.0.1:8000/",
+  baseURL: "https://df93-191-114-35-218.ngrok-free.app/",
   timeout: 10000, // Tiempo de espera opcional, ajusta según sea necesario
   headers: {
     "Content-Type": "application/json",

@@ -26,7 +26,10 @@ function UserCard({ user, onDireccionChange, onTelefonoChange }) {
   const handleGuardarDireccionClick = async () => {
     if (direccion.trim()) {
       try {
-        const updatedUser = await actualizarDireccion(user.id, direccion.trim());
+        const updatedUser = await actualizarDireccion(
+          user.id,
+          direccion.trim()
+        );
         // Actualiza la dirección en localStorage si es necesario
         localStorage.setItem(
           "usuario",
@@ -55,13 +58,13 @@ function UserCard({ user, onDireccionChange, onTelefonoChange }) {
   // Función para manejar el cambio en el campo de teléfono
   const handleTelefonoChange = (e) => {
     const newTelefono = e.target.value;
-     // Verificar que solo contenga números y tenga exactamente 9 dígitos
-  if (/^\d{0,9}$/.test(newTelefono)) {
-    setTelefono(newTelefono);
-    onTelefonoChange(newTelefono); // Notifica al componente padre del cambio
-  }else{
-    toast.error('Solo puede ingresar numeros')
-  }
+    // Verificar que solo contenga números y tenga exactamente 9 dígitos
+    if (/^\d{0,9}$/.test(newTelefono)) {
+      setTelefono(newTelefono);
+      onTelefonoChange(newTelefono); // Notifica al componente padre del cambio
+    } else {
+      toast.error("Solo puede ingresar numeros");
+    }
   };
 
   // Función para guardar el teléfono editado y enviarlo al servidor
@@ -96,13 +99,13 @@ function UserCard({ user, onDireccionChange, onTelefonoChange }) {
 
   return (
     <div className="user-card">
-      <h1>Información del usuario</h1>
-      <h2>Nombres: {user.nombres}</h2>
-      <h2>Apellidos: {user.apellidos}</h2>
-      <h2>Correo: {user.correo}</h2>
-      <h2>Teléfono:</h2>
+      <h1 className="text-black">Información del usuario</h1>
+      <h2 className="text-black">Nombres: {user.nombres}</h2>
+      <h2 className="text-black">Apellidos: {user.apellidos}</h2>
+      <h2 className="text-black">Correo: {user.correo}</h2>
+      <h2 className="text-black">Teléfono:</h2>
       {editTelefono ? (
-        <div className="user-profile-telefono-input-container">
+        <div className="user-profile-telefono-input-container text-black">
           <input
             type="text"
             placeholder="Ingresa tu teléfono"
@@ -119,7 +122,9 @@ function UserCard({ user, onDireccionChange, onTelefonoChange }) {
         </div>
       ) : (
         <div>
-          <p>{user.telefono || "Sin teléfono registrado"}</p>
+          <p className="text-black">
+            {user.telefono || "Sin teléfono registrado"}
+          </p>
           <button
             onClick={handleEditarTelefonoClick}
             className="btn btn-primary"
@@ -147,7 +152,9 @@ function UserCard({ user, onDireccionChange, onTelefonoChange }) {
         </div>
       ) : (
         <div>
-          <p>{user.direccion || "Sin dirección registrada"}</p>
+          <p className="text-black">
+            {user.direccion || "Sin dirección registrada"}
+          </p>
           <button
             onClick={handleEditarDireccionClick}
             className="btn btn-primary"
@@ -156,7 +163,7 @@ function UserCard({ user, onDireccionChange, onTelefonoChange }) {
           </button>
         </div>
       )}
-      
+
       <ToastContainer />
     </div>
   );

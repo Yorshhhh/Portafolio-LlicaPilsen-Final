@@ -170,7 +170,7 @@ function Navbar() {
                     aria-labelledby="user-menu-button"
                     tabIndex="-1"
                   >
-                    <h2>
+                    <h2 className="text-black">
                       Bienvenido {user.nombres} {user.apellidos}
                     </h2>
                     <NavLink
