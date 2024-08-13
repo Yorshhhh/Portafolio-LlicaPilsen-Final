@@ -141,7 +141,7 @@ function UserCard({ user, onDireccionChange, onTelefonoChange }) {
             placeholder="Ingresa tu dirección"
             value={direccion}
             onChange={handleDireccionChange}
-            className="user-profile-direccion-input w-full h-12 p-4 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="text-black user-profile-direccion-input w-full h-12 p-4 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <button
             onClick={handleGuardarDireccionClick}

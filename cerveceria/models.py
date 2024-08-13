@@ -219,6 +219,8 @@ class PedidoPendiente(models.Model):
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
     iva = models.DecimalField(max_digits=10, decimal_places=2)
     total_boleta = models.DecimalField(max_digits=10, decimal_places=2)
+    costo_envio = models.DecimalField(max_digits=10, decimal_places=2)
+    total_neto = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_pedido = models.DateField()
 
     class Meta:
@@ -242,6 +244,8 @@ class PedidoEntregado(models.Model):
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
     iva = models.DecimalField(max_digits=10, decimal_places=2)
     total_boleta = models.DecimalField(max_digits=10, decimal_places=2)
+    total_neto = models.DecimalField(max_digits=10, decimal_places=2)
+    costo_envio = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_pedido = models.DateTimeField()
     fecha_entrega = models.DateTimeField()
 

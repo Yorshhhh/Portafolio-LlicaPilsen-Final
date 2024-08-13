@@ -3,6 +3,7 @@ import {
   obtenerVentasPorProducto,
   ventasMensualesProducto,
   ventasPorFecha,
+  ventasF29,
 } from "../api/cerveceria_API";
 import {
   BarChart,
@@ -39,6 +40,7 @@ function VentasProductos() {
   const [ventasProducto, setVentasProducto] = useState([]);
   const [ventasMensuales, setVentasMensuales] = useState([]);
   const [ventasPorFechaData, setVentasPorFechaData] = useState([]);
+  const [documentosData, setDocumentosData] = useState([]);
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -99,9 +101,14 @@ function VentasProductos() {
       setLoading(true);
       const data = await ventasPorFecha(fechaInicio, fechaFin);
       if (data.length === 0) {
-        toast.info("No se encontraron ventas para el rango de fechas especificado.");
+        toast.info(
+          "No se encontraron ventas para el rango de fechas especificado."
+        );
       } else {
         setVentasPorFechaData(data);
+        const documentosResponse = await ventasF29(fechaInicio, fechaFin);
+        console.log(documentosResponse);
+        setDocumentosData(documentosResponse);
       }
     } catch (error) {
       const errorMessage = error.response?.data?.error || "Error desconocido";
@@ -167,7 +174,11 @@ function VentasProductos() {
           className="h-36 p-2 border border-gray-300 rounded"
         >
           {ventasProducto.map((venta) => (
-            <option key={venta.cod_producto} value={venta.nombre_producto}>
+            <option
+              className="text-black"
+              key={venta.cod_producto}
+              value={venta.nombre_producto}
+            >
               {venta.nombre_producto}
             </option>
           ))}
@@ -212,7 +223,7 @@ function VentasProductos() {
           type="text"
           value={fechaInicio}
           onChange={(e) => setFechaInicio(e.target.value)}
-          className="p-2 border border-gray-300 rounded mr-2"
+          className="p-2 border border-gray-300 rounded mr-2 text-black"
         />
         <label htmlFor="fechaFin" className="mr-2">
           Fecha Fin (DD-MM-YYYY):
@@ -222,7 +233,7 @@ function VentasProductos() {
           type="text"
           value={fechaFin}
           onChange={(e) => setFechaFin(e.target.value)}
-          className="p-2 border border-gray-300 rounded mr-2"
+          className="p-2 border border-gray-300 rounded mr-2 text-black"
         />
         <button
           onClick={handleFetchVentas}
@@ -256,6 +267,42 @@ function VentasProductos() {
             </Bar>
           </BarChart>
         </ResponsiveContainer>
+        <div>Aqui viene la Info para el Formulario 29</div>
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th scope="col" className="px-6 py-3">
+                Tipo Documento
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Cantidad de Documentos
+              </th>
+              <th scope="col" className="px-6 py-3">
+                IVA Acumulado
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Total Neto
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Total Boleta
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {documentosData.map((info) => (
+              <tr
+                key={info.tipo_documento}
+                className="bg-white border-b hover:bg-gray-50"
+              >
+                <td className="px-6 py-4">{info.tipo_documento}</td>
+                <td className="px-6 py-4">{info.cantidad_documentos}</td>
+                <td className="px-6 py-4">{info.total_iva}</td>
+                <td className="px-6 py-4">{info.total_neto}</td>
+                <td className="px-6 py-4">{info.total_con_iva}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <div className="basis-1/4">
@@ -272,7 +319,7 @@ function VentasProductos() {
             value={tempMonth}
             onChange={handleMonthChange}
             placeholder="MM-YYYY"
-            className="p-2 border border-gray-300 rounded mr-2"
+            className="p-2 border border-gray-300 rounded mr-2 text-black"
             pattern="\d{2}-\d{4}"
             title="Formato requerido: MM-YYYY"
           />

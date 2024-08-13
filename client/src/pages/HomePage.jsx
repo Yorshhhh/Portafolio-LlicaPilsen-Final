@@ -30,7 +30,7 @@ function HomePage() {
   useEffect(() => {
     async function loadProductos() {
       const res = await getAllProductos();
-      const featuredProductIds = [3, 1, 21, 2];
+      const featuredProductIds = [3, 41, 21, 2];
       const featuredProducts = res.data.filter(producto =>
         featuredProductIds.includes(producto.cod_producto)
       );

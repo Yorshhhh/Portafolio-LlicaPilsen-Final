@@ -16,89 +16,102 @@ import AdministarUsuario from "./pages/AdministarUsuario";
 import AdministrarProducto from "./pages/AdministrarProducto";
 import HistorialPedidosPage from "./pages/HistorialPedidosPage";
 import PrivateRoute from "./components/PrivateRoute";
+import EsperaVerificacion from "./pages/EsperaVerificacion";
+import Mensajeria from "./pages/Mensajeria";
 
 function App() {
   const { user } = useAuth();
-  
+
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/home" />} />
       <Route path="/home" element={<HomePage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/verificar" element={<EsperaVerificacion />} />
       <Route path="/productos" element={<ProductosPage />} />
       <Route path="/prepago" element={<PrepagoPage />} />
       <Route path="/producto/:id" element={<VistaProducto />} />
 
-      {/* Rutas protegidas */}
-      <Route 
-        path="/exito" 
+      {/*ESTAS 3 RUTAS ME GUSTARIA PROTEGERLAS, PARA QUE NINGUN USUARIO QUE NO ESTE
+      AUTENTICADO PUEDA ACCEDER A ELLAS*/}
+      <Route
+        path="/exito"
         element={
-
+          <PrivateRoute>
             <ExitoPage />
-        } 
+          </PrivateRoute>
+        }
       />
-      
-      <Route 
-        path="/historial-pedidos" 
+
+      <Route
+        path="/historial-pedidos"
         element={
           <PrivateRoute>
             <HistorialPedidosPage />
           </PrivateRoute>
-        } 
+        }
       />
-      <Route 
-        path="/perfil" 
+      <Route
+        path="/perfil"
         element={
           <PrivateRoute>
             <PerfilUsuarioPage />
           </PrivateRoute>
-        } 
+        }
       />
-      
+
       {/* Rutas para el usuario con is_staff */}
       {user && user.is_staff && (
         <>
-          <Route 
-            path="/agregar-producto" 
+          <Route
+            path="/agregar-producto"
             element={
               <PrivateRoute>
                 <AgregarProductoPage />
               </PrivateRoute>
-            } 
+            }
           />
-          <Route 
-            path="/listar-productos" 
+          <Route
+            path="/listar-productos"
             element={
               <PrivateRoute>
                 <ListarProductosPage />
               </PrivateRoute>
-            } 
+            }
           />
           <Route path="*" element={<NotFound />} />
-          <Route 
-            path="/pedidos" 
+          <Route
+            path="/pedidos"
             element={
               <PrivateRoute>
                 <Verpedidos />
               </PrivateRoute>
-            } 
+            }
           />
-          <Route 
-            path="/administrar-usuario" 
+          <Route
+            path="/administrar-usuario"
             element={
               <PrivateRoute>
                 <AdministarUsuario />
               </PrivateRoute>
-            } 
+            }
           />
-          <Route 
-            path="/administrar-productos" 
+          <Route
+            path="/administrar-productos"
             element={
               <PrivateRoute>
                 <AdministrarProducto />
               </PrivateRoute>
-            } 
+            }
+          />
+          <Route
+            path="/mensajeria"
+            element={
+              <PrivateRoute>
+                <Mensajeria />
+              </PrivateRoute>
+            }
           />
         </>
       )}

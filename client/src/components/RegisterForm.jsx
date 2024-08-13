@@ -85,8 +85,8 @@ function RegisterForm() {
       if (response.status === 201) {
         console.log("Usuario creado con exito!");
         console.log(response.data);
-        localStorage.setItem("usuario", JSON.stringify(response.data));
-        navigate("/perfil");
+        /* localStorage.setItem("usuario", JSON.stringify(response.data)); */
+        navigate("/verificar");
       } else {
         console.error("Error al registrar al usuario");
       }

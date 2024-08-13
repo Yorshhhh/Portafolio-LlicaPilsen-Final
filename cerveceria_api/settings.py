@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-nu!)3j^kg0hm0-hmlg($^0z+25z!+7bil($1n-s(m-5nnk@1m8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'df93-191-114-35-218.ngrok-free.app','127.0.0.1']
+ALLOWED_HOSTS = ['localhost:5173', '6d80-191-114-51-188.ngrok-free.app','127.0.0.1']
 
 #CONFIGURACION CORREO ELECTRONICO
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -179,6 +179,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #CORS ORIGENES PERMITIDOS
 CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "https://6d80-191-114-51-188.ngrok-free.app",
+    # otras URLs permitidas
+]
 
 #COREAPI LEGACY PARA DOCUMENTAR 
 REST_FRAMEWORK = {

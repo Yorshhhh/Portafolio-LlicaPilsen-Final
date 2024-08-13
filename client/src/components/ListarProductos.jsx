@@ -9,7 +9,7 @@ export default function ListarProductos() {
   useEffect(() => {
     const fetchProductos = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/productos/");
+        const response = await fetch("https://a563-191-114-51-188.ngrok-free.app/productos/");
         if (!response.ok) {
           throw new Error("Error al obtener los productos");
         }

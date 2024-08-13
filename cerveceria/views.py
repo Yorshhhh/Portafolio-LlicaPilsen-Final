@@ -17,7 +17,7 @@ from django.utils.dateparse import parse_date
 from rest_framework.decorators import api_view, action
 from django.http import HttpResponseBadRequest
 
-from .utils import generate_pdf, send_email_with_pdf, Util
+from .utils import generate_pdf, send_email_with_pdf,Util
 import logging
 
 import re
@@ -106,6 +106,21 @@ class VerifyEmail(views.APIView):
             return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError:
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+
+class SendBulkEmailView(APIView):
+    def post(self, request):
+        email_subject = request.data.get('email_subject', '').strip()  # Asegúrate de que no haya espacios
+        email_body = request.data.get('email_body', '').strip()        # Asegúrate de que no haya espacios
+
+        print(f"Email subject: {email_subject}")
+        print(f"Email body: {email_body}")
+
+        try:
+            # Pasar las cadenas directamente
+            Util.send_bulk_email(email_subject, email_body)  
+            return Response({'message': 'Correos enviados exitosamente'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class VentasComunaView(APIView): 
     def get(self,request):
@@ -291,6 +306,57 @@ class VentasFechaView(APIView):
         except ValueError as ve:
             return Response({"error": "Formato de fecha inválido. Use DD-MM-YYYY."}, status=status.HTTP_400_BAD_REQUEST)
 
+class DocumentosFechaView(APIView):
+    def get(self, request):
+        fecha_inicio = request.query_params.get('fecha_inicio')  # Formato DD-MM-YYYY
+        fecha_fin = request.query_params.get('fecha_fin')  # Formato DD-MM-YYYY
+
+        if not fecha_inicio or not fecha_fin:
+            return Response({"error": "Faltan los parámetros 'fecha_inicio' o 'fecha_fin' en la solicitud."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Convertir las fechas al formato YYYY-MM-DD
+            fecha_inicio_dt = datetime.strptime(fecha_inicio, '%d-%m-%Y').strftime('%Y-%m-%d')
+            fecha_fin_dt = datetime.strptime(fecha_fin, '%d-%m-%Y').strftime('%Y-%m-%d')
+
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT 
+                        a.tipo_documento,
+                        COUNT(*) AS cantidad_documentos,
+                        SUM(a.iva) AS total_iva,
+                        SUM(a.total_neto) AS total_neto,
+                        SUM(a.total_boleta) AS total_con_iva
+                    FROM cerveceria_pedido a
+                    WHERE a.fecha_entrega IS NOT NULL 
+                    AND a.fecha_entrega BETWEEN %s AND %s
+                    GROUP BY a.tipo_documento
+                """, [fecha_inicio_dt, fecha_fin_dt])
+
+                documentos_data = cursor.fetchall()
+
+                if not documentos_data:
+                    return Response({"error": "No se encontraron documentos para el rango de fechas especificado."}, status=status.HTTP_404_NOT_FOUND)
+
+                # Procesar los datos para el frontend
+                processed_documentos = []
+                for doc in documentos_data:
+                    documento_dict = {
+                        "tipo_documento": doc[0],
+                        "cantidad_documentos": doc[1],
+                        "total_iva": doc[2],
+                        "total_neto": doc[3],
+                        "total_con_iva": doc[4],
+                    }
+                    processed_documentos.append(documento_dict)
+
+                return Response(processed_documentos, status=status.HTTP_200_OK)
+
+        except OperationalError as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except ValueError as ve:
+            return Response({"error": "Formato de fecha inválido. Use DD-MM-YYYY."}, status=status.HTTP_400_BAD_REQUEST)
+
 class PedidoPendienteView(APIView):
     pagination_class =  PedidoPendientePagination
 
@@ -318,6 +384,8 @@ class PedidoPendienteView(APIView):
                     "precio_unitario": pedido.precio_unitario,
                     "iva": pedido.iva,
                     "total_boleta": pedido.total_boleta,
+                    "total_neto": pedido.total_neto,
+                    "costo_envio": pedido.costo_envio,
                     "fecha_pedido": pedido.fecha_pedido,
                 }
                 for pedido in pedidos_pendientes
@@ -358,6 +426,8 @@ class PedidoEntregadoView(APIView):
                     "precio_unitario": pedido.precio_unitario,
                     "iva": pedido.iva,
                     "total_boleta": pedido.total_boleta,
+                    "total_neto": pedido.total_neto,
+                    "costo_envio": pedido.costo_envio,
                     "fecha_pedido": pedido.fecha_pedido,
                     "fecha_entrega": pedido.fecha_entrega,
                 }
@@ -393,6 +463,8 @@ class BuscarPedidosConCodigoView(APIView):
                            c.precio_unitario,
                            a.iva,
                            a.total_boleta,
+                           a.total_neto,
+                           a.costo_envio,
                            TO_CHAR(a.fecha_pedido, 'DD-MM-YYYY') AS fecha_pedido,
                            TO_CHAR(a.fecha_entrega, 'DD-MM-YYYY') AS fecha_entrega,
                            a.codigo_envio
@@ -428,9 +500,11 @@ class BuscarPedidosConCodigoView(APIView):
                         "precio_unitario": pedido[12],
                         "iva": pedido[13],
                         "total_boleta": pedido[14],
-                        "fecha_pedido": pedido[15],
-                        "fecha_entrega": pedido[16],
-                        "codigo_envio": pedido[17],
+                        "total_neto": pedido[15],         
+                        "costo_envio": pedido[16],        
+                        "fecha_pedido": pedido[17],
+                        "fecha_entrega": pedido[18],
+                        "codigo_envio": pedido[19],
                     }
                     pedidos_data.append(pedido_dict)
                 
@@ -462,6 +536,8 @@ class BuscarPedidosConCorreoView(APIView):
                            c.precio_unitario,
                            a.iva,
                            a.total_boleta,
+                           a.total_neto,
+                           a.costo_envio,
                            TO_CHAR(a.fecha_pedido, 'DD-MM-YYYY') AS fecha_pedido,
                            TO_CHAR(a.fecha_entrega, 'DD-MM-YYYY') AS fecha_entrega,
                            a.codigo_envio     
@@ -497,9 +573,11 @@ class BuscarPedidosConCorreoView(APIView):
                         "precio_unitario": pedido[12],
                         "iva": pedido[13],
                         "total_boleta": pedido[14],
-                        "fecha_pedido": pedido[15],
-                        "fecha_entrega": pedido[16],
-                        "codigo_envio": pedido[17],
+                        "total_neto": pedido[15],         # Nuevo campo agregado
+                        "costo_envio": pedido[16],        # Nuevo campo agregado
+                        "fecha_pedido": pedido[17],
+                        "fecha_entrega": pedido[18],
+                        "codigo_envio": pedido[19],
                     }
                     pedidos_data.append(pedido_dict)
                 
@@ -621,16 +699,16 @@ class PedidoView(viewsets.ModelViewSet):
     def confirmar(self, request, pk=None):
         logger = logging.getLogger(__name__)
         try:
-            print("Antes de obtener el objeto del pedido")
             pedido = self.get_object()
-            print("Después de obtener el objeto del pedido")
             pedido.confirmado = True
             pedido.save()
 
-            # Obtener información del pedido, detalle_producto, producto, usuario, comuna, ciudad y región
+            # Obtener información del usuario y empresa (si existe)
             usuario = pedido.id_usuario
+            empresa = usuario.empresa if hasattr(usuario, 'empresa') and pedido.tipo_documento == 'factura' else None
+            
+            # Obtener detalles del pedido y otra información relacionada
             detalles_pedido = Detalle_Pedido.objects.filter(cod_pedido=pedido).select_related('cod_producto')
-            print(usuario)
             
             # Acceso a la comuna, ciudad y región
             comuna = pedido.cod_comuna
@@ -640,15 +718,33 @@ class PedidoView(viewsets.ModelViewSet):
             # Logging para verificar variables
             logger.info("Pedido: %s", pedido)
             logger.info("Usuario: %s", usuario)
+            logger.info("Empresa: %s", empresa)
             logger.info("Detalles del pedido: %s", detalles_pedido)
             logger.info("Comuna: %s", comuna)
             logger.info("Ciudad: %s", ciudad)
             logger.info("Región: %s", region)
 
-            # Generar el PDF con la información del pedido y enviarlo por correo
-            logger.info("Intentando enviar correo a %s", usuario.correo)
-            pdf_content = generate_pdf(pedido, usuario, detalles_pedido, comuna, ciudad, region)
-            logger.info("Contenido del PDF generado: %s", pdf_content[:100])
+            # Actualizar el stock y verificar el estado
+            for detalle in detalles_pedido:
+                product = detalle.cod_producto
+                product.stock_producto -= detalle.cantidad  # Reduce el stock
+                product.save()  # Guarda los cambios
+
+                print(product.stock_producto)
+                # Verifica si el stock ha llegado a 3 o menos
+                if product.stock_producto <= 5:
+                    subject = f"Stock bajo para el producto: {product.nombre_producto}"
+                    body = f"El stock del producto '{product.nombre_producto}' se ha reducido a {product.stock_producto} unidades. Es recomendable reponerlo."
+                    print("Se esta enviando un correo al administrador!")
+                    Util.send_email({
+                        'email_subject': subject,
+                        'email_body': body,
+                        'to_email': 'seinagi77@gmail.com'
+                    })
+            # Generar el PDF con la información del pedido, incluyendo la empresa si es una factura
+            pdf_content = generate_pdf(pedido, usuario, detalles_pedido, comuna, ciudad, region, empresa)
+
+            # Enviar el PDF por correo al usuario
             send_email_with_pdf(usuario, pdf_content)
 
             return Response({'status': 'pedido confirmado'})
@@ -663,6 +759,17 @@ def update_stock(request):
             product = Producto.objects.get(id=item['cod_producto'])
             product.stock -= item['quantity']
             product.save()
+
+            # Verifica si el stock ha llegado a 5 o menos
+            if product.stock <= 5:
+                # Envía un correo notificando la reducción del stock
+                subject = f"Stock bajo para el producto: {product.nombre_producto}"
+                body = f"El stock del producto '{product.nombre_producto}' se ha reducido a {product.stock} unidades. Es recomendable reponerlo."
+                Util.send_email({
+                    'email_subject': subject,
+                    'email_body': body,
+                    'to_email': 'seinagi77@gmail.com'  # Cambia esto al correo del usuario correspondiente
+                })
         return Response({"message": "Stock updated successfully"}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

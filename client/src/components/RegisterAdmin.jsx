@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { registrarAdmin } from "../api/cerveceria_API";
 
 function RegisterAdmin() {
@@ -16,7 +15,6 @@ function RegisterAdmin() {
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
-  const navigate = useNavigate();
   const authToken = localStorage.getItem("token");
 
   const handleSubmit = async (e) => {

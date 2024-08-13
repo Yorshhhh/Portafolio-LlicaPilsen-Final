@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useCart } from "../context/CarritoContext";
+import { useAuth } from '../context/AuthContext'
 import Carrito from "./Carrito";
-import UserCard from "./UserCard";
 
 function Navbar() {
+  const { user, logout } = useAuth();
   const {
     cartItems,
     removeFromCart,
@@ -13,7 +14,7 @@ function Navbar() {
     showCart,
     setShowCart,
   } = useCart();
-  const [user, setUser] = useState(null);
+  
   const [loading, setLoading] = useState(true);
   const [menuVisible, setMenuVisible] = useState(false);
   const [profileMenuVisible, setProfileMenuVisible] = useState(false);
@@ -31,14 +32,6 @@ function Navbar() {
   }, []);
 
   const history = useNavigate();
-
-  const logout = () => {
-    localStorage.removeItem("usuario");
-    localStorage.removeItem("token");
-    localStorage.removeItem("carrito");
-    setUser(null);
-    history("/");
-  };
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
@@ -193,6 +186,16 @@ function Navbar() {
                           id="user-menu-item-0"
                         >
                           Administrar Pedidos
+                        </NavLink>
+
+                        <NavLink
+                          to="/mensajeria"
+                          className="block px-4 py-2 text-sm text-gray-700"
+                          role="menuitem"
+                          tabIndex="-1"
+                          id="user-menu-item-0"
+                        >
+                          Enviar Correos
                         </NavLink>
 
                         <NavLink

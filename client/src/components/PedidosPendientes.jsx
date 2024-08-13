@@ -75,6 +75,8 @@ function PedidosPendientes() {
         precio_unitario: pedido.precio_unitario,
         iva: pedido.iva,
         total_boleta: pedido.total_boleta,
+        total_neto: pedido.total_neto,
+        costo_envio: pedido.costo_envio,
       });
     });
 
@@ -128,40 +130,64 @@ function PedidosPendientes() {
 
   return (
     <div>
-      <h1>Pedidos Pendientes</h1>
-      {prevPage && (
-        <button onClick={() => handlePageChange(prevPage)}>
-          Página Anterior
-          <FaArrowAltCircleLeft className="ml-2" />
-        </button>
-      )}
-      {nextPage && (
-        <button onClick={() => handlePageChange(nextPage)}>
-          Siguiente Página
-          <FaArrowAltCircleRight className="ml-2" />
-        </button>
-      )}
-      <table className="pedidos-table">
-        <thead>
+      <h1 className="text-center font-medium text-white">Pedidos Pendientes</h1>
+      <div className="flex justify-center">
+        {prevPage && (
+          <button onClick={() => handlePageChange(prevPage)}>
+            Página Anterior
+            <FaArrowAltCircleLeft className="ml-2" />
+          </button>
+        )}
+        {nextPage && (
+          <button onClick={() => handlePageChange(nextPage)}>
+            Siguiente Página
+            <FaArrowAltCircleRight className="ml-2" />
+          </button>
+        )}
+      </div>
+
+      <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
           <tr>
-            <th>Cod Pedido</th>
-            <th>Nombre Cliente</th>
-            <th>Datos Despacho</th>
-            <th>Correo</th>
-            <th>Teléfono</th>
-            <th>Detalles</th>
-            <th>Total Pedido</th>
-            <th>Fecha Pedido</th>
-            <th>Confirmar Pedido</th>
+            <th scope="col" className="px-6 py-3">
+              Cod Pedido
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Nombre Cliente
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Datos Despacho
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Correo
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Teléfono
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Detalles
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Total Pedido
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Fecha Pedido
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Confirmar Pedido
+            </th>
           </tr>
         </thead>
         <tbody>
           {agruparPedidos(p_pendientes).map((pedidoAgrupado) => {
             return (
-              <tr key={pedidoAgrupado.cod_pedido}>
-                <td>{pedidoAgrupado.cod_pedido}</td>
-                <td>{pedidoAgrupado.nombre_cliente}</td>
-                <td>
+              <tr
+                key={pedidoAgrupado.cod_pedido}
+                className="bg-white border-b  hover:bg-gray-50"
+              >
+                <td className="px-6 py-4">{pedidoAgrupado.cod_pedido}</td>
+                <td className="px-6 py-4">{pedidoAgrupado.nombre_cliente}</td>
+                <td className="px-6 py-4">
                   Comuna:
                   {pedidoAgrupado.comuna}
                   <br />
@@ -171,9 +197,9 @@ function PedidosPendientes() {
                   <br />
                   Tipo Entrega: {pedidoAgrupado.tipo_entrega}
                 </td>
-                <td>{pedidoAgrupado.correo}</td>
-                <td>{pedidoAgrupado.telefono}</td>
-                <td>
+                <td className="px-6 py-4">{pedidoAgrupado.correo}</td>
+                <td className="px-6 py-4">{pedidoAgrupado.telefono}</td>
+                <td className="px-6 py-4">
                   <ul>
                     {pedidoAgrupado.detalles.map((detalle, index) => (
                       <li key={index} className="mb-4">
@@ -194,13 +220,24 @@ function PedidosPendientes() {
                 </td>
                 <td className="text-center">
                   <strong>
-                    Total Boleta: {formatCurrency(pedidoAgrupado.total_boleta)}
+                    Total Neto: {formatCurrency(pedidoAgrupado.total_neto)}
+                  </strong>
+                  <br />
+                  <strong>
+                    Costo Envio: {formatCurrency(pedidoAgrupado.costo_envio)}
                   </strong>
                   <br />
                   <strong>IVA: {formatCurrency(pedidoAgrupado.iva)}</strong>
+                  <br />
+                  <strong>
+                    Total Boleta: {formatCurrency(pedidoAgrupado.total_boleta)}
+                  </strong>
+                  <br />
                 </td>
-                <td>{formatearFecha(pedidoAgrupado.fecha_pedido)}</td>
-                <td>
+                <td className="px-6 py-4">
+                  {formatearFecha(pedidoAgrupado.fecha_pedido)}
+                </td>
+                <td className="px-6 py-4">
                   <button
                     onClick={() => handleConfirmar(pedidoAgrupado)}
                     className="btn btn-danger"
@@ -213,18 +250,20 @@ function PedidosPendientes() {
           })}
         </tbody>
       </table>
-      {prevPage && (
-        <button onClick={() => handlePageChange(prevPage)}>
-          Página Anterior
-          <FaArrowAltCircleLeft className="ml-2" />
-        </button>
-      )}
-      {nextPage && (
-        <button onClick={() => handlePageChange(nextPage)}>
-          Siguiente Página
-          <FaArrowAltCircleRight className="ml-2" />
-        </button>
-      )}
+      <div className="flex justify-center">
+        {prevPage && (
+          <button onClick={() => handlePageChange(prevPage)}>
+            Página Anterior
+            <FaArrowAltCircleLeft className="ml-2" />
+          </button>
+        )}
+        {nextPage && (
+          <button onClick={() => handlePageChange(nextPage)}>
+            Siguiente Página
+            <FaArrowAltCircleRight className="ml-2" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }

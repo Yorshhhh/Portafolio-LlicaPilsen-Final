@@ -43,8 +43,8 @@ function VerPedidos() {
             onClick={toggleEntregados}
           >
             {activeButton === "entregados"
-              ? "Ocultar Pedidos Entregados"
-              : "Mostrar Pedidos Entregados"}
+              ? "Ocultar Pedidos Despachados"
+              : "Mostrar Pedidos Despachados"}
           </button>
 
           <button

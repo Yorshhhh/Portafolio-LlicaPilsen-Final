@@ -125,15 +125,27 @@ const HistorialPedidos = () => {
             </button>
           )}
         </div>
-        <table className="pedidos-table mx-auto">
-          <thead>
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
-              <th>Cod Pedido</th>
-              <th>Datos Despacho</th>
-              <th>Detalle Pedido</th>
-              <th>Total del Pedido</th>
-              <th>Fecha de Pedido</th>
-              <th>Fecha de Entrega</th>
+              <th scope="col" className="px-6 py-3">
+                Cod Pedido
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Datos Despacho
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Detalle Pedido
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Total del Pedido
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Fecha de Pedido
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Fecha de Entrega
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -142,9 +154,12 @@ const HistorialPedidos = () => {
                 pedidoAgrupado.detalles
               );
               return (
-                <tr key={pedidoAgrupado.cod_pedido}>
-                  <td>{pedidoAgrupado.cod_pedido}</td>
-                  <td>
+                <tr
+                  key={pedidoAgrupado.cod_pedido}
+                  className="bg-white border-b  hover:bg-gray-50"
+                >
+                  <td className="px-6 py-4">{pedidoAgrupado.cod_pedido}</td>
+                  <td className="px-6 py-4">
                     Comuna:
                     {pedidoAgrupado.comuna}
                     <br />
@@ -154,7 +169,7 @@ const HistorialPedidos = () => {
                     <br />
                     Tipo Entrega: {pedidoAgrupado.tipo_entrega}
                   </td>
-                  <td>
+                  <td className="px-6 py-4">
                     <ul>
                       {pedidoAgrupado.detalles.map((detalle, index) => (
                         <li key={index} className="mb-4">
@@ -182,7 +197,7 @@ const HistorialPedidos = () => {
                     <br />
                     <strong>Total + IVA: {formatCurrency(totalConIva)}</strong>
                   </td>
-                  <td>{pedidoAgrupado.fecha_pedido}</td>
+                  <td className="px-6 py-4">{pedidoAgrupado.fecha_pedido}</td>
                   <td
                     className={
                       pedidoAgrupado.fecha_entrega

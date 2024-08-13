@@ -31,8 +31,9 @@ urlpatterns = [
     path('buscar_pedidos_correo/', BuscarPedidosConCorreoView.as_view(), name='buscar_pedido_correo'),
     path('ventas_mensuales/', VentasMensualesView.as_view(), name='ventas_mensuales'),
     path('ventas_entre/', VentasFechaView.as_view(), name='ventas_entre'),
+    path('ventas_f29/', DocumentosFechaView.as_view(), name='ventas_f29'),
     path('ventas_mensuales_comuna/', VentasMensualesComunaView.as_view(), name='ventas_mensuales'),
-
+    path('correo-masivo/', SendBulkEmailView.as_view(), name='correo-masivo'),
     path('verify-email/', VerifyEmail.as_view(), name='email-verify'),
 ]
 #MOISES SEPULVEDA, OJO

@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { loginUsuario } from "../api/cerveceria_API";
+import { useAuth } from "../context/AuthContext";
 
 function LoginForm() {
+  const { login } = useAuth();
+
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [showAlert, setShowAlert] = useState(false);
@@ -27,12 +30,16 @@ function LoginForm() {
       const response = await loginUsuario(userLogin);
       if (response.status === 200) {
         console.log("Usuario autenticado correctamente!");
-        //INFO DEL USUARIO = response.data.user
-        console.log(response.data.user);
-        localStorage.setItem("usuario", JSON.stringify(response.data.user));
-        //INFO DEL TOKEN = response.data.token
-        localStorage.setItem("token", response.data.token); // Guardar token como cadena
-        console.log(response.data.token);
+        const userData = response.data.user;
+        const token = response.data.token;
+
+        // Usa el método login del AuthContext
+        login(userData); // Esto actualiza el estado en AuthContext
+
+        localStorage.setItem("token", token); // Guardar token en localStorage si es necesario
+        console.log(token);
+
+        // Redirigir después de actualizar el estado de autenticación
         navigate("/perfil");
       } else {
         console.error("Error al intentar logear");

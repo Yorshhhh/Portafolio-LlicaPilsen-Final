@@ -93,7 +93,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
             pass
 
         # Enviar correo de verificación
-        current_site = '1c52-191-114-35-218.ngrok-free.app'
+        current_site = '6d80-191-114-51-188.ngrok-free.app'
         token = RefreshToken.for_user(usuario).access_token
         relativeLink = reverse('email-verify')
         absurl = 'http://' + current_site + relativeLink + "?token=" + str(token)

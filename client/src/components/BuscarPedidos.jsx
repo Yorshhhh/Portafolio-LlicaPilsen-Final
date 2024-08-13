@@ -96,6 +96,8 @@ function BuscarPedidos() {
         precio_unitario: pedido.precio_unitario,
         iva: pedido.iva,
         total_boleta: pedido.total_boleta,
+        total_neto: pedido.total_neto,
+        costo_envio: pedido.costo_envio,
       });
     });
 
@@ -146,14 +148,14 @@ function BuscarPedidos() {
 
   return (
     <div>
-      <h1 className="text-center">Buscar Pedidos</h1>
+      <h1 className="text-center text-white">Buscar Pedidos</h1>
       <div className="flex justify-center my-4">
         <input
           type="text"
           placeholder="Ingresar código del pedido"
           value={busquedaCodigo}
           onChange={handleCodigoInputChange}
-          className="border border-gray-400 rounded py-2 px-4"
+          className="border border-gray-400 rounded py-2 px-4 text-black"
         />
         <button
           onClick={buscarPedidoCod}
@@ -167,7 +169,7 @@ function BuscarPedidos() {
           placeholder="Ingresar correo@buscar.cl"
           value={busquedaCorreo}
           onChange={handleCorreoInputChange}
-          className="border border-gray-400 rounded py-2 px-4 ml-4"
+          className="border border-gray-400 rounded py-2 px-4 ml-4 text-black"
         />
         <button
           onClick={buscarPedidoCorreoHandler}
@@ -196,18 +198,36 @@ function BuscarPedidos() {
         </div>
       )}
 
-      <table className="pedidos-table mx-auto">
-        <thead>
+      <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
           <tr>
-            <th>Codigo Pedido</th>
-            <th>Nombre Cliente</th>
-            <th>Correo Cliente</th>
-            <th>Datos Despacho</th>
-            <th>Detalles</th>
-            <th>Total del Pedido</th>
-            <th>Fecha Pedido</th>
-            <th>Fecha Despacho</th>
-            <th>Codigo Envio</th>
+            <th scope="col" className="px-6 py-3">
+              Codigo Pedido
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Nombre Cliente
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Correo Cliente
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Datos Despacho
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Detalles
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Total del Pedido
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Fecha Pedido
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Fecha Despacho
+            </th>
+            <th scope="col" className="px-6 py-3">
+              Codigo Envio
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -218,11 +238,14 @@ function BuscarPedidos() {
               );
 
               return (
-                <tr key={pedidoAgrupado.cod_pedido}>
-                  <td>{pedidoAgrupado.cod_pedido}</td>
-                  <td>{pedidoAgrupado.nombre_cliente}</td>
-                  <td>{pedidoAgrupado.correo}</td>
-                  <td>
+                <tr
+                  key={pedidoAgrupado.cod_pedido}
+                  className="bg-white border-b  hover:bg-gray-50"
+                >
+                  <td className="px-6 py-4">{pedidoAgrupado.cod_pedido}</td>
+                  <td className="px-6 py-4">{pedidoAgrupado.nombre_cliente}</td>
+                  <td className="px-6 py-4">{pedidoAgrupado.correo}</td>
+                  <td className="px-6 py-4">
                     Comuna:
                     {pedidoAgrupado.comuna}
                     <br />
@@ -232,7 +255,7 @@ function BuscarPedidos() {
                     <br />
                     Tipo Entrega: {pedidoAgrupado.tipo_entrega}
                   </td>
-                  <td>
+                  <td className="px-6 py-4">
                     <ul>
                       {pedidoAgrupado.detalles.map((detalle, index) => (
                         <li key={index} className="mb-4">
@@ -255,14 +278,23 @@ function BuscarPedidos() {
                   </td>
                   <td className="text-center">
                     <strong>
+                      Total Neto: {formatCurrency(pedidoAgrupado.total_neto)}
+                    </strong>
+                    <br />
+                    <strong>
+                      Costo Envio: {formatCurrency(pedidoAgrupado.costo_envio)}
+                    </strong>
+                    <br />
+                    <strong>IVA: {formatCurrency(pedidoAgrupado.iva)}</strong>
+                    <br />
+                    <strong>
                       Total Boleta:{" "}
                       {formatCurrency(pedidoAgrupado.total_boleta)}
                     </strong>
                     <br />
-                    <strong>IVA: {formatCurrency(pedidoAgrupado.iva)}</strong>
                   </td>
 
-                  <td>{pedidoAgrupado.fecha_pedido}</td>
+                  <td className="px-6 py-4">{pedidoAgrupado.fecha_pedido}</td>
                   <td
                     className={
                       pedidoAgrupado.fecha_entrega
@@ -279,7 +311,7 @@ function BuscarPedidos() {
                       "Pendiente"
                     )}
                   </td>
-                  <td>
+                  <td className="px-6 py-4">
                     {pedidoAgrupado.codigo_envio ||
                       "codigo no proporcionado aun"}
                   </td>

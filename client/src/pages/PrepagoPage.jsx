@@ -5,7 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useCart } from "../context/CarritoContext";
 import { createTransaction, obtenerComunas } from "../api/cerveceria_API";
 import "../css/Prepago.css";
-import medioPagoImage from '../img/mediopago.png';
+import medioPagoImage from "../img/mediopago.png";
 
 function Prepago() {
   const [selectedOption, setSelectedOption] = useState("");
@@ -205,14 +205,13 @@ function Prepago() {
   };
 
   const handleTelefonoChange = (e) => {
-    const newTelefono = e.target.value
+    const newTelefono = e.target.value;
     if (/^\d{0,9}$/.test(newTelefono)) {
       setTelefono(newTelefono);
-    }else{
-      toast.error('Solo puede ingresar numeros')
+    } else {
+      toast.error("Solo puede ingresar numeros");
     }
-     // Verificar que solo contenga números y tenga exactamente 9 dígitos
-  
+    // Verificar que solo contenga números y tenga exactamente 9 dígitos
   };
 
   const handleRazonSocialChange = (event) => {
@@ -341,7 +340,7 @@ function Prepago() {
   };
 
   return (
-    <div >
+    <div>
       {user ? (
         <div className="horizontal-container">
           <div className="flex flex-col">
@@ -535,6 +534,7 @@ function Prepago() {
                       className="form-control"
                       value={ciudadEmpresa || empresa?.ciudad_empresa || ""} // Establecer el valor del campo
                       onChange={handleCiudadEmpresaChange}
+                      readOnly
                     />
                   </div>
 
@@ -546,6 +546,7 @@ function Prepago() {
                       className="form-control"
                       value={comunaEmpresa || empresa?.comuna_empresa || ""} // Establecer el valor del campo
                       onChange={handleComunaEmpresaChange}
+                      readOnly
                     />
                   </div>
                 </form>
