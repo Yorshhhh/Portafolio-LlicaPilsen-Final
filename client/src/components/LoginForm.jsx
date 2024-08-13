@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { loginUsuario } from "../api/cerveceria_API";
+import { useAuth } from "../context/AuthContext";
 
 function LoginForm() {
+  const { login } = useAuth();
+
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [showAlert, setShowAlert] = useState(false);
@@ -27,12 +30,16 @@ function LoginForm() {
       const response = await loginUsuario(userLogin);
       if (response.status === 200) {
         console.log("Usuario autenticado correctamente!");
-        //INFO DEL USUARIO = response.data.user
-        console.log(response.data.user);
-        localStorage.setItem("usuario", JSON.stringify(response.data.user));
-        //INFO DEL TOKEN = response.data.token
-        localStorage.setItem("token", JSON.stringify(response.data.token));
-        console.log(response.data.token);
+        const userData = response.data.user;
+        const token = response.data.token;
+
+        // Usa el método login del AuthContext
+        login(userData); // Esto actualiza el estado en AuthContext
+
+        localStorage.setItem("token", token); // Guardar token en localStorage si es necesario
+        console.log(token);
+
+        // Redirigir después de actualizar el estado de autenticación
         navigate("/perfil");
       } else {
         console.error("Error al intentar logear");
@@ -61,20 +68,24 @@ function LoginForm() {
     header: {
       textAlign: "center",
       marginBottom: "20px",
+      color: "black",
     },
     formGroup: {
       marginBottom: "15px",
+      color: "black",
     },
     label: {
       display: "block",
       marginBottom: "5px",
       fontWeight: "bold",
+      color: "black",
     },
     input: {
       width: "100%",
       padding: "10px",
       borderRadius: "4px",
       border: "1px solid #ccc",
+      color: "black",
     },
     button: {
       padding: "10px 15px",
@@ -94,6 +105,11 @@ function LoginForm() {
       color: "#721c24",
       padding: "8px",
       borderRadius: "4px",
+    },
+    navLink: {
+      textAlign: "center",
+      marginTop: "20px",
+      color: "black",
     },
   };
 
@@ -143,10 +159,10 @@ function LoginForm() {
               Entrar
             </button>
           </form>
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <div style={styles.navLink}>
             <NavLink to="/register">Registrate</NavLink>
           </div>
-          <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <div style={styles.navLink}>
             <NavLink to="/home">Volver al Inicio</NavLink>
           </div>
         </div>

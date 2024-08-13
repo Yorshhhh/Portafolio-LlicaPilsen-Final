@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { registrarPedido, registrarDetalles,confirmar } from "../api/cerveceria_API";
 import { useLocation } from "react-router-dom";
-import CarritoExito from "../components/CarritoExito";
 import "../css/ExitoPage.css";
 
 function ExitoPage() {
@@ -79,6 +78,7 @@ function ExitoPage() {
 
           if (pedidoDetalles) {
             const {
+              total_neto,
               total,
               iva,
               tipo_entrega,
@@ -101,6 +101,7 @@ function ExitoPage() {
               fecha_pedido: fechaPedido,
               id_usuario: user.id,
               total_boleta: total || 0,
+              total_neto: total_neto,
               iva: iva || 0,
               costo_envio: costo_envio,
               tipo_entrega: tipo_entrega || "",
@@ -190,7 +191,8 @@ function ExitoPage() {
                 alt="Éxito"
                 style={{ width: "20%", height: "auto" }}
               />
-              <CarritoExito />
+              <h2>Se ha enviado la boleta del pedido a su correo</h2>
+              <h1>¡GRACIAS POR SU COMPRA!</h1>
             </div>
           </div>
         )}

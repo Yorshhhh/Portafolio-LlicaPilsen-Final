@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { registrarAdmin } from "../api/cerveceria_API";
 
 function RegisterAdmin() {
@@ -16,7 +15,6 @@ function RegisterAdmin() {
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
-  const navigate = useNavigate();
   const authToken = localStorage.getItem("token");
 
   const handleSubmit = async (e) => {
@@ -82,14 +80,13 @@ function RegisterAdmin() {
       password,
       is_staff: true, // Marcamos que es administrador (staff)
       is_superuser: false, // No es superusuario
+      is_verified: true,
     };
 
     try {
       const response = await registrarAdmin(newAdmin); // Esperar la respuesta
 
       if (response && response.status === 201) {
-        console.log("Administrador creado con éxito!");
-        console.log(response.data);
         localStorage.setItem("admin", JSON.stringify(response.data));
         setNombre("")
         setApellido("")
@@ -97,7 +94,6 @@ function RegisterAdmin() {
         setCorreo("")
         setPassword("")
         setConfirmPassword("")
-        navigate("/perfil"); // Redirige al dashboard de administradores
       } else {
         console.error("Error al registrar el administrador");
       }
@@ -112,13 +108,15 @@ function RegisterAdmin() {
       justifyContent: "center",
       alignItems: "center",
       height: "100vh",
-      background: "#f5f5f5",
+      background: "#f1f1f1  ",
+      color: "#000",
+      
     },
     card: {
       background: "#fff",
       padding: "20px",
       borderRadius: "8px",
-      boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+      boxShadow: "0 0 10px rgba(#000)",
       maxWidth: "400px",
       width: "100%",
     },

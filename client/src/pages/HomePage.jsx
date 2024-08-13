@@ -1,59 +1,72 @@
 import { useEffect, useState } from "react";
 import { getAllProductos } from "../api/cerveceria_API";
+import { useCart } from "../context/CarritoContext";
 import Modalidad from "../components/Modalidad";
-import Bienvenida from "../components/Bienvenida";
 import Footer from "../components/Footer";
 import CardProducts from "../components/CardProducts";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Carrusel from "../components/carrusel";
 
-import "../css/font-awesome.min.css";
-import "../css/bootstrap.min.css";
+
 import "../css/paginaestilo.css";
 
 function HomePage() {
   const [productos, setProductos] = useState([]);
+  const {
+    cartItems,
+    addToCart,
+    removeFromCart,
+    clearCart,
+    toggleCart,
+    showCart,
+    setShowCart,
+  } = useCart();
+
+  const clearCartHandler = () => {
+    clearCart(setCartItems, setShowCart);
+  };
 
   useEffect(() => {
     async function loadProductos() {
       const res = await getAllProductos();
-      /* console.log(res.data); */
-      setProductos(res.data);
+      const featuredProductIds = [3, 41, 21, 2];
+      const featuredProducts = res.data.filter(producto =>
+        featuredProductIds.includes(producto.cod_producto)
+      );
+      setProductos(featuredProducts);
     }
     loadProductos();
   }, []);
 
   return (
-    <body data-spy="scroll" data-target="#navbarNav" data-offset="50">
-      {/* BARRA DE NAVEGACION */}
-      {/* <Navbar
-        cartItems={cartItems}
-        removeFromCart={removeFromCart}
-        toggleCart={toggleCart}
-        showCart={showCart}
-        setShowCart={setShowCart}
-        clearCartHandler={clearCartHandler}
-      /> */}
-      {/* BIENVENIDA */}
-      <Bienvenida />
+    <div className="homepage">
+
+      {/* CARRUSEL */}
+      <Carrusel />
 
       {/* PRODUCTOS DESTACADOS */}
-      <section className="flex flex-col items-center my-8 mx-4">
-        <h1 className="font-bold text-2xl">Productos Destacados!</h1>
-        <div className="flex flex-wrap my-8 gap-8 justify-center">
-          {productos.map((producto) => (
-            <CardProducts producto={producto} />
-          ))}
+      <section className="featured-products py-8">
+        <div className="container mx-auto">
+          <h1 className="text-3xl font-bold text-center mb-8">Productos Destacados</h1>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {productos.map((producto) => (
+              <CardProducts key={producto.cod_producto} producto={producto} />
+            ))}
+          </div>
         </div>
       </section>
-      {/* CARRUSEL */}
+
       {/* INFORMACION Y MODALIDAD DE VENTAS */}
       <Modalidad />
+
       {/* FOOTER */}
       <Footer />
+
       <ToastContainer />
-    </body>
+    </div>
   );
 }
+
 
 export default HomePage;

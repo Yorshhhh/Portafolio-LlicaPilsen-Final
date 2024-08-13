@@ -1,0 +1,7 @@
+/* verpedidos.css */
+.ver-pedidos {
+    background: url('/img/fondo-cuellonegro-scaled.jpg') no-repeat center center fixed; /* Ajusta la ruta según tu estructura */
+    background-size: cover;
+    min-height: 100vh; /* Opcional: Asegura que el fondo cubra toda la pantalla */
+  }
+  

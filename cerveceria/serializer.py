@@ -93,12 +93,12 @@ class UsuarioSerializer(serializers.ModelSerializer):
             pass
 
         # Enviar correo de verificación
-        current_site = get_current_site(self.context['request']).domain
+        current_site = '6d80-191-114-51-188.ngrok-free.app'
         token = RefreshToken.for_user(usuario).access_token
         relativeLink = reverse('email-verify')
         absurl = 'http://' + current_site + relativeLink + "?token=" + str(token)
-        email_body = 'Hi ' + usuario.nombres + ' Use the link below to verify your email \n' + absurl
-        data = {'email_body': email_body, 'to_email': usuario.correo, 'email_subject': 'Verify your email'}
+        email_body = f'Hola {usuario.nombres}, utiliza el siguiente enlace para verificar tu correo: \n{absurl}'
+        data = {'email_body': email_body, 'to_email': usuario.correo, 'email_subject': 'Verifica tu correo'}
 
         Util.send_email(data)
 
@@ -112,7 +112,6 @@ class UsuarioSerializer(serializers.ModelSerializer):
             empresa, created = Empresa.objects.update_or_create(
                 usuario=instance, defaults=empresa_data
             )
-
         return instance
     
 class CustomAuthTokenSerializer(serializers.Serializer):

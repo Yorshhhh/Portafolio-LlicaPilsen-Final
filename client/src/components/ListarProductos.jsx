@@ -9,7 +9,7 @@ export default function ListarProductos() {
   useEffect(() => {
     const fetchProductos = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/productos/");
+        const response = await fetch("https://a563-191-114-51-188.ngrok-free.app/productos/");
         if (!response.ok) {
           throw new Error("Error al obtener los productos");
         }
@@ -21,6 +21,14 @@ export default function ListarProductos() {
     };
     fetchProductos();
   }, []);
+
+  const actualizarProducto = (productoActualizado) => {
+    setProductos((productos) =>
+      productos.map((producto) =>
+        producto.cod_producto === productoActualizado.cod_producto ? productoActualizado : producto
+      )
+    );
+  };
 
   return (
     <div className="my-[2rem]  flex flex-col items-center justify-center bg-gray-100">
@@ -35,7 +43,7 @@ export default function ListarProductos() {
               key={producto.cod_producto}
               className="rounded-md shadow-md hover:shadow-xl bg-white"
             >
-              <ModificarCardProduct producto={producto} />
+              <ModificarCardProduct producto={producto} actualizarProducto={actualizarProducto} />
             </div>
           ))}
         </div>

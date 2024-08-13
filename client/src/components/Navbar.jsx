@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useCart } from "../context/CarritoContext";
+import { useAuth } from '../context/AuthContext'
 import Carrito from "./Carrito";
-import UserCard from "./UserCard";
-import Ganancias from "./GananciasAdmin";
-import HistorialPedidos from "./HistorialPedidos";
 
 function Navbar() {
+  const { user, logout } = useAuth();
   const {
     cartItems,
     removeFromCart,
@@ -15,7 +14,7 @@ function Navbar() {
     showCart,
     setShowCart,
   } = useCart();
-  const [user, setUser] = useState(null);
+  
   const [loading, setLoading] = useState(true);
   const [menuVisible, setMenuVisible] = useState(false);
   const [profileMenuVisible, setProfileMenuVisible] = useState(false);
@@ -33,14 +32,6 @@ function Navbar() {
   }, []);
 
   const history = useNavigate();
-
-  const logout = () => {
-    localStorage.removeItem("usuario");
-    localStorage.removeItem("token");
-    localStorage.removeItem("carrito");
-    setUser(null);
-    history("/");
-  };
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
@@ -158,7 +149,7 @@ function Navbar() {
                     <span className="sr-only">Open user menu</span>
                     <img
                       className="h-8 w-8 rounded-full"
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                      src="https://img.icons8.com/ios/50/000000/user.png"
                       alt="Profile"
                     />
                   </button>
@@ -172,7 +163,7 @@ function Navbar() {
                     aria-labelledby="user-menu-button"
                     tabIndex="-1"
                   >
-                    <h2>
+                    <h2 className="text-black">
                       Bienvenido {user.nombres} {user.apellidos}
                     </h2>
                     <NavLink
@@ -195,6 +186,16 @@ function Navbar() {
                           id="user-menu-item-0"
                         >
                           Administrar Pedidos
+                        </NavLink>
+
+                        <NavLink
+                          to="/mensajeria"
+                          className="block px-4 py-2 text-sm text-gray-700"
+                          role="menuitem"
+                          tabIndex="-1"
+                          id="user-menu-item-0"
+                        >
+                          Enviar Correos
                         </NavLink>
 
                         <NavLink

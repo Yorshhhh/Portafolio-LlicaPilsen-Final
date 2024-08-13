@@ -170,19 +170,37 @@ class Detalle_Pedido(models.Model):
 class GananciasProducto(models.Model):
     cod_producto = models.IntegerField(primary_key=True)
     nombre_producto = models.CharField(max_length=100)
-    total = models.CharField(max_length=100)
+    total_ventas = models.CharField(max_length=100)
 
     class Meta:
         managed = False
         db_table = 'view_ventas_producto'
 
-class VentasComuna(models.Model):
-    comuna_envio = models.CharField(max_length=10, primary_key=True)
-    total = models.IntegerField()
+
+class VentasTipoDocumento(models.Model):
+    tipo_documento = models.CharField(max_length=20, primary_key=True)
+    total_ventas = models.IntegerField()
 
     class Meta:
         managed = False
-        db_table = 'view_ventas_comunas'
+        db_table = 'view_ventas_documento'
+
+class VentasTipoEntrega(models.Model):
+    tipo_entrega = models.CharField(max_length=20, primary_key=True)
+    total_ventas = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'view_ventas_entrega'
+
+class VentasComuna(models.Model):
+    cod_comuna_id = models.IntegerField(primary_key=True)
+    nombre = models.CharField(max_length=20)
+    total_ventas = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'view_ventas_comuna'
 
 class PedidoPendiente(models.Model):
     nombre_cliente = models.CharField(max_length=100)
@@ -201,6 +219,8 @@ class PedidoPendiente(models.Model):
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
     iva = models.DecimalField(max_digits=10, decimal_places=2)
     total_boleta = models.DecimalField(max_digits=10, decimal_places=2)
+    costo_envio = models.DecimalField(max_digits=10, decimal_places=2)
+    total_neto = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_pedido = models.DateField()
 
     class Meta:
@@ -224,6 +244,8 @@ class PedidoEntregado(models.Model):
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
     iva = models.DecimalField(max_digits=10, decimal_places=2)
     total_boleta = models.DecimalField(max_digits=10, decimal_places=2)
+    total_neto = models.DecimalField(max_digits=10, decimal_places=2)
+    costo_envio = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_pedido = models.DateTimeField()
     fecha_entrega = models.DateTimeField()
 

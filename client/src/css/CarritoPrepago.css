@@ -1,7 +1,7 @@
 
 :root{
   --carritoprepago-body-font-family:Arial, sans-serif;
-  --carritoprepago-body-background-color: #080808;
+  --carritoprepago-body-background-color: #ac4e4e;
   --carritoprepago-body-margin: 0;
   --carritoprepago-body-padding: 0;
 }
@@ -31,7 +31,7 @@
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
-}
+  }
 
 .cart-vista th,
 .cart-vista td {
@@ -41,8 +41,8 @@
 }
 
 .cart-vista th {
-  background-color: #92c52c;
-  color: #000; /* Color negro para los th */
+  background-color: #192bcb;
+  color: #fdfdfd; /* Color blanco para los th */
 }
 
 .cart-vista img {
@@ -71,4 +71,14 @@
 /* Estilos para textos */
 p {
   margin: 0;
+}
+
+/* Estilo específico para los p dentro de td para que sean negros */
+.cart-vista td p {
+  color: black;
+}
+
+/* Centrar el contenido de las celdas de cantidad */
+.cart-vista td.cantidad {
+  text-align: center;
 }

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import LoginForm from "../components/LoginForm";
 import CarritoPrepago from "../components/CarritoPrepago";
+import { ToastContainer, toast } from "react-toastify";
 import { useCart } from "../context/CarritoContext";
 import { createTransaction, obtenerComunas } from "../api/cerveceria_API";
 import "../css/Prepago.css";
+import medioPagoImage from "../img/mediopago.png";
 
 function Prepago() {
   const [selectedOption, setSelectedOption] = useState("");
@@ -151,6 +153,7 @@ function Prepago() {
 
     // Preparar los detalles del pedido
     const pedidoDetalles = {
+      total_neto: totalNeto,
       total: totalRounded,
       iva: ivaRounded,
       tipo_entrega: selectedOption,
@@ -201,9 +204,14 @@ function Prepago() {
     validateDeliveryForm(selectedComuna, event.target.value, telefono);
   };
 
-  const handleTelefonoChange = (event) => {
-    setTelefono(event.target.value);
-    validateDeliveryForm(selectedComuna, direccion, event.target.value);
+  const handleTelefonoChange = (e) => {
+    const newTelefono = e.target.value;
+    if (/^\d{0,9}$/.test(newTelefono)) {
+      setTelefono(newTelefono);
+    } else {
+      toast.error("Solo puede ingresar numeros");
+    }
+    // Verificar que solo contenga números y tenga exactamente 9 dígitos
   };
 
   const handleRazonSocialChange = (event) => {
@@ -526,6 +534,7 @@ function Prepago() {
                       className="form-control"
                       value={ciudadEmpresa || empresa?.ciudad_empresa || ""} // Establecer el valor del campo
                       onChange={handleCiudadEmpresaChange}
+                      readOnly
                     />
                   </div>
 
@@ -537,6 +546,7 @@ function Prepago() {
                       className="form-control"
                       value={comunaEmpresa || empresa?.comuna_empresa || ""} // Establecer el valor del campo
                       onChange={handleComunaEmpresaChange}
+                      readOnly
                     />
                   </div>
                 </form>
@@ -596,7 +606,7 @@ function Prepago() {
             <hr className="custom-hr" />
             <h2>Aceptamos los siguientes medios de pago</h2>
             <img
-              src="logos_medios_de_pago.png"
+              src={medioPagoImage}
               alt="Medios de pago"
               style={{ width: "70%", height: "auto" }}
             />
@@ -624,6 +634,7 @@ function Prepago() {
           <LoginForm />
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 }

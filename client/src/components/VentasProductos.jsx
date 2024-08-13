@@ -3,6 +3,7 @@ import {
   obtenerVentasPorProducto,
   ventasMensualesProducto,
   ventasPorFecha,
+  ventasF29,
 } from "../api/cerveceria_API";
 import {
   BarChart,
@@ -15,6 +16,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+import { ToastContainer, toast } from "react-toastify";
 
 const COLORS = [
   "#0088FE",
@@ -38,6 +40,7 @@ function VentasProductos() {
   const [ventasProducto, setVentasProducto] = useState([]);
   const [ventasMensuales, setVentasMensuales] = useState([]);
   const [ventasPorFechaData, setVentasPorFechaData] = useState([]);
+  const [documentosData, setDocumentosData] = useState([]);
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
   const [selectedProducts, setSelectedProducts] = useState([]);
@@ -65,12 +68,11 @@ function VentasProductos() {
   const fetchVentasPorProducto = async () => {
     try {
       setLoading(true);
-      setError(null);
       const data = await obtenerVentasPorProducto();
       setVentasProducto(data);
     } catch (error) {
       console.error("Error al obtener las ventas por producto: ", error);
-      setError("Error al cargar las ventas por producto.");
+      toast.error("Error al cargar las ventas por producto.");
     } finally {
       setLoading(false);
     }
@@ -79,26 +81,61 @@ function VentasProductos() {
   const fetchVentasMensuales = async (mes) => {
     try {
       setLoading(true);
-      setError(null);
       const data = await ventasMensualesProducto(mes);
-      setVentasMensuales(data);
+      if (data.length === 0) {
+        toast.info(`No se encontraron ventas para el mes ${mes}.`);
+      } else {
+        setVentasMensuales(data);
+      }
     } catch (error) {
+      const errorMessage = error.response?.data?.error || "Error desconocido";
       console.error("Error al obtener las ventas mensuales: ", error);
-      setError("Error al cargar las ventas mensuales.");
+      toast.error(`Error al obtener ventas mensuales: \n${errorMessage}`);
     } finally {
       setLoading(false);
     }
   };
 
+  const formatFecha = (value) => {
+    // Filtra caracteres no permitidos y asegura que el formato sea DD-MM-YYYY
+    const digits = value.replace(/\D/g, '');
+    if (digits.length <= 2) return digits; // DD
+    if (digits.length <= 4) return `${digits.slice(0, 2)}-${digits.slice(2)}`; // DD-MM
+    return `${digits.slice(0, 2)}-${digits.slice(2, 4)}-${digits.slice(4, 8)}`; // DD-MM-YYYY
+  };
+
+  const handleFechaChange = (event, setter) => {
+    const value = event.target.value;
+    setter(formatFecha(value));
+  };
+
+
   const handleFetchVentas = async () => {
+
+    const fechaRegex = /^\d{2}-\d{2}-\d{4}$/;
+
+    if (!fechaRegex.test(fechaInicio) || !fechaRegex.test(fechaFin)) {
+      toast.error("Formato de fecha inválido. Use DD-MM-YYYY.");
+      return;
+    }
+
     try {
       setLoading(true);
       const data = await ventasPorFecha(fechaInicio, fechaFin);
-      setVentasPorFechaData(data);
-      setError(null);
+      if (data.length === 0) {
+        toast.info(
+          "No se encontraron ventas para el rango de fechas especificado."
+        );
+      } else {
+        setVentasPorFechaData(data);
+        const documentosResponse = await ventasF29(fechaInicio, fechaFin);
+        console.log(documentosResponse);
+        setDocumentosData(documentosResponse);
+      }
     } catch (error) {
+      const errorMessage = error.response?.data?.error || "Error desconocido";
       console.error("Error al obtener las ventas por fecha: ", error);
-      setError("Error al obtener las ventas.");
+      toast.error(`Error al obtener ventas por periodo: \n${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -133,19 +170,18 @@ function VentasProductos() {
   const filteredVentasProducto =
     selectedProducts.length > 0
       ? ventasProducto.filter((venta) =>
-          selectedProducts.includes(venta.nombre_producto)
-        )
+        selectedProducts.includes(venta.nombre_producto)
+      )
       : ventasProducto;
 
   if (loading) {
     return <div>Cargando...</div>;
   }
 
-  if (error) {
-    return <div>{error}</div>;
-  }
+
 
   return (
+
     <div className="flex justify-between flex-row flex-wrap">
       <div className="basis-1/4">
         <h1 className="text-center text-2xl font-bold mb-4">
@@ -153,7 +189,7 @@ function VentasProductos() {
         </h1>
 
         <label htmlFor="productFilter" className="mr-2">
-          Selecciona Productos:
+          Seleccionar Productos:
         </label>
         <select
           id="productFilter"
@@ -163,7 +199,11 @@ function VentasProductos() {
           className="h-36 p-2 border border-gray-300 rounded"
         >
           {ventasProducto.map((venta) => (
-            <option key={venta.cod_producto} value={venta.nombre_producto}>
+            <option
+              className="text-black"
+              key={venta.cod_producto}
+              value={venta.nombre_producto}
+            >
               {venta.nombre_producto}
             </option>
           ))}
@@ -184,7 +224,7 @@ function VentasProductos() {
             <YAxis tickFormatter={formatCurrency} />
             <Tooltip formatter={(value) => formatCurrency(value)} />
             <Legend />
-            <Bar dataKey="total" fill="#8884d8" barSize={30}>
+            <Bar dataKey="total_ventas" fill="#8884d8" barSize={30}>
               {filteredVentasProducto.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
@@ -207,8 +247,9 @@ function VentasProductos() {
           id="fechaInicio"
           type="text"
           value={fechaInicio}
-          onChange={(e) => setFechaInicio(e.target.value)}
-          className="p-2 border border-gray-300 rounded mr-2"
+          onChange={(e) => handleFechaChange(e, setFechaInicio)}
+          placeholder="DD-MM-YYYY"
+          className="p-2 border border-gray-300 rounded mr-2 text-black"
         />
         <label htmlFor="fechaFin" className="mr-2">
           Fecha Fin (DD-MM-YYYY):
@@ -217,8 +258,9 @@ function VentasProductos() {
           id="fechaFin"
           type="text"
           value={fechaFin}
-          onChange={(e) => setFechaFin(e.target.value)}
-          className="p-2 border border-gray-300 rounded mr-2"
+          onChange={(e) => handleFechaChange(e, setFechaFin)}
+          placeholder="DD-MM-YYYY"
+          className="p-2 border border-gray-300 rounded mr-2 text-black"
         />
         <button
           onClick={handleFetchVentas}
@@ -242,7 +284,7 @@ function VentasProductos() {
             <YAxis tickFormatter={formatCurrency} />
             <Tooltip formatter={(value) => formatCurrency(value)} />
             <Legend />
-            <Bar dataKey="total" fill="#8884d8" barSize={30}>
+            <Bar dataKey="total_ventas" fill="#8884d8" barSize={30}>
               {ventasPorFechaData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
@@ -252,6 +294,42 @@ function VentasProductos() {
             </Bar>
           </BarChart>
         </ResponsiveContainer>
+        <div>Aqui viene la Info para el Formulario 29</div>
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th scope="col" className="px-6 py-3">
+                Tipo Documento
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Cantidad de Documentos
+              </th>
+              <th scope="col" className="px-6 py-3">
+                IVA Acumulado
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Total Neto
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Total Boleta
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {documentosData.map((info) => (
+              <tr
+                key={info.tipo_documento}
+                className="bg-white border-b hover:bg-gray-50"
+              >
+                <td className="px-6 py-4">{info.tipo_documento}</td>
+                <td className="px-6 py-4">{info.cantidad_documentos}</td>
+                <td className="px-6 py-4">{info.total_iva}</td>
+                <td className="px-6 py-4">{info.total_neto}</td>
+                <td className="px-6 py-4">{info.total_con_iva}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <div className="basis-1/4">
@@ -268,7 +346,7 @@ function VentasProductos() {
             value={tempMonth}
             onChange={handleMonthChange}
             placeholder="MM-YYYY"
-            className="p-2 border border-gray-300 rounded mr-2"
+            className="p-2 border border-gray-300 rounded mr-2 text-black"
             pattern="\d{2}-\d{4}"
             title="Formato requerido: MM-YYYY"
           />
@@ -295,7 +373,7 @@ function VentasProductos() {
             <YAxis tickFormatter={formatCurrency} />
             <Tooltip formatter={(value) => formatCurrency(value)} />
             <Legend />
-            <Bar dataKey="total" fill="#8884d8" barSize={30}>
+            <Bar dataKey="total_ventas" fill="#8884d8" barSize={30}>
               {ventasMensuales.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
@@ -306,6 +384,7 @@ function VentasProductos() {
           </BarChart>
         </ResponsiveContainer>
       </div>
+      <ToastContainer />
     </div>
   );
 }

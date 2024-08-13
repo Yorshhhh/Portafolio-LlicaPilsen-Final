@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const cerveceriaAPI = axios.create({
-  baseURL: "http://127.0.0.1:8000/",
+  baseURL: "https://6d80-191-114-51-188.ngrok-free.app",
   timeout: 10000, // Tiempo de espera opcional, ajusta según sea necesario
   headers: {
     "Content-Type": "application/json",
@@ -13,7 +13,8 @@ cerveceriaAPI.interceptors.request.use(
     // Obtener el token del almacenamiento local o algún otro lugar seguro
     const token = localStorage.getItem("token");
     if (token) {
-      config.headers["Authorization"] = `Token ${token}`;
+      config.headers["Authorization"] = `Bearer ${token}`; // Cambiado a 'Bearer'
+      console.log("Token agregado a la solicitud:", token); // Añadir un console.log para verificar
     }
     return config;
   },
@@ -22,14 +23,20 @@ cerveceriaAPI.interceptors.request.use(
   }
 );
 
-export const getAllProductos = () => {
-  return cerveceriaAPI.get("/productos/");
+export const getAllProductos = async () => {
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/productos/");
+    return response; // Devuelve la respuesta
+  } catch (error) {
+    console.error("Error al obtener productos:", error.response || error.message);
+    throw error; // Lanza el error para que se pueda manejar donde se llame
+  }
 };
 
-export const agregarProducto = (producto) => {
+/* export const agregarProducto = (producto) => {
   return cerveceriaAPI.post("/productos/", producto);
 };
-
+ */
 export const registrarUsuario = (usuario) => {
   return cerveceriaAPI.post("/usuarios/register/", usuario);
 };
@@ -49,6 +56,10 @@ export const registrarEmpresa = (empresaData) => {
 export const actualizarDireccion = (id, nuevaDireccion) => {
   return cerveceriaAPI.patch(`/usuarios/${id}/`, { direccion: nuevaDireccion });
 };
+
+export const actualizarTelefono = (id, nuevoTelefono) => {
+  return cerveceriaAPI.patch(`/usuarios/${id}/`, { telefono: nuevoTelefono });
+}
 
 export const confirmarPedido = (cod_pedido_id, fecha_Entregado, cod_comuna) => {
   return cerveceriaAPI.patch(`/pedidos/${cod_pedido_id}/`, {
@@ -85,7 +96,7 @@ export const registrarDetalles = async (detalles) => {
 
 export const obtenerVentasPorProducto = async () => {
   try {
-    const response = await cerveceriaAPI.get("/ventas_producto/");
+    const response = await axios.get("http://127.0.0.1:8000/ventas_producto/");
     return response.data;
   } catch (error) {
     throw error;
@@ -94,7 +105,25 @@ export const obtenerVentasPorProducto = async () => {
 
 export const obtenerVentasPorComuna = async () => {
   try {
-    const response = await cerveceriaAPI.get("/ventas_comuna/");
+    const response = await axios.get("http://127.0.0.1:8000/ventas_comuna/");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const obtenerVentasPorDocumento = async () => {
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/ventas_documento/");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const obtenerVentasPorEntrega = async () => {
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/ventas_entrega/");
     return response.data;
   } catch (error) {
     throw error;
@@ -103,7 +132,7 @@ export const obtenerVentasPorComuna = async () => {
 
 export const historialPedidos = async (id) => {
   try {
-    const response = await cerveceriaAPI.get("/historial_pedidos/", {
+    const response = await axios.get("http://127.0.0.1:8000/historial_pedidos/", {
       params: { id: id },
     });
     return response.data;
@@ -114,7 +143,7 @@ export const historialPedidos = async (id) => {
 
 export const buscarPedidoCodigo = async (codigo) => {
   try {
-    const response = await cerveceriaAPI.get("/buscar_pedidos_cod/", {
+    const response = await axios.get("http://127.0.0.1:8000/buscar_pedidos_cod/", {
       params: { cod_pedido: codigo },
     });
     return response.data;
@@ -125,7 +154,7 @@ export const buscarPedidoCodigo = async (codigo) => {
 
 export const buscarPedidoCorreo = async (correo) => {
   try {
-    const response = await cerveceriaAPI.get("/buscar_pedidos_correo/", {
+    const response = await axios.get("http://127.0.0.1:8000/buscar_pedidos_correo/", {
       params: { correo: correo },
     });
     return response.data;
@@ -136,7 +165,21 @@ export const buscarPedidoCorreo = async (correo) => {
 
 export const ventasPorFecha = async (fecha_inicio, fecha_fin) => {
   try {
-    const response = await cerveceriaAPI.get("/ventas_entre/", {
+    const response = await axios.get("http://127.0.0.1:8000/ventas_entre/", {
+      params: {
+        fecha_inicio: fecha_inicio,
+        fecha_fin: fecha_fin,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const ventasF29 = async (fecha_inicio, fecha_fin) => {
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/ventas_f29/", {
       params: {
         fecha_inicio: fecha_inicio,
         fecha_fin: fecha_fin,
@@ -150,7 +193,7 @@ export const ventasPorFecha = async (fecha_inicio, fecha_fin) => {
 
 export const ventasMensualesProducto = async (mes) => {
   try {
-    const response = await cerveceriaAPI.get("/ventas_mensuales/", {
+    const response = await axios.get("http://127.0.0.1:8000/ventas_mensuales/", {
       params: { mes: mes },
     });
     return response.data;
@@ -161,7 +204,7 @@ export const ventasMensualesProducto = async (mes) => {
 
 export const ventasMensualesComuna = async (mes) => {
   try {
-    const response = await cerveceriaAPI.get("/ventas_mensuales_comuna/", {
+    const response = await axios.get("http://127.0.0.1:8000/ventas_mensuales_comuna/", {
       params: { mes: mes },
     });
     return response.data;
@@ -172,7 +215,7 @@ export const ventasMensualesComuna = async (mes) => {
 
 export const obtenerPedidosPendientes = async () => {
   try {
-    const response = await cerveceriaAPI.get("/pedidos_pendientes/");
+    const response = await axios.get("http://127.0.0.1:8000/pedidos_pendientes/");
     return response.data;
   } catch (error) {
     throw error;
@@ -181,7 +224,7 @@ export const obtenerPedidosPendientes = async () => {
 
 export const obtenerPedidosEntregados = async () => {
   try {
-    const response = await cerveceriaAPI.get("/pedidos_despachados/");
+    const response = await axios.get("http://127.0.0.1:8000/pedidos_despachados/");
     return response.data;
   } catch (error) {
     throw error;
@@ -190,7 +233,7 @@ export const obtenerPedidosEntregados = async () => {
 
 export const obtenerComunas = async () => {
   try {
-    const response = await cerveceriaAPI.get("/comunas/");
+    const response = await axios.get("http://127.0.0.1:8000/comunas/");
     return response.data;
   } catch (error) {
     throw error;
@@ -199,7 +242,7 @@ export const obtenerComunas = async () => {
 
 export const obtenerCiudades = async () => {
   try {
-    const response = await cerveceriaAPI.get("/ciudades/");
+    const response = await axios.get("http://127.0.0.1:8000/ciudades/");
     return response.data;
   } catch (error) {
     throw error;
@@ -208,7 +251,7 @@ export const obtenerCiudades = async () => {
 
 export const obtenerRegiones = async () => {
   try {
-    const response = await cerveceriaAPI.get("/regiones/");
+    const response = await axios.get("http://127.0.0.1:8000/regiones/");
     return response.data;
   } catch (error) {
     throw error;
@@ -228,7 +271,7 @@ export const obtenerRegiones = async () => {
 }; */
 
 export const getProducto = (id) => {
-  return cerveceriaAPI.get(`/productos/${id}`);
+  return axios.get(`http://127.0.0.1:8000/productos/${id}`);
 };
 
 /* export const getTokenTransbank = async () => {
@@ -260,5 +303,16 @@ export const createTransaction = async (amount) => {
   } catch (error) {
     console.error("Error creating transaction:", error);
     throw error;
+  }
+};
+
+export const sendBulkEmail = async (subject, body) => {
+  try {
+    const response = await axios.post('http://127.0.0.1:8000/correo-masivo/', {
+      email_subject: subject,
+      email_body: body,
+    });
+  } catch (error) {
+    console.error('Error enviando correos:', error);
   }
 };
