@@ -19,6 +19,7 @@ function EmpresaForm({ onChange, usuario_id }) {
   const [direccionEmpresa, setDireccionEmpresa] = useState("");
   const [numeroEmpresa, setNumeroEmpresa] = useState("");
   const [isFacturaFormValid, setIsFacturaFormValid] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
 
   useEffect(() => {
     onChange({
@@ -80,16 +81,17 @@ function EmpresaForm({ onChange, usuario_id }) {
   }, []);
 
   const validateFacturaForm = () => {
-    setIsFacturaFormValid(
-      razonSocial &&
-      rutEmpresa &&
-      giroComercial &&
-      direccionEmpresa &&
-      numeroEmpresa &&
-      selectedComuna &&
-      selectedCiudad &&
-      selectedRegion
-    );
+    const errors = {};
+    if (!razonSocial) errors.razonSocial = "Razón Social es requerida.";
+    if (!rutEmpresa) errors.rutEmpresa = "RUT Empresa es requerido.";
+    if (!giroComercial) errors.giroComercial = "Giro Comercial es requerido.";
+    if (!direccionEmpresa) errors.direccionEmpresa = "Dirección Empresa es requerida.";
+    if (!numeroEmpresa) errors.numeroEmpresa = "Número es requerido.";
+    if (!selectedComuna) errors.selectedComuna = "Comuna es requerida.";
+    if (!selectedCiudad) errors.selectedCiudad = "Ciudad es requerida.";
+    if (!selectedRegion) errors.selectedRegion = "Región es requerida.";
+
+    setFormErrors(errors);
   };
 
   const handleComunaChange = (event) => {
@@ -110,8 +112,8 @@ function EmpresaForm({ onChange, usuario_id }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!isFacturaFormValid) {
-      alert("Por favor completa todos los campos requeridos.");
+    validateFacturaForm();
+    if (Object.keys(formErrors).length > 0) {
       return;
     }
     const nuevaEmpresa = {
@@ -162,6 +164,7 @@ function EmpresaForm({ onChange, usuario_id }) {
             value={rutEmpresa}
             onChange={handleChange(setRutEmpresa)}
           />
+          {formErrors.rutEmpresa && <p className="text-danger">{formErrors.rutEmpresa}</p>}
         </div>
 
         <div className="form-group">
@@ -173,6 +176,7 @@ function EmpresaForm({ onChange, usuario_id }) {
             value={giroComercial}
             onChange={handleChange(setGiroComercial)}
           />
+          {formErrors.giroComercial && <p className="text-danger">{formErrors.giroComercial}</p>}
         </div>
 
         <div className="form-group">
@@ -184,6 +188,7 @@ function EmpresaForm({ onChange, usuario_id }) {
             value={direccionEmpresa}
             onChange={handleChange(setDireccionEmpresa)}
           />
+          {formErrors.direccionEmpresa && <p className="text-danger">{formErrors.direccionEmpresa}</p>}
         </div>
 
         <div className="form-group">
@@ -195,6 +200,7 @@ function EmpresaForm({ onChange, usuario_id }) {
             value={numeroEmpresa}
             onChange={handleChange(setNumeroEmpresa)}
           />
+          {formErrors.numeroEmpresa && <p className="text-danger">{formErrors.numeroEmpresa}</p>}
         </div>
 
         <div className="form-group">
@@ -212,6 +218,7 @@ function EmpresaForm({ onChange, usuario_id }) {
               </option>
             ))}
           </select>
+          {formErrors.selectedRegion && <p className="text-danger">{formErrors.selectedRegion}</p>}
         </div>
 
         <div className="form-group">
@@ -232,6 +239,7 @@ function EmpresaForm({ onChange, usuario_id }) {
                 </option>
               ))}
           </select>
+          {formErrors.selectedCiudad && <p className="text-danger">{formErrors.selectedCiudad}</p>}
         </div>
 
         <div className="form-group">
@@ -252,6 +260,7 @@ function EmpresaForm({ onChange, usuario_id }) {
                 </option>
               ))}
           </select>
+          {formErrors.selectedComuna && <p className="text-danger">{formErrors.selectedComuna}</p>}
         </div>
 
         <button
