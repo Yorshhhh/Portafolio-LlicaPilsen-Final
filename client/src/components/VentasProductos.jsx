@@ -96,7 +96,29 @@ function VentasProductos() {
     }
   };
 
+  const formatFecha = (value) => {
+    // Filtra caracteres no permitidos y asegura que el formato sea DD-MM-YYYY
+    const digits = value.replace(/\D/g, '');
+    if (digits.length <= 2) return digits; // DD
+    if (digits.length <= 4) return `${digits.slice(0, 2)}-${digits.slice(2)}`; // DD-MM
+    return `${digits.slice(0, 2)}-${digits.slice(2, 4)}-${digits.slice(4, 8)}`; // DD-MM-YYYY
+  };
+
+  const handleFechaChange = (event, setter) => {
+    const value = event.target.value;
+    setter(formatFecha(value));
+  };
+
+
   const handleFetchVentas = async () => {
+
+    const fechaRegex = /^\d{2}-\d{2}-\d{4}$/;
+
+    if (!fechaRegex.test(fechaInicio) || !fechaRegex.test(fechaFin)) {
+      toast.error("Formato de fecha inválido. Use DD-MM-YYYY.");
+      return;
+    }
+
     try {
       setLoading(true);
       const data = await ventasPorFecha(fechaInicio, fechaFin);
@@ -148,15 +170,18 @@ function VentasProductos() {
   const filteredVentasProducto =
     selectedProducts.length > 0
       ? ventasProducto.filter((venta) =>
-          selectedProducts.includes(venta.nombre_producto)
-        )
+        selectedProducts.includes(venta.nombre_producto)
+      )
       : ventasProducto;
 
   if (loading) {
     return <div>Cargando...</div>;
   }
 
+
+
   return (
+
     <div className="flex justify-between flex-row flex-wrap">
       <div className="basis-1/4">
         <h1 className="text-center text-2xl font-bold mb-4">
@@ -222,7 +247,8 @@ function VentasProductos() {
           id="fechaInicio"
           type="text"
           value={fechaInicio}
-          onChange={(e) => setFechaInicio(e.target.value)}
+          onChange={(e) => handleFechaChange(e, setFechaInicio)}
+          placeholder="DD-MM-YYYY"
           className="p-2 border border-gray-300 rounded mr-2 text-black"
         />
         <label htmlFor="fechaFin" className="mr-2">
@@ -232,7 +258,8 @@ function VentasProductos() {
           id="fechaFin"
           type="text"
           value={fechaFin}
-          onChange={(e) => setFechaFin(e.target.value)}
+          onChange={(e) => handleFechaChange(e, setFechaFin)}
+          placeholder="DD-MM-YYYY"
           className="p-2 border border-gray-300 rounded mr-2 text-black"
         />
         <button
