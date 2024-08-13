@@ -1,21 +1,14 @@
-import React, { useState } from 'react';
-import ListarProductos from '../components/ListarProductos'
-import Navbar from '../components/Navbar'
+import React, { useState } from "react";
+import ListarProductos from "../components/ListarProductos";
 
 const ListarProductosPage = () => {
-    return (
-        <>
-        <Navbar />
-        <hr />
-        <hr />
-        <hr />
-        <hr />
-        <div className='mt-8'> 
-            <ListarProductos />  
-        </div>
-
-        </>
-    );
+  return (
+    <>
+      <div className="mt-8">
+        <ListarProductos />
+      </div>
+    </>
+  );
 };
 
 export default ListarProductosPage;

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,11 +27,43 @@ SECRET_KEY = 'django-insecure-nu!)3j^kg0hm0-hmlg($^0z+25z!+7bil($1n-s(m-5nnk@1m8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost:5173', '6d80-191-114-51-188.ngrok-free.app','127.0.0.1']
 
+#CONFIGURACION CORREO ELECTRONICO
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'seinagi77@gmail.com'
+EMAIL_HOST_PASSWORD = 'yhtnkvugoedjmuto'
+EMAIL_USE_TLS = True
+
+#JWT
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Establece el tiempo que desees
+}
+
+#LOGGER
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'cerveceria': {  # Cambia esto por el nombre de tu app
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,6 +74,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework_simplejwt',
     'coreapi',
     'cerveceria',
 ]
@@ -90,8 +124,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'localhost:1521/xe',
-        'USER': 'nico5',
-        'PASSWORD':'nico5',
+        'USER': 'nico6',
+        'PASSWORD':'nico6',
         'TEST': {
             'USER': 'default_test',
             'TBLSPACE': 'default_test_tbls',
@@ -145,6 +179,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #CORS ORIGENES PERMITIDOS
 CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "https://6d80-191-114-51-188.ngrok-free.app",
+    # otras URLs permitidas
+]
 
 #COREAPI LEGACY PARA DOCUMENTAR 
 REST_FRAMEWORK = {

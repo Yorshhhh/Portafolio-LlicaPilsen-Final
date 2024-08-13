@@ -8,8 +8,10 @@
   --prepago-body-display: flex;
   --prepago-body-flex-direction: column;
   --prepago-body-justify-content: center;
+  --prepago-body-background-image: url('../img/fondo-cuellonegro-scaled.jpg');
 }
 
+<<<<<<< HEAD
 .prepago-btn {
   font-family: var(--prepago-body-font-family);
   line-height: var(--prepago-body-line-height);
@@ -19,6 +21,17 @@
   display: var(--prepago-body-display);
   flex-direction: var(--prepago-body-flex-direction);
   justify-content: var(--prepago-body-justify-content);
+=======
+.prepago {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  background-image: url('../img/fondo-cuellonegro-scaled.jpg'); /* Cambia esta URL por la ruta de tu imagen */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+>>>>>>> ramayorsh
 }
 
 /* Estilos para el contenedor horizontal */
@@ -89,6 +102,7 @@ img {
   margin: 0 auto; /* Centrar la imagen */
 }
 
+<<<<<<< HEAD
 /* Estilos específicos para etiquetas h2 y h3 */
 h2, h3 {
   color: #333;
@@ -112,3 +126,10 @@ h2, h3 {
 .navbar a:hover {
   text-decoration: underline;
 }
+=======
+.custom-hr {
+  border: none;
+  border-top: 2px solid black;
+  margin: 10px 0;
+}
+>>>>>>> ramayorsh

@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { registrarPedido, registrarDetalles } from "../api/cerveceria_API";
+import { registrarPedido, registrarDetalles,confirmar } from "../api/cerveceria_API";
 import { useLocation } from "react-router-dom";
-import CarritoExito from "../components/CarritoExito";
-import Navbar from "../components/Navbar";
 import "../css/ExitoPage.css";
 
 function ExitoPage() {
@@ -17,7 +15,6 @@ function ExitoPage() {
   const fechaPedido = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
-    // Cargar el carrito y el usuario del localStorage al montar el componente
     const userCarrito = localStorage.getItem("carrito");
     if (userCarrito) {
       try {
@@ -77,43 +74,106 @@ function ExitoPage() {
         if (response.data.status === "success") {
           setTransactionData(response.data.viewData.commitResponse);
 
-          const nuevoPedido = {
-            fecha_pedido: fechaPedido,
-            id_usuario: user.id,
-          };
+          const pedidoDetalles = localStorage.getItem("pedidoDetalles");
 
-          try {
-            const pedido = await registrarPedido(nuevoPedido);
-            console.log("Pedido registrado:", pedido);
+          if (pedidoDetalles) {
+            const {
+              total_neto,
+              total,
+              iva,
+              tipo_entrega,
+              cod_comuna,
+              tipo_documento,
+              direccion,
+              telefono,
+              productos,
+              costo_envio,
+              razon_social,
+              rut_empresa,
+              giro_comercial,
+              direccion_empresa,
+              numero_empresa,
+              ciudad_empresa,
+              comuna_empresa,
+            } = JSON.parse(pedidoDetalles);
 
-            const detalles = carro.map((producto) => ({
-              cod_producto: producto.cod_producto,
-              cod_pedido: pedido.cod_pedido,
-              descuento: 0,
-              cantidad: producto.quantity,
-              precio_unitario: producto.precio_producto,
-            }));
+            const nuevoPedido = {
+              fecha_pedido: fechaPedido,
+              id_usuario: user.id,
+              total_boleta: total || 0,
+              total_neto: total_neto,
+              iva: iva || 0,
+              costo_envio: costo_envio,
+              tipo_entrega: tipo_entrega || "",
+              tipo_documento: tipo_documento || "",
+              cod_comuna,
+              direccion: direccion || "",
+              telefono: telefono || "",
+              ...(tipo_documento === "factura" && {
+                razon_social: razon_social || "",
+                rut_empresa: rut_empresa || "",
+                giro_comercial: giro_comercial || "",
+                direccion_empresa: direccion_empresa || "",
+                numero_empresa: numero_empresa || "",
+                ciudad_empresa: ciudad_empresa || "",
+                comuna_empresa: comuna_empresa || "",
+              }),
+            };
 
-            const promises = detalles.map((detalle) =>
-              registrarDetalles(detalle)
-            );
-            await Promise.all(promises);
-            console.log("Todos los detalles de pedidos han sido registrados.");
-            localStorage.removeItem("carrito");
-            console.log("Carrito eliminado del localStorage.");
-          } catch (error) {
-            console.error("Error al registrar los detalles del pedido:", error);
-            setError("Error al registrar los detalles del pedido.");
+            try {
+              const pedido = await registrarPedido(nuevoPedido);
+              console.log("Pedido registrado:", pedido);
+
+              const detalles = productos.map((producto) => ({
+                cod_producto: producto.cod_producto,
+                cod_pedido: pedido.cod_pedido,
+                descuento: 0,
+                cantidad: producto.quantity,
+                precio_unitario: producto.precio_producto,
+              }));
+
+              const promises = detalles.map((detalle) =>
+                registrarDetalles(detalle)
+              );
+              await Promise.all(promises);
+              console.log(
+                "Todos los detalles de pedidos han sido registrados."
+              );
+
+              // Aquí llamamos a la acción confirmar después de registrar el pedido
+              try {
+                const confirmarResponse = await confirmar(
+                  pedido.cod_pedido
+                ); // Asegúrate de que esta función esté definida
+                console.log("Pedido confirmado:", confirmarResponse);
+              } catch (error) {
+                console.error("Error al confirmar el pedido:", error);
+              }
+
+              localStorage.removeItem("carrito");
+              localStorage.removeItem("pedidoDetalles");
+              console.log("Carrito y detalles eliminados del localStorage.");
+            } catch (error) {
+              console.error(
+                "Error al registrar los detalles del pedido:",
+                error
+              );
+              setError("Error al registrar los detalles del pedido.");
+            }
+          } else {
+            setError("No se encontraron detalles de pedido en localStorage.");
           }
         } else {
-          setError("Error en la transacción: " + JSON.stringify(response.data.commitResponse));
+          setError(
+            "Error en la transacción: " +
+              JSON.stringify(response.data.commitResponse)
+          );
         }
       } catch (error) {
         setError("Error confirmando la transacción: " + error.message);
       }
     };
 
-    // Confirmar la transacción solo si el usuario y el carrito están cargados
     if (user && carro.length > 0) {
       confirmTransaction();
     }
@@ -121,7 +181,6 @@ function ExitoPage() {
 
   return (
     <>
-      <Navbar />
       <div className="center-container">
         {transactionData && (
           <div>
@@ -129,10 +188,11 @@ function ExitoPage() {
               <h2>¡Transacción exitosa!</h2>
               <img
                 src="tic-verde.jpg"
-                alt=""
+                alt="Éxito"
                 style={{ width: "20%", height: "auto" }}
               />
-              <CarritoExito />
+              <h2>Se ha enviado la boleta del pedido a su correo</h2>
+              <h1>¡GRACIAS POR SU COMPRA!</h1>
             </div>
           </div>
         )}
@@ -141,7 +201,7 @@ function ExitoPage() {
             <h2>¡Error!</h2>
             <img
               src="cruz-roja.png"
-              alt=""
+              alt="Error"
               style={{ width: "30%", height: "auto" }}
             />
             <p>{error}</p>

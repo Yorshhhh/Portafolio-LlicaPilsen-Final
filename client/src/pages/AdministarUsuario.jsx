@@ -1,7 +1,5 @@
 import React from "react";
 import RegisterAdmin from "../components/RegisterAdmin";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
 
 const styles = {
   container: {
@@ -14,6 +12,7 @@ const styles = {
 
 function verpedidos() {
   return (
+<<<<<<< HEAD
     <div style={styles.container}>
       <Navbar />
       <div className="registercontainer">
@@ -21,6 +20,13 @@ function verpedidos() {
       </div>
       <Footer />
     </div>
+=======
+    <>
+      <div>
+        <RegisterAdmin />
+      </div>
+    </>
+>>>>>>> ramayorsh
   );
 }
 

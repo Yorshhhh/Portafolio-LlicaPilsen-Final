@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from "react-icons/fa";
 import { obtenerPedidosEntregados } from "../api/cerveceria_API";
 
 function PedidosEntregados() {
@@ -41,13 +42,6 @@ function PedidosEntregados() {
     }
   };
 
-  if (loading) {
-    return <div>Cargando...</div>;
-  }
-  if (error) {
-    return <div>{error}</div>;
-  }
-
   const agruparPedidos = (pedidos) => {
     const pedidosAgrupados = {};
 
@@ -64,37 +58,42 @@ function PedidosEntregados() {
         cod_producto: pedido.cod_producto,
         nombre_producto: pedido.nombre_producto,
         cantidad: pedido.cantidad,
-        precio_unitario: pedido.precio_unitario.toLocaleString("es-CL", {
-          style: "currency",
-          currency: "CLP",
-        }),
-        total: pedido.total,
+        precio_unitario: pedido.precio_unitario,
+        iva: pedido.iva,
+        total_boleta: pedido.total_boleta,
+        total_neto: pedido.total_neto,
+        costo_envio: pedido.costo_envio,
       });
     });
 
     return Object.values(pedidosAgrupados);
   };
-  const calcularTotalBoleta = (detalles) => {
-    let totalBoleta = 0;
-    detalles.forEach((detalle) => {
-      totalBoleta += detalle.total;
-    });
-    return totalBoleta.toLocaleString("es-CL", {
+
+  const formatCurrency = (amount) => {
+    return amount.toLocaleString("es-CL", {
       style: "currency",
       currency: "CLP",
     });
   };
-  // Función para formatear la fecha
+
   const formatearFecha = (fechaISO) => {
     const fecha = new Date(fechaISO);
     const dia = String(fecha.getDate()).padStart(2, "0");
-    const mes = String(fecha.getMonth() + 1).padStart(2, "0"); // Los meses en JavaScript comienzan desde 0.
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
     const año = fecha.getFullYear();
     return `${dia}-${mes}-${año}`;
   };
 
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
+  if (error) {
+    return <div>{error}</div>;
+  }
+
   return (
     <>
+<<<<<<< HEAD
       <div className="pedidos-table-container">
         <h2>Pedidos Entregados</h2>
 
@@ -111,53 +110,141 @@ function PedidosEntregados() {
 
         <table className="pedidos-table">
           <thead>
+=======
+      <div>
+        <h1 className="text-center font-medium text-white">
+          Pedidos Despachados
+        </h1>
+        <div className="flex justify-center">
+          {prevPage && (
+            <button onClick={() => handlePageChange(prevPage)}>
+              Página Anterior
+              <FaArrowAltCircleLeft className="ml-2" />
+            </button>
+          )}
+          {nextPage && (
+            <button onClick={() => handlePageChange(nextPage)}>
+              Siguiente Página
+              <FaArrowAltCircleRight className="ml-2" />
+            </button>
+          )}
+        </div>
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+>>>>>>> ramayorsh
             <tr>
-              <th>Cod Pedido</th>
-              <th>Nombre Cliente</th>
-              <th>Correo</th>
-              <th>Teléfono</th>
-              <th>Detalles</th>
-              <th>Fecha Pedido</th>
-              <th>Fecha Entrega</th>
+              <th scope="col" className="px-6 py-3">
+                Cod Pedido
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Nombre Cliente
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Datos Despacho
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Correo
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Teléfono
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Detalles
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Total Pedido
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Fecha Pedido
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Fecha Despacho
+              </th>
             </tr>
           </thead>
           <tbody>
             {agruparPedidos(p_entregados).map((pedidoAgrupado) => (
-              <tr key={pedidoAgrupado.cod_pedido}>
-                <td>{pedidoAgrupado.cod_pedido}</td>
-                <td>{pedidoAgrupado.nombre_cliente}</td>
-                <td>{pedidoAgrupado.correo}</td>
-                <td>{pedidoAgrupado.telefono}</td>
-                <td>
+              <tr
+                key={pedidoAgrupado.cod_pedido}
+                className="bg-white border-b  hover:bg-gray-50"
+              >
+                <td className="px-6 py-4">{pedidoAgrupado.cod_pedido}</td>
+                <td className="px-6 py-4">{pedidoAgrupado.nombre_cliente}</td>
+                <td className="px-6 py-4">
+                  Comuna:
+                  {pedidoAgrupado.comuna}
+                  <br />
+                  Dirección: {pedidoAgrupado.direccion}
+                  <br />
+                  Tipo Documento:{pedidoAgrupado.tipo_documento}
+                  <br />
+                  Tipo Entrega: {pedidoAgrupado.tipo_entrega}
+                </td>
+                <td className="px-6 py-4">{pedidoAgrupado.correo}</td>
+                <td className="px-6 py-4">{pedidoAgrupado.telefono}</td>
+                <td className="px-6 py-4">
                   <ul>
                     {pedidoAgrupado.detalles.map((detalle, index) => (
-                      <li key={index}>
+                      <li key={index} className="mb-4">
                         <strong>Producto:</strong> {detalle.nombre_producto}
                         <br />
-                        <strong>Codigo Producto:{detalle.cod_producto}</strong>
+                        <strong>Codigo Producto:</strong> {detalle.cod_producto}
                         <br />
                         <strong>Cantidad:</strong> {detalle.cantidad} <br />
-                        <strong>Precio:</strong>
-                        {detalle.precio_unitario} <br />
+                        <strong>Precio:</strong>{" "}
+                        {detalle.precio_unitario.toLocaleString("es-CL", {
+                          style: "currency",
+                          currency: "CLP",
+                        })}
+                        <br />
                       </li>
                     ))}
-                    <li>
-                      Total:{" "}
-                      <strong>
-                        {calcularTotalBoleta(pedidoAgrupado.detalles)}
-                      </strong>
-                    </li>
                   </ul>
                 </td>
-                <td>{formatearFecha(pedidoAgrupado.fecha_pedido)}</td>{" "}
-                {/* Aquí se formatea la fecha */}
-                <td>{formatearFecha(pedidoAgrupado.fecha_entrega)}</td>{" "}
-                {/* Aquí se formatea la fecha */}
+                <td className="text-center">
+                  <strong>
+                    Total Neto: {formatCurrency(pedidoAgrupado.total_neto)}
+                  </strong>
+                  <br />
+                  <strong>
+                    Costo Envio: {formatCurrency(pedidoAgrupado.costo_envio)}
+                  </strong>
+                  <br />
+                  <strong>IVA: {formatCurrency(pedidoAgrupado.iva)}</strong>
+                  <br />
+                  <strong>
+                    Total Boleta: {formatCurrency(pedidoAgrupado.total_boleta)}
+                  </strong>
+                  <br />
+                </td>
+                <td className="px-6 py-4">
+                  {formatearFecha(pedidoAgrupado.fecha_pedido)}
+                </td>
+                <td className="px-6 py-4">
+                  {formatearFecha(pedidoAgrupado.fecha_entrega)}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
+<<<<<<< HEAD
         
+=======
+        <div className="flex justify-center">
+          {prevPage && (
+            <button onClick={() => handlePageChange(prevPage)}>
+              Página Anterior
+              <FaArrowAltCircleLeft className="ml-2" />
+            </button>
+          )}
+          {nextPage && (
+            <button onClick={() => handlePageChange(nextPage)}>
+              Siguiente Página
+              <FaArrowAltCircleRight className="ml-2" />
+            </button>
+          )}
+        </div>
+>>>>>>> ramayorsh
       </div>
     </>
   );

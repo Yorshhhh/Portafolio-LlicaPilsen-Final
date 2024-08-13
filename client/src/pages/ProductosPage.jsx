@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { getAllProductos } from "../api/cerveceria_API";
-import Navbar from "../components/Navbar";
 import { useCart } from "../context/CarritoContext";
 import "../css/styleproducto.css";
 import CardProducts from "../components/CardProducts";
 import ReactPaginate from "react-paginate";
+<<<<<<< HEAD
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+=======
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+>>>>>>> ramayorsh
 import Footer from "../components/Footer";
 
 function ProductosPage() {
@@ -23,7 +27,7 @@ function ProductosPage() {
   const [productos, setProductos] = useState([]);
   const [sortCriteria, setSortCriteria] = useState("default");
   const [pageNumber, setPageNumber] = useState(0);
-  const productosPerPage = 9;
+  const productosPerPage = 6;
 
   const clearCartHandler = () => {
     clearCart(setCartItems, setShowCart);
@@ -31,9 +35,18 @@ function ProductosPage() {
 
   useEffect(() => {
     async function loadProductos() {
-      const res = await getAllProductos();
-      console.log(res.data);
-      setProductos(res.data);
+      try {
+        const res = await getAllProductos();
+        console.log("Respuesta de productos res:", res);
+        console.log("Respuesta de res.data: ", res.data)
+        if (Array.isArray(res.data)) {
+          setProductos(res.data);
+        } else {
+          setProductos([]); // En caso de que res.data no sea un arreglo
+        }
+      } catch (error) {
+        console.error("Error al cargar productos:", error);
+      }
     }
     loadProductos();
   }, []);
@@ -45,9 +58,13 @@ function ProductosPage() {
   const sortProducts = (products, criteria) => {
     switch (criteria) {
       case "price-asc":
-        return products.slice().sort((a, b) => a.precio_producto - b.precio_producto);
+        return products
+          .slice()
+          .sort((a, b) => a.precio_producto - b.precio_producto);
       case "price-desc":
-        return products.slice().sort((a, b) => b.precio_producto - a.precio_producto);
+        return products
+          .slice()
+          .sort((a, b) => b.precio_producto - a.precio_producto);
       default:
         return products;
     }
@@ -69,6 +86,7 @@ function ProductosPage() {
 
   return (
     <>
+<<<<<<< HEAD
       <Navbar
         cartItems={cartItems}
         removeFromCart={removeFromCart}
@@ -111,6 +129,32 @@ function ProductosPage() {
       </div>
       <ToastContainer />  
       <Footer />
+=======
+      <div className="productos-page">
+        <div className="productos-header">
+          <h1 className="text-4xl font-bold text-center mb-8">
+            Todos los productos
+          </h1>
+        </div>
+        <div className="flex justify-center mb-4">
+          <select
+            className="p-2 border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent custom-filter"
+            onChange={handleSortChange}
+            value={sortCriteria}
+          >
+            <option value="default">Ordenar por...</option>
+            <option value="price-asc">Precio: Menor a Mayor</option>
+            <option value="price-desc">Precio: Mayor a Menor</option>
+          </select>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mx-auto w-full max-w-7xl">
+          {selectedProducts}
+        </div>
+        <div className="flex justify-center mt-8 mb-16 pagination-container"></div>
+        <ToastContainer />
+        <Footer />
+      </div>
+>>>>>>> ramayorsh
     </>
   );
 }

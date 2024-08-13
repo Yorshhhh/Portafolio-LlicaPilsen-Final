@@ -25,7 +25,7 @@ function Carrito() {
         onClick={() => setShowCart(!showCart)}
         style={{ color: "white", textDecoration: "none" }}
       >
-        <i class="fa-sharp fa-solid fa-cart-shopping"></i> ({cartItems.length})
+        <i className="fa-sharp fa-solid fa-cart-shopping"></i> ({cartItems.length})
       </a>
       {showCart && (
         <div id="carrito" className="cart-dropdown absolute top-0 right-0 z-40 w-auto">
@@ -51,13 +51,21 @@ function Carrito() {
                     />
                   </td>
                   <td>
-                    <p>{producto.nombre_producto}</p>
+                    <p className="text-black">{producto.nombre_producto}</p>
                   </td>
+<<<<<<< HEAD
                   <td className="cantidad">
                     <p>{producto.quantity}</p>
                   </td>
                   <td> 
                     <p>${producto.precio_producto * producto.quantity}</p>
+=======
+                  <td>
+                    <p className="text-black">{producto.quantity}</p>
+                  </td>
+                  <td>
+                    <p className="text-black">${producto.precio_producto * producto.quantity}</p>
+>>>>>>> ramayorsh
                   </td>
                   <td>
                     <button

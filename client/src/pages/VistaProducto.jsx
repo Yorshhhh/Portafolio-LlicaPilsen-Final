@@ -89,14 +89,7 @@ function VistaProductoPage() {
 
   return (
     <>
-    <Navbar
-          cartItems={cartItems}
-          /* removeFromCart={removeFromCart} */
-          toggleCart={toggleCart}
-          showCart={showCart}
-          setShowCart={setShowCart}
-        /* clearCartHandler={clearCartHandler} */
-        />
+    
     <div className="vista-producto">
     
   
@@ -104,7 +97,7 @@ function VistaProductoPage() {
         <h1>Detalles del Producto</h1>
         <h2>{producto.nombre_producto}</h2>
       </div>
-
+  
       <main>
         <div className="imagen">
           <img
@@ -116,10 +109,14 @@ function VistaProductoPage() {
 
         <div className="container-info-product">
           <div className="container-description">
+<<<<<<< HEAD
             <div className="title-description">
               <h2 text-white>Descripcion</h2>
               <i className="fa-solid fa-chevron-down"></i>
             </div>
+=======
+            
+>>>>>>> ramayorsh
 
             <div className="text-description">
               <p>{producto.descripcion_producto}</p>
@@ -142,8 +139,7 @@ function VistaProductoPage() {
           <hr />
           <div className="container-price">
             <h2>Precio: ${producto.precio_producto}</h2>
-            {/* Mostrar el precio del producto */}
-            <i className="fa-solid fa-angle-right"></i>
+           
           </div>
 
           <div className="container-add-cart">

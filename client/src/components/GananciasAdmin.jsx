@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { ventasMensuales } from "../api/cerveceria_API";
+import {
+  obtenerVentasPorProducto,
+  ventasMensualesProducto,
+  obtenerVentasPorComuna,
+} from "../api/cerveceria_API";
 import {
   BarChart,
   Bar,
@@ -9,11 +13,9 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  PieChart,
-  Pie,
   Cell,
-} from "recharts";
-import "../css/GananciasAdmin.css";
+} from "recharts";/* 
+import "../css/GananciasAdmin.css"; */
 
 const COLORS = [
   "#0088FE",
@@ -35,32 +37,95 @@ const formatCurrency = (value) => {
 };
 
 function GananciasAdmin() {
-  const [ganancias, setGanancias] = useState([]);
+  const [ventasProducto, setVentasProducto] = useState([]);
+  const [ventasMensuales, setVentasMensuales] = useState([]);
+  const [ventasComuna, setVentasComuna] = useState([]);
+  const [ventasComunaMensuales, setVentasComunaMensuales] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(""); // Estado para el mes seleccionado
   const [tempMonth, setTempMonth] = useState(""); // Estado temporal para el input de fecha
   const [selectedProducts, setSelectedProducts] = useState([]); // Estado para el producto seleccionado
+  const [selectedCommunes, setSelectedCommunes] = useState([]); // Estado para la comuna seleccionada
 
   useEffect(() => {
-    // Inicialmente, carga las ganancias para el mes actual
+    // Inicialmente, carga las ventas para el mes actual
     const currentMonth = new Date().toISOString().slice(5, 7);
     const currentYear = new Date().getFullYear();
     const initialMonth = `${currentMonth}-${currentYear}`;
     setTempMonth(initialMonth);
     setSelectedMonth(initialMonth);
-    fetchGanancias(initialMonth);
+    fetchVentasMensuales(initialMonth);
+    fetchVentasPorProducto();
+    fetchVentasPorComuna();
+    fetchVentasMensualesComuna(initialMonth);
   }, []);
 
-  const fetchGanancias = async (mes) => {
+  useEffect(() => {
+    if (selectedMonth) {
+      fetchVentasMensuales(selectedMonth);
+      fetchVentasMensualesComuna(selectedMonth);
+    }
+  }, [selectedMonth]);
+
+  // Función para obtener ventas mensuales
+  const fetchVentasMensuales = async (mes) => {
     try {
       setLoading(true);
       setError(null); // Limpia cualquier error anterior
-      const data = await ventasMensuales(mes);
-      setGanancias(data);
+      const data = await ventasMensualesProducto(mes);
+      setVentasMensuales(data);
     } catch (error) {
-      console.error("Error al obtener las ganancias: ", error);
-      setError("Error al cargar las ganancias por producto.");
+      console.error("Error al obtener las ventas mensuales: ", error);
+      setError("Error al cargar las ventas mensuales.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Función para obtener ventas mensuales por comuna
+  const fetchVentasMensualesComuna = async (mes) => {
+    try {
+      setLoading(true);
+      setError(null); // Limpia cualquier error anterior
+      const data = await obtenerVentasPorComuna(mes);
+      setVentasComunaMensuales(data);
+    } catch (error) {
+      console.error(
+        "Error al obtener las ventas mensuales por comuna: ",
+        error
+      );
+      setError("Error al cargar las ventas mensuales por comuna.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Función para obtener ventas por producto (histórico)
+  const fetchVentasPorProducto = async () => {
+    try {
+      setLoading(true);
+      setError(null); // Limpia cualquier error anterior
+      const data = await obtenerVentasPorProducto();
+      setVentasProducto(data);
+    } catch (error) {
+      console.error("Error al obtener las ventas por producto: ", error);
+      setError("Error al cargar las ventas por producto.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Función para obtener ventas por comuna (histórico)
+  const fetchVentasPorComuna = async () => {
+    try {
+      setLoading(true);
+      setError(null); // Limpia cualquier error anterior
+      const data = await obtenerVentasPorComuna();
+      setVentasComuna(data);
+    } catch (error) {
+      console.error("Error al obtener las ventas por comuna: ", error);
+      setError("Error al cargar las ventas por comuna.");
     } finally {
       setLoading(false);
     }
@@ -76,7 +141,6 @@ function GananciasAdmin() {
 
     if (monthRegex.test(tempMonth)) {
       setSelectedMonth(tempMonth);
-      fetchGanancias(tempMonth);
     } else {
       setError("Formato de mes y año inválido. Use MM-YYYY.");
     }
@@ -89,12 +153,6 @@ function GananciasAdmin() {
   if (error) {
     return <div>{error}</div>;
   }
-
-  // Calcular el total de ventas
-  const totalVentas = ganancias.reduce(
-    (acc, ganancia) => acc + ganancia.total,
-    0
-  );
 
   // Función para renderizar la etiqueta personalizada con el porcentaje
   const renderCustomizedLabel = ({
@@ -135,88 +193,43 @@ function GananciasAdmin() {
     setSelectedProducts(selectedValues);
   };
 
-  const filteredGanancias =
+  const handleCommuneChange = (event) => {
+    const options = event.target.options;
+    const selectedValues = [];
+    for (let i = 0; i < options.length; i++) {
+      if (options[i].selected) {
+        selectedValues.push(options[i].value);
+      }
+    }
+    setSelectedCommunes(selectedValues);
+  };
+
+  const filteredVentasProducto =
     selectedProducts.length > 0
-      ? ganancias.filter((ganancia) =>
-          selectedProducts.includes(ganancia.nombre_producto)
+      ? ventasProducto.filter((venta) =>
+          selectedProducts.includes(venta.nombre_producto)
         )
-      : ganancias;
+      : ventasProducto;
+
+  const filteredVentasComuna =
+    selectedCommunes.length > 0
+      ? ventasComuna.filter((venta) =>
+          selectedCommunes.includes(venta.comuna_envio)
+        )
+      : ventasComuna;
+
+  const filteredVentasComunaMensuales =
+    selectedCommunes.length > 0
+      ? ventasComunaMensuales.filter((venta) =>
+          selectedCommunes.includes(venta.comuna_envio)
+        )
+      : ventasComunaMensuales;
 
   return (
-    <div className="ganancias-admin">
-      <h1>Total de Ventas Mensuales</h1>
-
-      {/* Filtro de mes */}
-      <div className="month-filter">
-        <label htmlFor="monthInput">Selecciona Mes y Año (MM-YYYY):</label>
-        <input
-          id="monthInput"
-          type="text"
-          value={tempMonth}
-          onChange={handleMonthChange}
-          placeholder="MM-YYYY"
-          pattern="\d{2}-\d{4}"
-          title="Formato requerido: MM-YYYY"
-        />
-        <button onClick={handleFetchClick}>Buscar</button>
-      </div>
-
-      <div className="chart-container">
-        <ResponsiveContainer width="40%" height={400}>
-          <BarChart
-            data={ganancias}
-            margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="nombre_producto"
-              interval={0}
-              angle={-45}
-              textAnchor="end"
-              tick={{ fontSize: 12, fill: "#8884d8" }}
-            />
-            <YAxis tickFormatter={formatCurrency} />
-            <Tooltip formatter={(value) => formatCurrency(value)} />
-            <Legend />
-            <Bar dataKey="total" fill="#8884d8" barSize={30}>
-              {ganancias.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-        <ResponsiveContainer width="50%" height={400}>
-          <PieChart>
-            <Pie
-              data={ganancias}
-              dataKey="total"
-              nameKey="nombre_producto"
-              cx="50%"
-              cy="50%"
-              outerRadius={150}
-              fill="#82ca9d"
-              label={renderCustomizedLabel}
-              labelLine={false}
-            >
-              {ganancias.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip formatter={(value) => formatCurrency(value)} />
-          </PieChart>
-        </ResponsiveContainer>
-        <h3>Total Ventas: {formatCurrency(totalVentas)}</h3>
-      </div>
-
+    <div className="ventasProducto-admin">
+      <h1>Ventas Históricas por Producto</h1>
       {/* Filtro de productos */}
-      <div className="detalle-ganancias">
-        <h1 className="font-bold">Ventas por Producto</h1>
+      <div className="detalle-ventasProducto">
         <div className="flex justify-end filter-container">
           <label htmlFor="productFilter">Selecciona Productos:</label>
           <select
@@ -226,20 +239,17 @@ function GananciasAdmin() {
             onChange={handleProductChange}
             style={{ height: "150px" }} // Para ver múltiples opciones a la vez
           >
-            {ganancias.map((ganancia) => (
-              <option
-                key={ganancia.cod_producto}
-                value={ganancia.nombre_producto}
-              >
-                {ganancia.nombre_producto}
+            {ventasProducto.map((venta) => (
+              <option key={venta.cod_producto} value={venta.nombre_producto}>
+                {venta.nombre_producto}
               </option>
             ))}
           </select>
         </div>
         <div className="chart-container">
-          <ResponsiveContainer width="40%" height={400}>
+          <ResponsiveContainer width="100%" height={400}>
             <BarChart
-              data={filteredGanancias}
+              data={filteredVentasProducto}
               margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
@@ -254,7 +264,7 @@ function GananciasAdmin() {
               <Tooltip formatter={(value) => formatCurrency(value)} />
               <Legend />
               <Bar dataKey="total" fill="#8884d8" barSize={30}>
-                {filteredGanancias.map((entry, index) => (
+                {filteredVentasProducto.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
@@ -263,30 +273,142 @@ function GananciasAdmin() {
               </Bar>
             </BarChart>
           </ResponsiveContainer>
-          <ResponsiveContainer width="50%" height={400}>
-            <PieChart>
-              <Pie
-                data={filteredGanancias}
-                dataKey="total"
-                nameKey="nombre_producto"
-                cx="50%"
-                cy="50%"
-                outerRadius={150}
-                fill="#82ca9d"
-                label={renderCustomizedLabel}
-                labelLine={false}
-              >
-                {filteredGanancias.map((entry, index) => (
+        </div>
+      </div>
+
+      <h1>Ventas Mensuales por Producto</h1>
+      {/* Filtro de mes */}
+      <div className="chart-container">
+        <div className="month-filter">
+          <label htmlFor="monthInput">Selecciona Mes y Año (MM-YYYY):</label>
+          <input
+            id="monthInput"
+            type="text"
+            value={tempMonth}
+            onChange={handleMonthChange}
+            placeholder="MM-YYYY"
+            pattern="\d{2}-\d{4}"
+            title="Formato requerido: MM-YYYY"
+          />
+          <button onClick={handleFetchClick}>Buscar</button>
+        </div>
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart
+            data={ventasMensuales}
+            margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="nombre_producto"
+              interval={0}
+              angle={-45}
+              textAnchor="end"
+              tick={{ fontSize: 12, fill: "#8884d8" }}
+            />
+            <YAxis tickFormatter={formatCurrency} />
+            <Tooltip formatter={(value) => formatCurrency(value)} />
+            <Legend />
+            <Bar dataKey="total" fill="#8884d8" barSize={30}>
+              {ventasMensuales.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <h1>Ventas por Comuna</h1>
+      {/* Filtro de comunas */}
+      <div className="detalle-ventasComuna">
+        <div className="flex justify-end filter-container">
+          <label htmlFor="communeFilter">Selecciona Comunas:</label>
+          <select
+            id="communeFilter"
+            multiple
+            value={selectedCommunes}
+            onChange={handleCommuneChange}
+            style={{ height: "150px" }} // Para ver múltiples opciones a la vez
+          >
+            {ventasComuna.map((venta) => (
+              <option key={venta.comuna_envio} value={venta.comuna_envio}>
+                {venta.comuna_envio}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="chart-container">
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart
+              data={filteredVentasComuna}
+              margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="comuna_envio"
+                angle={-45}
+                textAnchor="end"
+                tick={{ fontSize: 12, fill: "#8884d8" }}
+              />
+              <YAxis tickFormatter={formatCurrency} />
+              <Tooltip formatter={(value) => formatCurrency(value)} />
+              <Legend />
+              <Bar dataKey="total" fill="#8884d8" barSize={30}>
+                {filteredVentasComuna.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
                   />
                 ))}
-              </Pie>
-              <Tooltip formatter={(value) => formatCurrency(value)} />
-            </PieChart>
+              </Bar>
+            </BarChart>
           </ResponsiveContainer>
         </div>
+      </div>
+
+      <h1>Ventas Mensuales por Comuna</h1>
+      {/* Visualización de ventas mensuales por comuna */}
+      <div className="chart-container">
+        <div className="month-filter">
+          <label htmlFor="monthInput">Selecciona Mes y Año (MM-YYYY):</label>
+          <input
+            id="monthInput"
+            type="text"
+            value={tempMonth}
+            onChange={handleMonthChange}
+            placeholder="MM-YYYY"
+            pattern="\d{2}-\d{4}"
+            title="Formato requerido: MM-YYYY"
+          />
+          <button onClick={handleFetchClick}>Buscar</button>
+        </div>
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart
+            data={filteredVentasComunaMensuales}
+            margin={{ top: 20, right: 30, left: 20, bottom: 50 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              dataKey="comuna_envio"
+              angle={-45}
+              textAnchor="end"
+              tick={{ fontSize: 12, fill: "#8884d8" }}
+            />
+            <YAxis tickFormatter={formatCurrency} />
+            <Tooltip formatter={(value) => formatCurrency(value)} />
+            <Legend />
+            <Bar dataKey="total" fill="#8884d8" barSize={30}>
+              {filteredVentasComunaMensuales.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );

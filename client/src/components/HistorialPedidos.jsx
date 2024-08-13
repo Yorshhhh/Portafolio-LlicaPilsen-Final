@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { historialPedidos } from "../api/cerveceria_API";
 import "../css/PedidosPendientes.css";
+import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from "react-icons/fa";
 
 const HistorialPedidos = () => {
   const [user, setUser] = useState(null);
@@ -56,37 +57,43 @@ const HistorialPedidos = () => {
     const pedidosAgrupados = {};
 
     pedidos.forEach((pedido) => {
-      if (!pedidosAgrupados[pedido.cod_pedido_id]) {
-        pedidosAgrupados[pedido.cod_pedido_id] = {
+      if (!pedidosAgrupados[pedido.cod_pedido_]) {
+        pedidosAgrupados[pedido.cod_pedido] = {
           ...pedido,
           detalles: [],
         };
       }
-      pedidosAgrupados[pedido.cod_pedido_id].detalles.push({
+      pedidosAgrupados[pedido.cod_pedido].detalles.push({
         id_detalle_pedido: pedido.id_detalle_pedido,
         cod_producto: pedido.cod_producto,
         nombre_producto: pedido.nombre_producto,
         cantidad: pedido.cantidad,
         precio_unitario: pedido.precio_unitario,
-        total: pedido.total,
       });
     });
 
     return Object.values(pedidosAgrupados);
   };
 
-  const calcularTotalBoleta = (detalles) => {
-    // Verificar si detalles está definido y no es null
+  const calcularTotales = (detalles) => {
     if (!detalles || detalles.length === 0) {
-      return "0,00 CLP"; // O cualquier valor predeterminado que desees mostrar
+      return { total: 0, iva: 0, totalConIva: 0 };
     }
 
     let totalBoleta = 0;
+
     detalles.forEach((detalle) => {
-      totalBoleta += detalle.total;
+      const subtotal = detalle.precio_unitario * detalle.cantidad;
+      totalBoleta += subtotal;
     });
 
-    return totalBoleta.toLocaleString("es-CL", {
+    const totalIva = totalBoleta * 0.19;
+    const totalConIva = totalBoleta + totalIva;
+
+    return { total: totalBoleta, iva: totalIva, totalConIva: totalConIva };
+  };
+  const formatCurrency = (amount) => {
+    return amount.toLocaleString("es-CL", {
       style: "currency",
       currency: "CLP",
     });
@@ -104,77 +111,128 @@ const HistorialPedidos = () => {
     <>
       <div>
         <h2>Historial de Pedidos</h2>
-        <table className="pedidos-table">
-          <thead>
+        <div className="flex justify-center">
+          {prevPage && (
+            <button onClick={() => handlePageChange(prevPage)}>
+              Página Anterior
+              <FaArrowAltCircleLeft className="ml-2" />
+            </button>
+          )}
+          {nextPage && (
+            <button onClick={() => handlePageChange(nextPage)}>
+              Siguiente Página
+              <FaArrowAltCircleRight className="ml-2" />
+            </button>
+          )}
+        </div>
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
-              <th>Cod Pedido</th>
-              <th>Detalle Pedido</th>
-              <th>Fecha de Pedido</th>
-              <th>Fecha de Entrega</th>
-              <th>Total del Pedido</th>
+              <th scope="col" className="px-6 py-3">
+                Cod Pedido
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Datos Despacho
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Detalle Pedido
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Total del Pedido
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Fecha de Pedido
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Fecha de Entrega
+              </th>
             </tr>
           </thead>
           <tbody>
-            {agruparPedidos(historial).map((pedidoAgrupado) => (
-              <tr key={pedidoAgrupado.cod_pedido_id}>
-                <td>{pedidoAgrupado.cod_pedido_id}</td>
-                <td>
-                  <ul>
-                    {pedidoAgrupado.detalles.map((detalle, index) => (
-                      <li key={index}>
-                        <strong>Codigo Producto:</strong> {detalle.cod_producto} <br />
-                        <strong>Nombre Producto:</strong> {detalle.nombre_producto} <br />
-                        <strong>Cantidad:</strong> {detalle.cantidad} <br />
-                        <strong>Precio:</strong>{" "}
-                        {detalle.precio_unitario.toLocaleString("es-CL", {
-                          style: "currency",
-                          currency: "CLP",
-                        })}
-                        <br />
-                      </li>
-                    ))}
-                    <li>
-                      Total:{" "}
-                      <strong>
-                        {calcularTotalBoleta(pedidoAgrupado.detalles)}
-                      </strong>
-                    </li>
-                  </ul>
-                </td>
-                <td>{pedidoAgrupado.fecha_pedido}</td>
-                <td
-                  className={
-                    pedidoAgrupado.fecha_entrega
-                      ? "estado-entregado"
-                      : "estado-pendiente"
-                  }
+            {agruparPedidos(historial).map((pedidoAgrupado) => {
+              const { total, iva, totalConIva } = calcularTotales(
+                pedidoAgrupado.detalles
+              );
+              return (
+                <tr
+                  key={pedidoAgrupado.cod_pedido}
+                  className="bg-white border-b  hover:bg-gray-50"
                 >
-                  {pedidoAgrupado.fecha_entrega ? (
-                    <>
-                      ¡Entregado! <br />
-                      Fecha: {pedidoAgrupado.fecha_entrega}
-                    </>
-                  ) : (
-                    "Pendiente"
-                  )}
-                </td>
-                <td>
-                  <strong>{calcularTotalBoleta(pedidoAgrupado.detalles)}</strong>{" "}
-                </td>
-              </tr>
-            ))}
+                  <td className="px-6 py-4">{pedidoAgrupado.cod_pedido}</td>
+                  <td className="px-6 py-4">
+                    Comuna:
+                    {pedidoAgrupado.comuna}
+                    <br />
+                    Dirección: {user.direccion}
+                    <br />
+                    Tipo Documento:{pedidoAgrupado.tipo_documento}
+                    <br />
+                    Tipo Entrega: {pedidoAgrupado.tipo_entrega}
+                  </td>
+                  <td className="px-6 py-4">
+                    <ul>
+                      {pedidoAgrupado.detalles.map((detalle, index) => (
+                        <li key={index} className="mb-4">
+                          <strong>Codigo Producto:</strong>{" "}
+                          {detalle.cod_producto}
+                          <br />
+                          <strong>Nombre Producto:</strong>
+                          {detalle.nombre_producto}
+                          <br />
+                          <strong>Cantidad:</strong> {detalle.cantidad} <br />
+                          <strong>Precio:</strong>{" "}
+                          {detalle.precio_unitario.toLocaleString("es-CL", {
+                            style: "currency",
+                            currency: "CLP",
+                          })}
+                          <br />
+                        </li>
+                      ))}
+                    </ul>
+                  </td>
+                  <td className="text-center">
+                    <strong>Total neto: {formatCurrency(total)}</strong>
+                    <br />
+                    <strong>IVA: {formatCurrency(iva)}</strong>
+                    <br />
+                    <strong>Total + IVA: {formatCurrency(totalConIva)}</strong>
+                  </td>
+                  <td className="px-6 py-4">{pedidoAgrupado.fecha_pedido}</td>
+                  <td
+                    className={
+                      pedidoAgrupado.fecha_entrega
+                        ? "estado-entregado"
+                        : "estado-pendiente"
+                    }
+                  >
+                    {pedidoAgrupado.fecha_entrega ? (
+                      <>
+                        ¡Entregado! <br />
+                        Fecha: {pedidoAgrupado.fecha_entrega}
+                      </>
+                    ) : (
+                      "Pendiente"
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
-        {prevPage && (
-          <button onClick={() => handlePageChange(prevPage)}>
-            Página Anterior
-          </button>
-        )}
-        {nextPage && (
-          <button onClick={() => handlePageChange(nextPage)}>
-            Siguiente Página
-          </button>
-        )}
+        <div className="flex justify-center">
+          {prevPage && (
+            <button onClick={() => handlePageChange(prevPage)}>
+              Página Anterior
+              <FaArrowAltCircleLeft className="ml-2" />
+            </button>
+          )}
+          {nextPage && (
+            <button onClick={() => handlePageChange(nextPage)}>
+              Siguiente Página
+              <FaArrowAltCircleRight className="ml-2" />
+            </button>
+          )}
+        </div>
       </div>
     </>
   );

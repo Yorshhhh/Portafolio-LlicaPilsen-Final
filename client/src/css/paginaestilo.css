@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @font-face {
   font-family: "Plain";
   src: url("../fonts/Plain-Regular.woff2") format("woff2"),
@@ -56,6 +57,8 @@ body {
   background: var(--white-color);
   font-family: var(--base-font-family);
 }
+=======
+>>>>>>> ramayorsh
 
 
 /* Estilo para la sección de productos destacados */
@@ -66,8 +69,9 @@ body {
 }
 
 /*---------------------------------------
- TYPOGRAPHY              
+ HERO (Estilos Componente Bienvenida)          
 -----------------------------------------*/
+<<<<<<< HEAD
 
 h1,
 h2,
@@ -367,59 +371,50 @@ FEATURE
  HERO              
 -----------------------------------------*/
 
+=======
+>>>>>>> ramayorsh
 .hero {
   background-image: url("../img/cervezas.jpg");
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/*---------------------------------------
- CLASS               
------------------------------------------*/
-
-.class-info {
-  background: var(--white-color);
-  box-shadow: 6px 0 38px rgba(20, 20, 20, 0.1);
-  border-radius: 0 0 4px 4px;
-  padding: 1rem 2rem;
-  position: relative;
+.hero h1 {
+  color: white;
+  font-size: 6rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, -2px 2px 0 #000, 2px -2px 0 #000;
 }
 
-.class-info img {
-  border-radius: 2px 2px 0 0;
+
+.homepage {
+  background-image: url('../img/fondo-cuellonegro-scaled.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.class-info strong {
-  color: var(--gray-color);
+
+.footer{
+  background-image: url('../img/fondo-cuellonegro-scaled.jpg');
 }
 
-.class-price {
-  background: var(--primary-color);
-  border-radius: var(--border-radius-large);
-  color: var(--white-color);
-  font-weight: var(--font-weight-bold);
-  display: block;
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-  width: 3.5rem;
-  height: 3.5rem;
-  line-height: 3.5rem;
-  text-align: center;
+.footer p {
+  color: white;
 }
 
-/*---------------------------------------
- SCHEDULE             
------------------------------------------*/
-
-.schedule {
-  background: var(--dark-color);
+.modalidad{
+  background-image: url('../img/fondo-cuellonegro-scaled.jpg');
 }
 
-.schedule-table {
-  display: table;
-  border: 0;
-  text-align: center;
-}
 
+<<<<<<< HEAD
 .schedule-table strong,
 .schedule-table span {
   display: block;
@@ -588,3 +583,5 @@ FEATURE
     display: block;
   }
 }
+=======
+>>>>>>> ramayorsh

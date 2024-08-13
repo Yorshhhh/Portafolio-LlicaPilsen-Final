@@ -1,12 +1,14 @@
-import React from 'react'
-import HistorialPedidos from '../components/HistorialPedidos'
+import React from "react";
+import HistorialPedidos from "../components/HistorialPedidos";
 
 function HistorialPedidosPage() {
   return (
-    <div>
-        <HistorialPedidos/>
-    </div>
-  )
+    <>
+      <div className="w-full flex justify-center items-center">
+        <HistorialPedidos />
+      </div>
+    </>
+  );
 }
 
-export default HistorialPedidosPage
+export default HistorialPedidosPage;

@@ -9,7 +9,7 @@ export default function ListarProductos() {
   useEffect(() => {
     const fetchProductos = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/productos/");
+        const response = await fetch("https://a563-191-114-51-188.ngrok-free.app/productos/");
         if (!response.ok) {
           throw new Error("Error al obtener los productos");
         }
@@ -37,6 +37,7 @@ export default function ListarProductos() {
           Lista de Productos
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          
           {productos.map((producto, index) => (
             <div
               key={producto.cod_producto}
