@@ -37,14 +37,6 @@
   }
   
   .container-title {
-<<<<<<< HEAD
-	padding: 30px;
-	background-color: #333; /* Fondo gris oscuro */
-	margin-bottom: 50px;
-	color: #fff; /* Texto blanco */
-	font-family: 'Plain';
-  }
-=======
     padding: 30px;
     margin-bottom: 50px;
     color: #fff; /* Texto blanco */
@@ -58,7 +50,6 @@
 .container-title h2 {
     color: #fff; /* Color blanco */
 }
->>>>>>> ramayorsh
   
   main {
 	display: flex;
@@ -72,11 +63,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-<<<<<<< HEAD
-	background-color: #555; /* Fondo gris */
-=======
 	background-color: transparent;
->>>>>>> ramayorsh
   }
   
   .imagen img {
@@ -103,15 +90,7 @@
 
   .container-price h2{
 	color: #fff;
-<<<<<<< HEAD
-  }
-  
-  .container-price span {
-	font-size: 30px;
-	font-weight: 400;
-=======
 	margin-bottom: 20px;
->>>>>>> ramayorsh
   }
   
   .container-add-cart {
@@ -127,15 +106,11 @@
 
   .container-quantity h2{
 	color: #fff;
-<<<<<<< HEAD
-  }
-=======
 	
   }
   .container-quantity h2 {
     margin-top: 20px; /* Ajusta el valor según el espacio que desees */
 }
->>>>>>> ramayorsh
   
   .input-quantity {
 	background-color: #777; /* Fondo gris claro */
@@ -168,11 +143,7 @@
   
   .btn-increment-decrement i {
 	font-size: 11px;
-<<<<<<< HEAD
-	color: #fff; /* Iconos blancos */
-=======
 	color: #f12828; /* Iconos blancos */
->>>>>>> ramayorsh
 	cursor: pointer;
   }
   
@@ -233,10 +204,7 @@
   }
   .text-description h2,p {
 	color: #fff;
-<<<<<<< HEAD
-=======
 	margin-top: 10px;
->>>>>>> ramayorsh
   }
   
   .container-related-products h2 {

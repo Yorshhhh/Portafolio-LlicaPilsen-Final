@@ -33,20 +33,11 @@ function CardProducts({ producto }) {
           className="w-full h-full object-contain" // Asegura que la imagen cubra el contenedor
         />
       </Link>
-<<<<<<< HEAD
-      <div className="p-2 flex flex-col flex-grow w-full">
-        <h2 className="text-gray-700 mb-1 text-lg font-bold">{producto.nombre_producto}</h2>
-        <p className="text-gray-700 mb-4">{producto.descripcion}</p>
-        <p className="text-gray-900 font-bold mb-2">Precio: ${producto.precio_producto}</p>
-        <p className="text-gray-600 mb-4">Stock: {producto.stock_producto}</p>
-        {/* Botón con ancho igual al de la tarjeta */}
-=======
       <div className=" p-2 flex flex-col flex-grow w-full">
         <h2 className="text-white mb-1 text-lg font-bold">{producto.nombre_producto}</h2>
         <p className="text-white mb-4">{producto.descripcion}</p>
         <p className="text-white font-bold mb-2">Precio: ${producto.precio_producto}</p>
         <p className="text-white mb-4">Stock: {producto.stock_producto}</p>
->>>>>>> ramayorsh
         <button
           className="card-button bg-orange-400 text-white py-2 px-4 rounded hover:bg-orange-600 w-full"
           onClick={handleAddToCart}

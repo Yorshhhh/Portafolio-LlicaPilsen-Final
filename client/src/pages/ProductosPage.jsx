@@ -4,13 +4,8 @@ import { useCart } from "../context/CarritoContext";
 import "../css/styleproducto.css";
 import CardProducts from "../components/CardProducts";
 import ReactPaginate from "react-paginate";
-<<<<<<< HEAD
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-=======
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
->>>>>>> ramayorsh
 import Footer from "../components/Footer";
 
 function ProductosPage() {
@@ -86,50 +81,6 @@ function ProductosPage() {
 
   return (
     <>
-<<<<<<< HEAD
-      <Navbar
-        cartItems={cartItems}
-        removeFromCart={removeFromCart}
-        toggleCart={toggleCart}
-        showCart={showCart}
-        setShowCart={setShowCart}
-        clearCartHandler={clearCartHandler}
-      />
-      <div className="productos-header">
-        <h1 className="text-4xl font-bold text-center mb-8">
-          Todos los productos
-        </h1>
-      </div>
-      <div className="flex justify-center mb-4">
-        <select
-          className="p-2 border shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent custom-filter"
-          onChange={handleSortChange}
-          value={sortCriteria}
-        >
-          <option value="default">Ordenar por...</option>
-          <option value="price-asc">Precio: Menor a Mayor</option>
-          <option value="price-desc">Precio: Mayor a Menor</option>
-        </select>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mx-auto w-full max-w-7xl">
-        {selectedProducts}
-      </div>
-      <div className="flex justify-center mt-8 mb-16">
-        <ReactPaginate
-          previousLabel={"Anterior"}
-          nextLabel={"Siguiente"}
-          pageCount={pageCount}
-          onPageChange={changePage}
-          containerClassName={"pagination"}
-          previousLinkClassName={"pagination__link"}
-          nextLinkClassName={"pagination__link"}
-          disabledClassName={"pagination__link--disabled"}
-          activeClassName={"pagination__link--active"}
-        />
-      </div>
-      <ToastContainer />  
-      <Footer />
-=======
       <div className="productos-page">
         <div className="productos-header">
           <h1 className="text-4xl font-bold text-center mb-8">
@@ -154,7 +105,6 @@ function ProductosPage() {
         <ToastContainer />
         <Footer />
       </div>
->>>>>>> ramayorsh
     </>
   );
 }

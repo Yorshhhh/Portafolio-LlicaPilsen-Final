@@ -12,21 +12,11 @@ const styles = {
 
 function verpedidos() {
   return (
-<<<<<<< HEAD
-    <div style={styles.container}>
-      <Navbar />
-      <div className="registercontainer">
-        <RegisterAdmin />
-      </div>
-      <Footer />
-    </div>
-=======
     <>
       <div>
         <RegisterAdmin />
       </div>
     </>
->>>>>>> ramayorsh
   );
 }
 

@@ -130,12 +130,6 @@ function PedidosPendientes() {
 
     
   return (
-<<<<<<< HEAD
-    <div className="pedidos-table-container">
-      <h2>Pedidos Pendientes</h2>
-      <table className="pedidos-table">
-        <thead>
-=======
     <div>
       <h1 className="text-center font-medium text-white">Pedidos Pendientes</h1>
       <div className="flex justify-center">
@@ -155,7 +149,6 @@ function PedidosPendientes() {
 
       <table className="w-full text-sm text-left rtl:text-right text-gray-500">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
->>>>>>> ramayorsh
           <tr>
             <th scope="col" className="px-6 py-3">
               Cod Pedido

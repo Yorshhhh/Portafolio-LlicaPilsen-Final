@@ -93,24 +93,6 @@ function PedidosEntregados() {
 
   return (
     <>
-<<<<<<< HEAD
-      <div className="pedidos-table-container">
-        <h2>Pedidos Entregados</h2>
-
-        {prevPage && (
-          <button onClick={() => handlePageChange(prevPage)}>
-            Página Anterior
-          </button>
-        )}
-        {nextPage && (
-          <button onClick={() => handlePageChange(nextPage)}>
-            Siguiente Página
-          </button>
-        )}
-
-        <table className="pedidos-table">
-          <thead>
-=======
       <div>
         <h1 className="text-center font-medium text-white">
           Pedidos Despachados
@@ -131,7 +113,6 @@ function PedidosEntregados() {
         </div>
         <table className="w-full text-sm text-left rtl:text-right text-gray-500">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
->>>>>>> ramayorsh
             <tr>
               <th scope="col" className="px-6 py-3">
                 Cod Pedido
@@ -227,9 +208,6 @@ function PedidosEntregados() {
             ))}
           </tbody>
         </table>
-<<<<<<< HEAD
-        
-=======
         <div className="flex justify-center">
           {prevPage && (
             <button onClick={() => handlePageChange(prevPage)}>
@@ -244,7 +222,6 @@ function PedidosEntregados() {
             </button>
           )}
         </div>
->>>>>>> ramayorsh
       </div>
     </>
   );

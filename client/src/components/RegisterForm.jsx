@@ -112,11 +112,7 @@ function RegisterForm() {
     header: {
       textAlign: "center",
       marginBottom: "20px",
-<<<<<<< HEAD
-      color: "black", // Cambiado a color negro
-=======
       color: "black",
->>>>>>> ramayorsh
     },
     formGroup: {
       marginBottom: "15px",
@@ -126,22 +122,14 @@ function RegisterForm() {
       display: "block",
       marginBottom: "5px",
       fontWeight: "bold",
-<<<<<<< HEAD
-      color: "black", // Cambiado a color negro
-=======
       color: "black",
->>>>>>> ramayorsh
     },
     input: {
       width: "100%",
       padding: "10px",
       borderRadius: "4px",
       border: "1px solid #ccc",
-<<<<<<< HEAD
-      color: "black", // Cambiado a color negro
-=======
       color: "black",
->>>>>>> ramayorsh
     },
     button: {
       padding: "10px 15px",

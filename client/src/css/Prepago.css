@@ -11,17 +11,6 @@
   --prepago-body-background-image: url('../img/fondo-cuellonegro-scaled.jpg');
 }
 
-<<<<<<< HEAD
-.prepago-btn {
-  font-family: var(--prepago-body-font-family);
-  line-height: var(--prepago-body-line-height);
-  background-color: var(--prepago-body-background-color);
-  margin: var(--prepago-body-margin);
-  padding: var(--prepago-body-padding);
-  display: var(--prepago-body-display);
-  flex-direction: var(--prepago-body-flex-direction);
-  justify-content: var(--prepago-body-justify-content);
-=======
 .prepago {
   font-family: Arial, sans-serif;
   line-height: 1.6;
@@ -31,7 +20,6 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
->>>>>>> ramayorsh
 }
 
 /* Estilos para el contenedor horizontal */
@@ -102,34 +90,8 @@ img {
   margin: 0 auto; /* Centrar la imagen */
 }
 
-<<<<<<< HEAD
-/* Estilos específicos para etiquetas h2 y h3 */
-h2, h3 {
-  color: #333;
-}
-
-/* Estilos específicos para la barra de navegación */
-.navbar {
-  background-color: #333;
-  color: #fff;
-  padding: 10px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.navbar a {
-  color: #fff;
-  text-decoration: none;
-}
-
-.navbar a:hover {
-  text-decoration: underline;
-}
-=======
 .custom-hr {
   border: none;
   border-top: 2px solid black;
   margin: 10px 0;
 }
->>>>>>> ramayorsh

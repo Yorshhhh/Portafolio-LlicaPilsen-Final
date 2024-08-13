@@ -40,21 +40,11 @@ function UserCard({ user, onDireccionChange, onTelefonoChange }) {
             direccion: updatedUser.data.direccion,
           })
         );
-<<<<<<< HEAD
-        setEditDireccion(false); // Ocultar el input de edición después de guardar
-        toast.success("Dirección actualizada correctamente.");
-      } catch (error) {
-        console.error("Error al actualizar la dirección:", error);
-        toast.error("Ocurrió un error al actualizar la dirección.");
-      } finally {
-        setLoading(false); // Oculta el indicador de carga
-=======
         setEditDireccion(false); // Oculta el input de edición
         alert("Dirección actualizada correctamente.");
       } catch (error) {
         console.error("Error al actualizar la dirección:", error);
         alert("Ocurrió un error al actualizar la dirección.");
->>>>>>> ramayorsh
       }
     } else {
       toast.error("Por favor, ingresa una dirección válida.");
@@ -110,48 +100,6 @@ function UserCard({ user, onDireccionChange, onTelefonoChange }) {
   };
 
   return (
-<<<<<<< HEAD
-    <div>
-      <div className="user-profile-card">
-        <h1>Información del usuario</h1>
-        <h2>Nombres: {user.nombres}</h2>
-        <h2>Apellidos: {user.apellidos}</h2>
-        <h2>Correo: {user.correo}</h2>
-        <h2>Teléfono: {user.telefono}</h2>
-        <h2>Dirección:</h2>
-        {editDireccion ? (
-          // Mostrar input de edición si se está editando la dirección
-          <div className="user-profile-direccion-input-container">
-            <input
-              type="text"
-              placeholder="Ingresa tu dirección"
-              value={direccion}
-              onChange={handleDireccionChange}
-              className="user-profile-direccion-input"
-              style={{ color: "black" }} // Establecer el color del texto en negro
-            />
-            <button
-              onClick={handleGuardarDireccionClick}
-              className="user-profile-button user-profile-btn-primary"
-              disabled={loading}
-            >
-              {loading ? "Guardando..." : "Guardar dirección"}
-            </button>
-          </div>
-        ) : (
-          // Mostrar la dirección y botón de editar si está proporcionada
-          <div>
-            <h2>{user.direccion || "Dirección no proporcionada"}</h2>
-            <button
-              onClick={handleEditarDireccionClick}
-              className="user-profile-button user-profile-btn-secondary"
-            >
-              Editar dirección
-            </button>
-          </div>
-        )}
-      </div>
-=======
     <div className="user-card">
       <h1 className="text-black">Información del usuario</h1>
       <h2 className="text-black">Nombres: {user.nombres}</h2>
@@ -218,7 +166,6 @@ function UserCard({ user, onDireccionChange, onTelefonoChange }) {
         </div>
       )}
 
->>>>>>> ramayorsh
       <ToastContainer />
     </div>
   );

@@ -109,14 +109,7 @@ function VistaProductoPage() {
 
         <div className="container-info-product">
           <div className="container-description">
-<<<<<<< HEAD
-            <div className="title-description">
-              <h2 text-white>Descripcion</h2>
-              <i className="fa-solid fa-chevron-down"></i>
-            </div>
-=======
             
->>>>>>> ramayorsh
 
             <div className="text-description">
               <p>{producto.descripcion_producto}</p>

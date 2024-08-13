@@ -53,19 +53,11 @@ function Carrito() {
                   <td>
                     <p className="text-black">{producto.nombre_producto}</p>
                   </td>
-<<<<<<< HEAD
-                  <td className="cantidad">
-                    <p>{producto.quantity}</p>
-                  </td>
-                  <td> 
-                    <p>${producto.precio_producto * producto.quantity}</p>
-=======
                   <td>
                     <p className="text-black">{producto.quantity}</p>
                   </td>
                   <td>
                     <p className="text-black">${producto.precio_producto * producto.quantity}</p>
->>>>>>> ramayorsh
                   </td>
                   <td>
                     <button
